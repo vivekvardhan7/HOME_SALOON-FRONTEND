@@ -1,0 +1,997 @@
+{
+  "common": {
+    "loading": "Ezali kotongisa...",
+    "error": "Libunga",
+    "success": "Elongi malamu",
+    "cancel": "Kotika",
+    "save": "Kobomba",
+    "delete": "Kolimola",
+    "edit": "Kobongola",
+    "add": "Kobakisa",
+    "search": "Koluka",
+    "filter": "Kopona",
+    "clear": "Kolongola nyonso",
+    "back": "Kozonga",
+    "next": "Oyo elandaka",
+    "previous": "Oyo eleki",
+    "submit": "Kotinda",
+    "close": "Kokanga",
+    "yes": "Iyo",
+    "no": "Te",
+    "confirm": "Kondima",
+    "actions": "Misala",
+    "addToCart": "Kobakisa na Panier",
+    "viewDetails": "Kotala Makambo",
+    "bookNow": "Kobongisa Sikoyo"
+  },
+  "errors": {
+    "failedToLoad": "Kokanga ya ba données ekweyi",
+    "selectService": "Pona mosala moko na nsuka moke",
+    "somethingWentWrong": "Likambo moko ebongani te"
+  },
+  "success": {
+    "addedToCart": "{{item}} ebakisami na panier",
+    "removedFromCart": "Elongwami na panier",
+    "updated": "Ebongolami malamu"
+  },
+  "booking": {
+    "selectedServices": "Misala oyo Eponami",
+    "noServicesSelected": "Mosala moko te eponami",
+    "totalDuration": "Ntango Nyonso",
+    "totalPrice": "Mbongo Nyonso",
+    "proceedToBooking": "Kokoba na Kobongisa",
+    "title": "Kobongisa Mokolo ya Kokutana",
+    "selectService": "Kopona Mosala",
+    "selectDate": "Kopona Mokolo",
+    "selectTime": "Kopona Ngonga",
+    "personalInfo": "Makambo na Yo",
+    "payment": "Kofuta",
+    "confirmation": "Kondima",
+    "serviceDetails": "Makambo ya Mosala",
+    "appointmentDetails": "Makambo ya Mokolo ya Kokutana",
+    "totalAmount": "Mbongo Nyonso",
+    "bookNow": "Kobongisa Sikoyo",
+    "bookingConfirmed": "Kobongisa Endimami!",
+    "appointmentBooked": "Mokolo na yo ya kokutana ebongisami malamu."
+  },
+  "navigation": {
+    "home": "Ndako",
+    "services": "Misala",
+    "vendors": "Bato ya misala",
+    "appointments": "Mikolo ya kokutana",
+    "products": "Biloko",
+    "payments": "Kofuta",
+    "dashboard": "Esika ya kotambola",
+    "profile": "Profil na yo",
+    "logout": "Kobima",
+    "login": "Kokota",
+    "register": "Kokoma nkombo",
+    "findServices": "Koluka Misala",
+    "myBookings": "Mikolo na ngai ya kokutana",
+    "manageBookings": "Kotambwisa Mikolo ya Kokutana",
+    "adminPanel": "Esika ya Admin",
+    "getStarted": "Kobanda"
+  },
+  "nav": {
+    "home": "Ndako",
+    "services": "Misala",
+    "atHomeServices": "Misala na Ndako",
+    "salonVisit": "Kokende na Salon",
+    "howItWorks": "Ndenge esalemaka",
+    "dashboard": "Esika ya kotambola",
+    "profile": "Profil",
+    "appointments": "Mikolo ya kokutana",
+    "products": "Biloko",
+    "revenue": "Mbongo oyo ozwi",
+    "assignedAppointments": "Mikolo ya kokutana oyo bapesi yo",
+    "earnings": "Mbongo oyo ozwi",
+    "vendors": "Bato ya misala",
+    "beauticians": "Basi ya kitoko",
+    "approvals": "Kondima",
+    "users": "Bato oyo basalelaka",
+    "managers": "Bayangeli",
+    "reports": "Bansango",
+    "pendingVendors": "Bato ya misala oyo bazali kozela",
+    "allVendors": "Bato nyonso ya misala",
+    "financials": "Makambo ya mbongo",
+    "settings": "Paramètres",
+    "logout": "Kobima",
+    "signup": "Kokoma nkombo"
+  },
+  "home": {
+    "hero": {
+      "badge": "Misala ya Kitoko na Ndako na yo",
+      "title": "Misala ya Kitoko ya Malamu",
+      "subtitle": "Bongisa Basi ya Kitoko oyo bazali na Diplôme na Ntango Nyonso, Esika Nyonso",
+      "description": "Kokutana na basi ya kitoko mpe ba salons oyo bazali pene na yo. Bongisa misala ya nsuki, maquillage, mpe bien-être na kaka mwa ba clics. Mosala ya malamu, satisfaction garantie.",
+      "bookServices": "Kobongisa Misala",
+      "joinProfessional": "Kokota lokola Professionnel",
+      "bookAtHome": "Kobongisa Mosala na Ndako",
+      "findSalon": "Koluka Salon Pene na Ngai"
+    },
+    "features": {
+      "easySearch": "Koluka Pete",
+      "easySearchDesc": "Koluka bato ya misala oyo bazali pene na yo na ba notes mpe ba avis",
+      "atHomeService": "Mosala na Ndako",
+      "atHomeServiceDesc": "Misala ya professionnel ekoya na ndako na yo",
+      "flexibleBooking": "Kobongisa na Liberté",
+      "flexibleBookingDesc": "Bongisa nokinoki to planifier mpo na sima",
+      "securePayment": "Kofuta na Libateli",
+      "securePaymentDesc": "Ba options ya kofuta ebele na traitement sécurisé"
+    },
+    "services": {
+      "title": "Misala ya Kitoko ya Professionnel",
+      "subtitle": "Ba Spécialistes oyo Batali mpe Bazali na Confiance",
+      "atHome": {
+        "title": "Misala na Ndako",
+        "description": "Zwa misala ya kitoko na ndako na yo.",
+        "button": "Kobongisa Sikoyo"
+      },
+      "salon": {
+        "title": "Kokende na Salon",
+        "description": "Bongisa mikolo ya kokutana na ba salons oyo batali pene na yo.",
+        "button": "Koluka Salon"
+      },
+      "categories": {
+        "hair": {
+          "title": "Kosala Nsuki",
+          "description": "Ba Tresses, Coloration, Coiffure ya Libala, mpe Mosusu"
+        },
+        "face": {
+          "title": "Soins ya Elongi",
+          "description": "Ba traitements mpe soins mpo na peau ya kongenga"
+        },
+        "extras": {
+          "title": "Biloko Mosusu",
+          "description": "Biloko mpe misala ya kobakisa"
+        }
+      }
+    },
+    "howItWorks": {
+      "title": "Ndenge Esalemaka",
+      "subtitle": "Kobongisa na kaka mwa ba étapes",
+      "steps": {
+        "step1": {
+          "title": "Kopona Mosala",
+          "description": "Pona mosala oyo ozali na mposa na yango"
+        },
+        "step2": {
+          "title": "Kopona Ngonga mpe Mokolo",
+          "description": "Pona ngonga oyo ebongi na yo"
+        },
+        "step3": {
+          "title": "Moyangeli Apesa Mwasi ya Kitoko",
+          "description": "Mwasi ya kitoko oyo batali apesami"
+        },
+        "step4": {
+          "title": "Kosepela na Mosala",
+          "description": "Mwasi ya kitoko akoya na ndako to na salon"
+        },
+        "step5": {
+          "title": "Kofuta na Libateli",
+          "description": "Futa na carte to mobile money"
+        }
+      }
+    },
+    "whyChoose": {
+      "title": "Mpo na Nini Kopona Home Bonzenga?",
+      "subtitle": "Tozali kosala misala ya professionnel, ya libateli mpe ya kotyelama motema",
+      "features": {
+        "verified": {
+          "title": "Ba Spécialistes oyo Batali",
+          "description": "Kaka ba professionnels oyo bazali na diplôme"
+        },
+        "flexible": {
+          "title": "Planification ya Liberté",
+          "description": "Bongisa ntango ebongi na yo"
+        },
+        "secure": {
+          "title": "Kofuta na Libateli",
+          "description": "Système ya kotyelama motema mpe ya crypté"
+        },
+        "updates": {
+          "title": "Ba Mises à Jour na Ntango Nyonso",
+          "description": "Yeba sango ya mikolo na yo ya kokutana"
+        }
+      }
+    },
+    "newsletter": {
+      "title": "Koyeba Sango",
+      "subtitle": "Zwa ba offres ya sika mpe ba conseils ya kitoko",
+      "placeholder": "Koma email na yo",
+      "button": "Kokoma Nkombo"
+    },
+    "cta": {
+      "title": "Ozali Pene ya Kobanda?",
+      "subtitle": "Kokutana na bankoto ya bakiliya oyo bazali na esengo mpe batiaka motema na HOME BONZENGA mpo na bamposa na bango ya kitoko.",
+      "bookFirstService": "Kobongisa Mosala na Yo ya Liboso",
+      "browseServices": "Kotala Misala"
+    }
+  },
+  "auth": {
+    "login": {
+      "title": "Boyei Malamu",
+      "subtitle": "Kota na compte na yo mpo na kokoba",
+      "signIn": "Kokota",
+      "email": "Adresse Email",
+      "password": "Mot de Passe",
+      "enterEmail": "Koma email na yo",
+      "enterPassword": "Koma mot de passe na yo",
+      "signingIn": "Ezali kokota...",
+      "noAccount": "Ozali na compte te?",
+      "signUp": "Kokoma nkombo",
+      "demoAccounts": "Ba Comptes ya Démonstration:",
+      "adminDemo": "Admin: admin@beautybook.com / admin123",
+      "customerDemo": "Kiliya: customer@demo.com / demo123",
+      "vendorDemo": "Mosali: vendor@demo.com / demo123"
+    },
+    "register": {
+      "title": "Kosala Compte",
+      "subtitle": "Kokota na HOME BONZENGA mpe kobanda mobembo na yo",
+      "signUp": "Kokoma Nkombo",
+      "accountType": "Lolenge ya Compte",
+      "customer": "Kiliya",
+      "professional": "Professionnel",
+      "firstName": "Nkombo ya Liboso",
+      "lastName": "Nkombo ya Suka",
+      "email": "Adresse Email",
+      "phone": "Numéro ya Téléphone (Optionnel)",
+      "password": "Mot de Passe",
+      "confirmPassword": "Kondima Mot de Passe",
+      "createPassword": "Kosala mot de passe",
+      "confirmYourPassword": "Kondima mot de passe na yo",
+      "creatingAccount": "Ezali kosala compte...",
+      "hasAccount": "Ozali na compte?",
+      "signIn": "Kokota",
+      "vendorRedirect": "Tokotinda yo na formulaire mobimba ya candidature vendeur."
+    },
+    "verifyEmail": {
+      "titleSuccess": "Email Etaliami",
+      "titlePending": "Email Etaliami – Ezali Kozela Kondima",
+      "titleError": "Botali Ekweyi",
+      "verifying": "Ezali kotala compte na yo...",
+      "pleaseWait": "Zela moke ntango tozali kotala email na yo.",
+      "success": "Email na yo etaliami malamu!",
+      "pendingApproval": "Compte etaliami. Ezali kozela kondima ya moyangeli.",
+      "error": "Tokokaki kotala email na yo te. Lien ekoki kozala esili.",
+      "missingToken": "Jeton ya botali ezali te.",
+      "goToLogin": "Kende na connexion",
+      "contactSupport": "Kopesa sango na support"
+    }
+  },
+  "dashboard": {
+    "customer": {
+      "hello": "Mbote, {{name}}",
+      "valuedCustomer": "Kiliya ya Motuya",
+      "manageAppointments": "Tambwisa mikolo na yo ya kokutana mpe koluka misala.",
+      "upcomingAppointment": "Mokolo ya Kokutana oyo Ekoya",
+      "date": "Mokolo",
+      "status": "Statut",
+      "yourExpert": "Mwasi na Yo ya Kitoko",
+      "expertAssignedShortly": "Mwasi ya kitoko akopesama yo nokinoki",
+      "viewDetails": "Kotala Makambo",
+      "noUpcomingAppointments": "Mokolo ya kokutana moko te ekoya",
+      "scheduleClear": "Emploi du temps na yo ezali mpamba. Mipesa nzoto kitoko ya malamu lelo.",
+      "bookAtHomeService": "Kobongisa Mosala na Ndako",
+      "quickActions": "Misala ya Nokinoki",
+      "atHomeService": "Mosala na Ndako",
+      "salonVisit": "Kokende na Salon",
+      "myHistory": "Makambo na Ngai ya Kala",
+      "editProfile": "Kobongola Profil",
+      "recentBeautyJourney": "Mobembo na Yo ya Kitoko ya Sika",
+      "viewAllHistory": "Kotala Makambo Nyonso ya Kala",
+      "beautyService": "Mosala ya Kitoko",
+      "service": "Mosala",
+      "details": "Makambo",
+      "rebook": "Kobongisa Lisusu",
+      "noHistoryYet": "Makambo ya kala ezali te naino. Banda mobembo na yo na kobongisa mosala!",
+      "welcome": "Boyei malamu, {{name}}!",
+      "subtitle": "Tambwisa mikolo na yo ya kitoko mpe koluka misala ya sika",
+      "upcomingAppointments": "Mikolo ya Kokutana oyo Ekoya",
+      "noUpcoming": "Mokolo ya kokutana moko te ekoya",
+      "bookNewAppointment": "Kobongisa Mokolo ya Kokutana ya Sika",
+      "recentBookings": "Ba Réservations ya Sika",
+      "noRecentBookings": "Réservation ya sika moko te",
+      "viewAllBookings": "Kotala Mikolo Nyonso ya Kokutana",
+      "searchServices": "Koluka Misala",
+      "viewProfile": "Kotala Profil",
+      "featuredServices": "Misala ya Malamu",
+      "manicure": "Manucure",
+      "manicureDesc": "Soins ya ba ongles ya professionnel",
+      "hairStyling": "Kosala Nsuki",
+      "hairStylingDesc": "Kokata, coloration mpe coiffage",
+      "facial": "Soins ya Elongi",
+      "facialDesc": "Ba traitements ya régénération",
+      "makeup": "Maquillage",
+      "makeupDesc": "Application ya professionnel"
+    },
+    "vendor": {
+      "welcome": "Boyei malamu, {{name}}!",
+      "subtitle": "Tambwisa misala mpe mikolo na yo ya kokutana",
+      "todayAppointments": "Mikolo ya Kokutana ya Lelo",
+      "pendingBookings": "Ba Réservations oyo Ezali Kozela",
+      "completedServices": "Misala oyo Esilaki",
+      "earnings": "Mbongo oyo Ozwi",
+      "addService": "Kobakisa Mosala ya Sika",
+      "manageServices": "Kotambwisa Misala",
+      "viewSchedule": "Kotala Emploi du Temps"
+    },
+    "admin": {
+      "welcome": "Tableau de Bord ya Admin",
+      "subtitle": "Kotambwisa plateforme mobimba",
+      "totalUsers": "Motango ya Bato oyo Basalelaka",
+      "totalVendors": "Motango ya Bato ya Misala",
+      "totalBookings": "Motango ya Ba Réservations",
+      "totalRevenue": "Mbongo Nyonso oyo Ezwami",
+      "recentActivity": "Activité ya Sika",
+      "manageUsers": "Kotambwisa Bato oyo Basalelaka",
+      "manageVendors": "Kotambwisa Bato ya Misala",
+      "viewAnalytics": "Kotala Ba Analyses"
+    }
+  },
+  "bookings": {
+    "title": "Mikolo na Ngai ya Kokutana",
+    "subtitle": "Tala mpe tambwisa mikolo na yo nyonso ya kokutana mpo na kitoko",
+    "totalBookings": "Motango ya Mikolo ya Kokutana",
+    "searchPlaceholder": "Koluka mikolo ya kokutana...",
+    "filterByStatus": "Kopona na statut",
+    "filterByPayment": "Kopona na kofuta",
+    "allStatuses": "Ba Statuts Nyonso",
+    "allPayments": "Kofuta Nyonso",
+    "clearFilters": "Kolongola Ba Filtres",
+    "bookingHistory": "Makambo ya Kala ya Mikolo ya Kokutana",
+    "bookingId": "ID ya Mokolo ya Kokutana",
+    "service": "Mosala",
+    "type": "Lolenge",
+    "beautician": "Mwasi ya Kitoko",
+    "dateTime": "Mokolo mpe Ngonga",
+    "status": "Statut",
+    "payment": "Kofuta",
+    "total": "Nyonso",
+    "actions": "Misala",
+    "atHome": "Na Ndako",
+    "salon": "Salon",
+    "notAssigned": "Apesami te",
+    "view": "Kotala",
+    "services": "misala",
+    "pending": "Ezali Kozela",
+    "confirmed": "Endimami",
+    "completed": "Esilaki",
+    "cancelled": "Etikaki",
+    "paid": "Efutami",
+    "unpaid": "Efutami Te",
+    "refunded": "Ezongisami",
+    "noBookingsFound": "Mokolo ya kokutana moko te ezwami",
+    "noMatchingBookings": "Mokolo ya kokutana moko te ekokani na ba filtres na yo. Meka kobongola ba critères na yo.",
+    "noBookingsYet": "Obongisi mokolo ya kokutana moko te naino. Banda na kobongisa mosala ya kitoko!",
+    "bookService": "Kobongisa Mosala",
+    "salonBookingUnavailable": "Makambo ya mokolo ya kokutana ya salon ezali te sikoyo."
+  },
+  "profile": {
+    "title": "Profil na Ngai",
+    "subtitle": "Tambwisa makambo na yo mpe ba préférences",
+    "personalInfo": "Makambo na Yo",
+    "firstName": "Nkombo ya Liboso",
+    "lastName": "Nkombo ya Suka",
+    "email": "Adresse Email",
+    "phone": "Numéro ya Téléphone",
+    "address": "Adresse",
+    "street": "Balabala",
+    "city": "Engumba",
+    "state": "État/Province",
+    "zipCode": "Code Postal",
+    "saveChanges": "Kobomba Ba Modifications",
+    "cancel": "Kotika",
+    "saving": "Ezali kobomba...",
+    "profileUpdated": "Profil ebongolami malamu!",
+    "updateFailed": "Kobongola profil ekweyi. Komeka lisusu."
+  },
+  "atHome": {
+    "intro": {
+      "title": "Misala ya Kitoko na Ndako",
+      "subtitle": "Misala ya kitoko ya professionnel ekoya na ndako na yo",
+      "withProducts": "Na Biloko",
+      "withProductsDesc": "Tokomema biloko nyonso oyo osengeli",
+      "withoutProducts": "Kozanga Biloko",
+      "withoutProductsDesc": "Salelá biloko na yo moko",
+      "howItWorks": "Ndenge Esalemaka",
+      "step1": "Pona misala na yo",
+      "step2": "Pona mokolo mpe ngonga",
+      "step3": "Kondima adresse na yo",
+      "step4": "Mwasi ya kitoko akoya na ndako na yo",
+      "getStarted": "Kobanda"
+    },
+    "selection": {
+      "title": "Pona Misala na Yo",
+      "subtitle": "Pona misala ya kitoko oyo olingi",
+      "selectServices": "Kopona Misala",
+      "selectedServices": "Misala oyo Eponami",
+      "noServicesSelected": "Mosala moko te eponami naino",
+      "totalAmount": "Mbongo Nyonso",
+      "continue": "Kokoba na Kobongisa",
+      "addMore": "Kobakisa Misala Mosusu"
+    },
+    "booking": {
+      "title": "Kobongisa Mokolo na Yo ya Kokutana",
+      "selectDate": "Kopona Mokolo",
+      "selectTime": "Kopona Ngonga",
+      "yourAddress": "Adresse na Yo",
+      "specialRequests": "Ba Demandes Spéciales",
+      "specialRequestsPlaceholder": "Makambo ya spécial mpo na mwasi ya kitoko?",
+      "confirmBooking": "Kondima Kobongisa",
+      "bookingDetails": "Makambo ya Kobongisa"
+    }
+  },
+  "salon": {
+    "title": "Kokende na Salon",
+    "subtitle": "Kobongisa mokolo ya kokutana na ba salons partenaires na biso",
+    "findSalon": "Koluka Salon",
+    "selectSalon": "Kopona Salon",
+    "viewDetails": "Kotala Makambo",
+    "bookNow": "Kobongisa Sikoyo",
+    "location": "Esika",
+    "rating": "Note",
+    "reviews": "Ba Avis",
+    "openNow": "Efungwami Sikoyo",
+    "closed": "Ekangami"
+  },
+  "bookingConfirmation": {
+    "title": "Kondima Kobongisa",
+    "subtitle": "Tala makambo ya kobongisa na yo",
+    "bookingSummary": "Résumé ya Kobongisa",
+    "serviceDetails": "Makambo ya Mosala",
+    "dateTime": "Mokolo mpe Ngonga",
+    "location": "Esika",
+    "beautician": "Mwasi ya Kitoko",
+    "totalCost": "Mbongo Nyonso",
+    "confirmAndPay": "Kondima mpe Kofuta",
+    "editBooking": "Kobongola Kobongisa",
+    "termsAgree": "Nandimi ba conditions"
+  },
+  "paymentPage": {
+    "title": "Kofuta",
+    "subtitle": "Silisa kofuta na yo",
+    "paymentMethod": "Lolenge ya Kofuta",
+    "creditCard": "Carte ya Crédit/Débit",
+    "mobileMoney": "Mobile Money",
+    "cardNumber": "Numéro ya Carte",
+    "expiryDate": "Mokolo ya Kosila",
+    "cvv": "CVV",
+    "cardholderName": "Nkombo ya Nkolo ya Carte",
+    "mobileProvider": "Fournisseur Mobile",
+    "mobileNumber": "Numéro Mobile",
+    "payNow": "Kofuta Sikoyo",
+    "processing": "Ezali kosala kofuta...",
+    "securePayment": "Kofuta ya Sécurité",
+    "orderSummary": "Résumé ya Commande",
+    "subtotal": "Sous-total",
+    "tax": "Taxe",
+    "total": "Nyonso"
+  },
+  "search": {
+    "title": "Koluka Misala ya Kitoko",
+    "subtitle": "Koluka mpe kobongisa mikolo ya kokutana na ba professionnels ya kitoko oyo bazali malamu",
+    "searchServices": "Koluka Misala",
+    "searchPlaceholder": "ndakisa: manucure, kokata nsuki, soins ya elongi...",
+    "category": "Catégorie",
+    "allCategories": "Ba Catégories Nyonso",
+    "salon": "Salon",
+    "nailServices": "Misala ya Ba Ongles",
+    "makeup": "Maquillage",
+    "spaWellness": "Spa & Bien-être",
+    "barberShop": "Barbier",
+    "location": "Esika",
+    "allLocations": "Bisika Nyonso",
+    "downtown": "Centre-ville",
+    "westside": "Ngambo ya Weste",
+    "eastside": "Ngambo ya Este",
+    "northside": "Ngambo ya Norde",
+    "southside": "Ngambo ya Sude",
+    "availableVendors": "Bato ya Misala oyo Bazali",
+    "bookAppointment": "Kobongisa Mokolo ya Kokutana"
+  },
+  "payment": {
+    "title": "Kofuta",
+    "paymentMethod": "Lolenge ya Kofuta",
+    "card": "Carte",
+    "upi": "UPI",
+    "wallet": "Portefeuille",
+    "cardNumber": "Numéro ya Carte",
+    "expiryDate": "Mokolo ya Kosila",
+    "cvv": "CVV",
+    "cardholderName": "Nkombo ya Nkolo ya Carte",
+    "payNow": "Kofuta Sikoyo",
+    "processing": "Ezali kosala...",
+    "paymentSuccessful": "Kofuta Elongi Malamu!",
+    "paymentFailed": "Kofuta Ekweyi",
+    "tryAgain": "Komeka Lisusu",
+    "success": {
+      "title": "Kofuta Elongi Malamu!",
+      "subtitle": "Réservation na yo endimami mpe kofuta esalami malamu.",
+      "transactionId": "ID ya Transaction",
+      "loadingConfirmation": "Ezali kotongisa confirmation ya kofuta...",
+      "noDataFound": "Makambo ya kofuta ezwami te",
+      "goToDashboard": "Kende na Tableau de Bord",
+      "bookingDetails": "Makambo ya Réservation",
+      "serviceType": "Lolenge ya Mosala",
+      "scheduledDate": "Mokolo oyo Ebongisami",
+      "scheduledTime": "Ngonga oyo Ebongisami",
+      "atHomeService": "Mosala na Ndako",
+      "contactNumber": "Numéro ya Kopesa Sango",
+      "notProvided": "Epesami te",
+      "beauticianPreference": "Mwasi ya Kitoko oyo Olingi",
+      "paymentDetails": "Makambo ya Kofuta",
+      "creditDebitCard": "Carte ya Crédit/Débit",
+      "mobileMoney": "Mobile Money",
+      "mobileNumber": "Numéro ya Mobile",
+      "amountPaid": "Mbongo oyo Ofutaki",
+      "paymentStatus": "Statut ya Kofuta",
+      "paid": "EFUTAMI",
+      "servicesBooked": "Misala oyo Ebongisami",
+      "quantity": "Motango",
+      "duration": "Temps",
+      "totalAmount": "Mbongo Nyonso",
+      "whatsNext": "Oyo Ekoya Sima?",
+      "nextSteps": {
+        "confirmationEmail": "Okozwa email ya confirmation nokinoki",
+        "assignBeautician": "Équipe na biso ekopesa yo mwasi ya kitoko",
+        "notifyBeautician": "Okozwa notification na makambo ya mwasi ya kitoko",
+        "beauticianArrival": "Mwasi ya kitoko akoya na ngonga oyo ebongisami",
+        "specialNotes": "Makanisi na yo ya spécial"
+      },
+      "downloadInvoice": "Kokitisa Facture",
+      "bookAnother": "Kobongisa Mosala Mosusu",
+      "invoiceDownloaded": "Facture ekitisami malamu!",
+      "invoiceHeader": "HOME BONZENGA - FACTURE",
+      "invoiceDate": "Mokolo",
+      "invoiceBookingDetails": "MAKAMBO YA RÉSERVATION",
+      "invoiceServices": "MISALA",
+      "invoiceTotal": "NYONSO",
+      "invoiceThankYou": "Matondo mpo na kopona Home Bonzenga!"
+    }
+  },
+  "footer": {
+    "company": {
+      "about": "Oyo Tozali",
+      "careers": "Misala",
+      "contact": "Kopesa Biso Sango",
+      "terms": "Ba Conditions Générales",
+      "privacy": "Politique ya Vie Privée"
+    },
+    "services": {
+      "title": "Misala",
+      "atHome": "Misala na Ndako",
+      "salons": "Kokende na Salon",
+      "categories": "Ba Catégories",
+      "booking": "Kobongisa"
+    },
+    "support": {
+      "title": "Lisungi",
+      "help": "Centre ya Lisungi",
+      "faq": "Mituna oyo Bato Batunaka Mingi"
+    },
+    "social": {
+      "title": "Kolanda Biso"
+    },
+    "copyright": "© 2025 Home Bonzenga. Makoki nyonso ebatelami."
+  },
+  "language": {
+    "english": "Anglais",
+    "french": "Français",
+    "lingala": "Lingala",
+    "switchLanguage": "Kobongola Monoko"
+  },
+  "vendor": {
+    "details": {
+      "title": "Makambo ya Mosali",
+      "services": "Misala",
+      "products": "Biloko",
+      "reviews": "Ba Avis",
+      "bookNow": "Kobongisa Sikoyo",
+      "addToCart": "Kobakisa na Panier",
+      "removeFromCart": "Kolongola na Panier",
+      "workingHours": "Ba Ngonga ya Mosala",
+      "contact": "Makambo ya Kopesa Sango",
+      "address": "Adresse",
+      "phone": "Téléphone",
+      "email": "Email",
+      "rating": "Note",
+      "experience": "Expérience",
+      "specialties": "Ba Spécialités",
+      "availability": "Disponibilité",
+      "price": "Prix",
+      "duration": "Temps",
+      "description": "Description",
+      "category": "Catégorie",
+      "inStock": "Ezali",
+      "outOfStock": "Ezali te"
+    },
+    "registration": {
+      "title": "Kokota Lokola Professionnel",
+      "subtitle": "Kobanda business na yo ya kitoko na HOME BONZENGA",
+      "step1": "Makambo na Yo",
+      "step2": "Makambo ya Business",
+      "step3": "Kotala mpe Kotinda",
+      "firstName": "Nkombo ya Liboso",
+      "lastName": "Nkombo ya Suka",
+      "email": "Adresse Email",
+      "phone": "Numéro ya Téléphone",
+      "password": "Mot de Passe",
+      "confirmPassword": "Kondima Mot de Passe",
+      "shopName": "Nkombo ya Business",
+      "description": "Description ya Business",
+      "address": "Adresse",
+      "city": "Engumba",
+      "state": "État/Province",
+      "zipCode": "Code Postal",
+      "country": "Mboka",
+      "businessType": "Lolenge ya Business",
+      "yearsInBusiness": "Mibu na Business",
+      "specialties": "Ba Spécialités",
+      "businessTypes": {
+        "beautySalon": "Salon ya Kitoko",
+        "hairSalon": "Salon ya Nsuki",
+        "nailSalon": "Salon ya Ba Ongles",
+        "spaCenter": "Centre ya Spa",
+        "barbershop": "Barbershop",
+        "beautyClinic": "Clinique ya Kitoko",
+        "mobileBeautyService": "Service ya Kitoko Mobile",
+        "other": "Mosusu"
+      },
+      "specialtyOptions": {
+        "hairStyling": "Kosala Nsuki",
+        "hairColoring": "Coloration ya Nsuki",
+        "hairCutting": "Kokata Nsuki",
+        "facialTreatments": "Soins ya Elongi",
+        "makeup": "Maquillage",
+        "nailArt": "Nail Art",
+        "manicure": "Manucure",
+        "pedicure": "Pédicure",
+        "massage": "Massage",
+        "spaTreatments": "Soins Spa",
+        "bridalServices": "Misala ya Libala",
+        "mensGrooming": "Soins ya Mibali"
+      },
+      "next": "Oyo Elandaka",
+      "previous": "Oyo Eleki",
+      "submit": "Kotinda Candidature",
+      "submitting": "Ezali kotinda...",
+      "success": "Candidature etindami malamu!",
+      "error": "Kotinda candidature ekweyi. Komeka lisusu."
+    },
+    "auth": {
+      "verificationSent": "Email ya botali etindami. Tala na boîte na yo.",
+      "waitingApproval": "Compte etaliami. Ezali kozela kondima ya moyangeli. Bakoyebisa yo.",
+      "rejectionReasonLabel": "Note ya moyangeli",
+      "backendError": "Kokoma nkombo ya vendeur ekweyi. Komeka lisusu.",
+      "backendUnavailable": "API backend ezali te. Ezali kokende na Supabase...",
+      "noBackendOrSupabase": "Kokoma nkombo ya vendeur esengaka API backend to projet Supabase oyo ebongisami.",
+      "supabaseSignupError": "Kokoma nkombo na Supabase ekweyi. Tala email na yo mpe komeka lisusu.",
+      "supabaseMissingUser": "Supabase ezongisi identifiant ya moto te. Komeka kokoma nkombo lisusu.",
+      "supabaseVendorError": "Kokoka kobomba makambo ya vendeur na Supabase te. Komeka lisusu.",
+      "supabaseSuccess": "Kokoma nkombo elongi malamu! Kondima email na yo mpo na kokoba."
+    },
+    "pending": {
+      "titlePending": "Compte Ezali Kotalami",
+      "titleRejected": "Candidature Eboyami",
+      "subtitlePending": "Tozali kotala candidature na yo ya vendeur.",
+      "subtitleRejected": "Tokokaki kondima candidature na yo te na ntango oyo.",
+      "applicationStatus": "Statut ya Candidature",
+      "badgePending": "EZALI KOZELA KONDIMA",
+      "badgeRejected": "EBOYAMI",
+      "steps": {
+        "received": {
+          "title": "Candidature Ezwami",
+          "description": "Candidature na yo ezali na file ya botali."
+        },
+        "review": {
+          "title": "Ezali Kotalami",
+          "description": "Équipe na biso ezali kotala makambo na yo. Yango esalemaka mingi na mikolo 1-2 ya mosala."
+        },
+        "decision": {
+          "title": "Décision ya Kondima",
+          "description": "Okozwa email ntango décision ekozwa."
+        }
+      },
+      "rejectedNote": "Moyangeli apesi ntina oyo:",
+      "rejectedDefault": "Makambo mosusu moko te epesami.",
+      "nextSteps": {
+        "email": {
+          "title": "Notification na Email",
+          "description": "Okozwa email na {{email}} na décision."
+        },
+        "access": {
+          "title": "Accès Epesami",
+          "description": "Soki endimami, okozala na accès mobimba mpo na kotambwisa misala, biloko, mpe basali."
+        },
+        "prepare": {
+          "title": "Kobongisa Ba Offres na Yo",
+          "description": "Kobanda kosangisa makambo ya misala, prix, mpe équipe mpo ozala pene soki endimami."
+        }
+      },
+      "reapplyHint": "Soki okanisi ete ezali libunga, pesa sango na support mpo na kosolola makambo oyo ekoya.",
+      "supportPrompt": "Ozali na mposa ya lisungi? Pesa sango na équipe na biso ya support"
+    },
+    "dashboard": {
+      "title": "Boni, {{name}} !",
+      "subtitle": "Tala oyo ezali koleka na mosala na yo lelo"
+    },
+    "stats": {
+      "newBookings": "Bakomisi ya Sika",
+      "pending": "ezali kozela",
+      "completedServices": "Misala Esilaki",
+      "thisMonth": "Sanza oyo",
+      "monthlyRevenue": "Mbongo ya Sanza",
+      "revenueGrowth": "koluta sanza eleki",
+      "totalCustomers": "Bato Nyonso",
+      "avgRating": "note ya average"
+    },
+    "recentAppointments": {
+      "title": "Ba Rendez-vous ya Sika",
+      "viewAll": "Tala Nyonso",
+      "noAppointments": "Rendez-vous moko te ya sika"
+    },
+    "quickActions": {
+      "title": "Misala ya Mbangu",
+      "addService": "Bakisa Mosala ya Sika",
+      "profileSettings": "Bongisa Profil"
+    },
+    "services": {
+      "title": "Misala",
+      "manage": "Bongisa",
+      "active": "Ezali kosala",
+      "inactive": "Ezali kosala te",
+      "noServices": "Mosala moko te naino"
+    },
+    "businessOverview": {
+      "title": "Taleru ya Mosala",
+      "totalServices": "Misala Nyonso",
+      "activeServices": "Misala Ezali Kosala",
+      "customerRating": "Note ya Bato",
+      "totalReviews": "Bavis Nyonso"
+    },
+    "appointments": {
+      "title": "Ba Rendez-vous",
+      "description": "Bongisa ba rendez-vous ya ba clients",
+      "total": "{{count}} Nyonso",
+      "searchPlaceholder": "Luka na kombo to email...",
+      "status": {
+        "all": "Ba Rendez-vous Nyonso",
+        "pending": "Ezali kozela",
+        "awaiting_vendor_response": "Ezali kozela biyano ya vendeur",
+        "vendor_confirmed": "Vendeur andimi",
+        "confirmed": "Endimami",
+        "started": "Ebandi",
+        "in_progress": "Ezali kosalema",
+        "completed": "Esili",
+        "cancelled": "Eboyami"
+      },
+      "no_appointments": "Rendez-vous moko te emonani",
+      "try_adjusting": "Meka kobongisa maluko na yo.",
+      "no_appointments_desc": "Ozali na rendez-vous moko te naino.",
+      "confirm": "Ndimela",
+      "cancel": "Boya",
+      "complete": "Silisa",
+      "assign_beautician": "Pesa mosala na Beautician",
+      "confirm_assignment": "Ndima Affectation",
+      "failed_assign": "Affectation ekoki te. Meka lisusu.",
+      "no_services": "Mosala moko te ekomami",
+      "services_label": "Misala:"
+    }
+  },
+  "contact": {
+    "title": "Kopesa Biso Sango",
+    "subtitle": "Tolingi koyoka yo. Tindela biso message mpe tokozongisa yo nokinoki.",
+    "form": {
+      "name": "Nkombo Mobimba",
+      "email": "Adresse Email",
+      "subject": "Sujet",
+      "message": "Message",
+      "send": "Kotinda Message",
+      "sending": "Ezali kotinda...",
+      "success": "Message Etindami! Matondo mpo na kopesa biso sango. Tokozongisa yo nokinoki.",
+      "error": "Kotinda message ekweyi. Komeka lisusu."
+    },
+    "info": {
+      "email": {
+        "title": "Tindela Biso Email",
+        "content": "hello@homebonzenga.com",
+        "description": "Tindela biso email na ntango nyonso"
+      },
+      "phone": {
+        "title": "Benga Biso",
+        "content": "+243 123 456 789",
+        "description": "Lun-Ven banda 8h tii 18h"
+      },
+      "address": {
+        "title": "Koya Komona Biso",
+        "content": "Kinshasa, République Démocratique du Congo",
+        "description": "Koya koloba mbote na bureau na biso"
+      },
+      "hours": {
+        "title": "Ba Ngonga ya Mosala",
+        "content": "Lun-Ven: 8h-18h",
+        "description": "Support ya weekend ezali"
+      }
+    }
+  },
+  "about": {
+    "title": "Oyo Tozali",
+    "subtitle": "Passion Ekutani na Précision",
+    "description": "Tomipesi mpo na kosala ba expériences ya kitoko ya kokamwa oyo ekosangisa technologie ya sika na service ya makanisi. Mokolo nyonso ya kokutana ezali libaku ya kopesa excellence.",
+    "mission": "Mission na Biso",
+    "missionText": "Kokutanisa ba professionnels ya kitoko na bakiliya na nzela ya plateforme ya pete, ya libateli mpe ya innovation.",
+    "vision": "Vision na Biso",
+    "visionText": "Kozala plateforme ya misala ya kitoko ya liboso na Afrique, kopesa nguya na ba professionnels mpe kosepelisa bakiliya.",
+    "values": "Ba Valeurs na Biso",
+    "valuesText": "Qualité, Confiance, Innovation, mpe Satisfaction ya Kiliya ezali na motema ya makambo nyonso oyo tosalaka."
+  },
+  "services": {
+    "management": {
+      "title": "Kotambwisa Misala",
+      "addService": "Kobakisa Mosala ya Sika",
+      "editService": "Kobongola Mosala",
+      "deleteService": "Kolimola Mosala",
+      "serviceName": "Nkombo ya Mosala",
+      "description": "Description",
+      "price": "Prix",
+      "duration": "Temps (minutes)",
+      "category": "Catégorie",
+      "isActive": "Ezali kosala",
+      "save": "Kobomba Mosala",
+      "cancel": "Kotika",
+      "confirmDelete": "Ozali na motema ya kolimola mosala oyo?",
+      "success": "Mosala ebombami malamu!",
+      "error": "Kobomba mosala ekweyi. Komeka lisusu."
+    }
+  },
+  "appointments": {
+    "title": "Mikolo ya Kokutana",
+    "upcoming": "Mikolo ya Kokutana oyo Ekoya",
+    "past": "Mikolo ya Kokutana oyo Eleki",
+    "noAppointments": "Mokolo ya kokutana moko te",
+    "bookNew": "Kobongisa Mokolo ya Kokutana ya Sika",
+    "viewDetails": "Kotala Makambo",
+    "cancel": "Kotika Mokolo ya Kokutana",
+    "reschedule": "Kobongola Mokolo",
+    "status": {
+      "pending": "Ezali Kozela",
+      "confirmed": "Endimami",
+      "inProgress": "Ezali Kosalema",
+      "completed": "Esilaki",
+      "cancelled": "Etikaki"
+    }
+  },
+  "validation": {
+    "required": "Esengeli kotondisa esika oyo",
+    "email": "Koma adresse email ya malamu",
+    "phone": "Koma numéro ya téléphone ya malamu",
+    "password": "Mot de passe esengeli kozala na ba caractères 8 mingimingi",
+    "passwordMatch": "Ba mots de passe ekokani te",
+    "minLength": "Esengeli kozala na ba caractères {{count}} mingimingi",
+    "maxLength": "Esengeli kozala na ba caractères {{count}} te koleka"
+  },
+  "notFound": {
+    "title": "Page Ezwami Te",
+    "description": "Page oyo ozali koluka ezali te to ebalukaki.",
+    "goHome": "Kozonga na Ndako",
+    "searchServices": "Koluka Misala"
+  },
+  "manager": {
+    "pending": {
+      "pageTitle": "Ba Candidatures ya Vendeur oyo Ezali Kozela",
+      "pageSubtitle": "Kotala mpe kondima ba candidatures ya ba vendeurs",
+      "statusCount": "{{count}} Ezali Kozela",
+      "statusPending": "Ezali Kozela Kondima",
+      "searchPlaceholder": "Koluka na nkombo ya boutique, nkolo, to engumba...",
+      "approve": "Kondima",
+      "reject": "Koboye",
+      "loadSuccess": "Ezwami {{count}} vendeur(s) oyo bazali kozela",
+      "loadError": "Kozwa ba vendeurs oyo bazali kozela ekweyi. Tala soki serveur ezali kosala.",
+      "toastApproveSuccess": "Vendeur endimami malamu! Email etindami.",
+      "toastRejectSuccess": "Vendeur eboyami malamu. Email etindami.",
+      "toastApproveDescription": "Vendeur akoki sikoyo kokota na tableau de bord na ye.",
+      "toastRejectDescription": "Email ya koboye etindelami vendeur.",
+      "toastApproveError": "Kondima vendeur ekweyi. Komeka lisusu.",
+      "toastRejectError": "Koboye vendeur ekweyi. Komeka lisusu.",
+      "rejectDialogTitle": "Koboye Candidature ya Vendeur",
+      "rejectDialogDescription": "Ozali na motema ya koboye candidature oyo? Vendeur akozwa email ya notification.",
+      "rejectionReasonLabel": "Ntina ya Koboye (Optionnel)",
+      "rejectionReasonPlaceholder": "ndakisa: Candidature ekokani te na ba critères na biso...",
+      "rejectionReasonHint": "Ntina oyo ekokota na email ya koboye oyo ekotindama na vendeur.",
+      "confirmRejection": "Kondima Koboye",
+      "processing": "Ezali kosala...",
+      "emptyTitle": "Candidature moko te Ezali Kozela",
+      "emptyFiltered": "Vendeur moko te akokani na ba critères na yo.",
+      "emptyDefault": "Ba candidatures nyonso etaliami."
+    },
+    "dashboard": {
+      "title": "Tableau de Bord Manager",
+      "welcome": "Boni, {{name}} ! Bongisa ba assignments mpe talela misala.",
+      "refresh": "Zongisa sika"
+    },
+    "stats": {
+      "pending_vendors": "Ba Demande ya Vendeurs",
+      "active_vendors": "Vendeurs Ezali Kosala",
+      "total_appointments": "Ba Rendez-vous Nyonso",
+      "rejected_vendors": "Vendeurs Baboyami",
+      "requires_approval": "Esengeli endimama",
+      "out_of_total": "Na kati ya {{total}} nyonso",
+      "completed": "{{count}} esili",
+      "not_approved": "Endimami te"
+    },
+    "pending_vendors": {
+      "title": "Ba Demande ya Vendeurs",
+      "no_applications": "Demande moko te",
+      "view_more": "Tala misusu ({{count}})",
+      "services": "Misala",
+      "products": "Biloko",
+      "employees": "Basali"
+    },
+    "actions": {
+      "approve": "Ndima",
+      "reject": "Boya"
+    },
+    "quick_actions": {
+      "title": "Misala ya Mbangu",
+      "pending_vendors": "Vendeurs Bazali Kozela",
+      "review_applications": "Tala ba demandes",
+      "all_vendors": "Vendeurs Nyonso",
+      "manage_vendors": "Bongisa vendeurs"
+    }
+  },
+  "admin": {
+    "dashboard": {
+      "title": "Tableau de Bord Admin",
+      "welcome": "Boni, {{name}} ! Tala ndenge platform ezali kotambola.",
+      "refresh": "Zongisa sika"
+    },
+    "financial": {
+      "title": "Mbongo Eyingeli (Audité)",
+      "total_invoiced": "Mbongo Nyonso Ekomami",
+      "from_invoices": "Euti na ba factures",
+      "commission": "Commission Platform",
+      "net_earnings": "Mbongo Etikali",
+      "payouts": "Mbongo ya Beauticians",
+      "payable": "Mbongo Esengeli Kofuta"
+    },
+    "stats": {
+      "total_users": "Bato Nyonso",
+      "active": "{{count}} Bazali Kosala",
+      "total_vendors": "Vendeurs Nyonso",
+      "pending": "{{count}} Bazali Kozela",
+      "pending_approvals": "Ezali Kozela Endimama",
+      "requires_action": "Esengeli Kosala",
+      "at_home_bookings": "Rendez-vous na Ndako",
+      "salon_bookings": "Rendez-vous na Salon",
+      "lifetime_total": "Total Banda Ebandeli",
+      "pending_payouts": "Bafuti Naino Te",
+      "awaiting_approval": "Ezali Kozela",
+      "bookings_monitor": "Tala ba Rendez-vous",
+      "at_home_live": "Na Ndako Live",
+      "view_details": "Tala makambo",
+      "salon_monitor": "Tala Misala ya Salon",
+      "salon_live": "Salon Live"
+    },
+    "pending_vendors": {
+      "title": "Vendeurs Bazali Kozela",
+      "view_all": "Tala Nyonso",
+      "approve": "Ndima",
+      "reject": "Boya"
+    },
+    "catalog": {
+      "title": "Bongisa Catalogue na Ndako",
+      "new_flow": "Flow ya Sika",
+      "services": {
+        "title": "Catalogue Munene ya Misala",
+        "description": "Bongisa liste officiel ya misala na ndako. Tala ba prix, na ndimisa ba descriptions.",
+        "manage": "Bongisa Misala Minene"
+      },
+      "products": {
+        "title": "Catalogue Munene ya Biloko",
+        "description": "Bongisa biloko oyo beauticians basalelaka to batekaka.",
+        "manage": "Bongisa Biloko Minene"
+      }
+    }
+  }
+}

@@ -1,0 +1,48 @@
+# ===============================
+# Environment files
+# ===============================
+.env
+.env.*
+!.env.example
+
+# ===============================
+# Dependencies
+# ===============================
+node_modules/
+
+# ===============================
+# Build output
+# ===============================
+dist/
+build/
+.next/
+out/
+
+# ===============================
+# Cache
+# ===============================
+.cache/
+.vite/
+.eslintcache
+
+# ===============================
+# Logs
+# ===============================
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
+*.log
+
+# ===============================
+# OS & Editor
+# ===============================
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+node_modules/
+.env
+dist
+.vite
+npm-cache
+.npm

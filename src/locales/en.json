@@ -1,0 +1,1045 @@
+{
+  "common": {
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success",
+    "cancel": "Cancel",
+    "save": "Save",
+    "delete": "Delete",
+    "edit": "Edit",
+    "add": "Add",
+    "search": "Search",
+    "filter": "Filter",
+    "clear": "Clear",
+    "back": "Back",
+    "next": "Next",
+    "previous": "Previous",
+    "submit": "Submit",
+    "close": "Close",
+    "yes": "Yes",
+    "no": "No",
+    "confirm": "Confirm",
+    "actions": "Actions",
+    "addToCart": "Add to Cart",
+    "viewDetails": "View Details",
+    "bookNow": "Book Now"
+  },
+  "errors": {
+    "failedToLoad": "Failed to load data",
+    "selectService": "Please select at least one service",
+    "somethingWentWrong": "Something went wrong",
+    "generic": "Something went wrong. Please try again.",
+    "network": "Network error. Please check your connection.",
+    "unauthorized": "You are not authorized to perform this action.",
+    "notFound": "The requested resource was not found.",
+    "validation": "Please check your input and try again.",
+    "server": "Server error. Please try again later."
+  },
+  "success": {
+    "addedToCart": "Added {{item}} to cart",
+    "removedFromCart": "Removed from cart",
+    "updated": "Updated successfully",
+    "generic": "Operation completed successfully!",
+    "saved": "Changes saved successfully!",
+    "deleted": "Item deleted successfully!",
+    "created": "Item created successfully!"
+  },
+  "booking": {
+    "selectedServices": "Selected Services",
+    "noServicesSelected": "No services selected",
+    "totalDuration": "Total Duration",
+    "totalPrice": "Total Price",
+    "proceedToBooking": "Proceed to Booking",
+    "title": "Book Appointment",
+    "selectService": "Select Service",
+    "selectDate": "Select Date",
+    "selectTime": "Select Time",
+    "personalInfo": "Personal Information",
+    "payment": "Payment",
+    "confirmation": "Confirmation",
+    "serviceDetails": "Service Details",
+    "appointmentDetails": "Appointment Details",
+    "totalAmount": "Total Amount",
+    "bookNow": "Book Now",
+    "bookingConfirmed": "Booking Confirmed!",
+    "appointmentBooked": "Your appointment has been successfully booked."
+  },
+  "navigation": {
+    "home": "Home",
+    "services": "Services",
+    "vendors": "Vendors",
+    "appointments": "Appointments",
+    "products": "Products",
+    "payments": "Payments",
+    "dashboard": "Dashboard",
+    "profile": "Profile",
+    "logout": "Logout",
+    "login": "Login",
+    "register": "Register",
+    "findServices": "Find Services",
+    "myBookings": "My Bookings",
+    "manageBookings": "Manage Bookings",
+    "adminPanel": "Admin Panel",
+    "getStarted": "Get Started",
+    "manageAccount": "Manage Account"
+  },
+  "nav": {
+    "home": "Home",
+    "services": "Services",
+    "atHomeServices": "At-Home Services",
+    "salonVisit": "Salon Visit",
+    "howItWorks": "How It Works",
+    "dashboard": "Dashboard",
+    "profile": "Profile",
+    "appointments": "Appointments",
+    "products": "Products",
+    "revenue": "Revenue",
+    "assignedAppointments": "Assigned Appointments",
+    "earnings": "Earnings",
+    "vendors": "Vendors",
+    "beauticians": "Beauticians",
+    "approvals": "Approvals",
+    "users": "Users",
+    "managers": "Managers",
+    "reports": "Reports",
+    "pendingVendors": "Pending Vendors",
+    "allVendors": "All Vendors",
+    "financials": "Financials",
+    "settings": "Settings",
+    "logout": "Logout",
+    "signup": "Sign Up"
+  },
+  "home": {
+    "hero": {
+      "badge": "Beauty Services at Your Doorstep",
+      "title": "Premium Beauty Services",
+      "subtitle": "Book Certified Beauticians Anytime, Anywhere",
+      "description": "Connect with professional beauticians and salons near you. Book hair, makeup, and wellness services with just a few taps. Quality service, guaranteed satisfaction.",
+      "bookServices": "Book Services",
+      "joinProfessional": "Join as Professional",
+      "bookAtHome": "Book At-Home Service",
+      "findSalon": "Find a Salon Near Me"
+    },
+    "features": {
+      "easySearch": "Easy Search",
+      "easySearchDesc": "Find nearby professionals with ratings and reviews",
+      "atHomeService": "At-Home Service",
+      "atHomeServiceDesc": "Professional services delivered to your location",
+      "flexibleBooking": "Flexible Booking",
+      "flexibleBookingDesc": "Book instantly or schedule for later",
+      "securePayment": "Secure Payment",
+      "securePaymentDesc": "Multiple payment options with secure processing"
+    },
+    "services": {
+      "title": "Professional Beauty Services",
+      "subtitle": "Trusted and Verified Specialists",
+      "atHome": {
+        "title": "At-Home Services",
+        "description": "Get beauty services in the comfort of your home.",
+        "button": "Book Now"
+      },
+      "salon": {
+        "title": "Salon Visits",
+        "description": "Book appointments at verified salons near you.",
+        "button": "Find a Salon"
+      },
+      "categories": {
+        "hair": {
+          "title": "Hair Styling",
+          "description": "Braids, Coloring, Bridal Styling, and More"
+        },
+        "face": {
+          "title": "Facials",
+          "description": "Glowing skin treatments and care"
+        },
+        "extras": {
+          "title": "Extras",
+          "description": "Products and additional services"
+        }
+      }
+    },
+    "howItWorks": {
+      "title": "How It Works",
+      "subtitle": "Booking in just a few steps",
+      "steps": {
+        "step1": {
+          "title": "Choose a Service",
+          "description": "Select the service you need"
+        },
+        "step2": {
+          "title": "Pick Time & Date",
+          "description": "Choose your convenient slot"
+        },
+        "step3": {
+          "title": "Manager Assigns Beautician",
+          "description": "Verified beautician is assigned"
+        },
+        "step4": {
+          "title": "Enjoy the Service",
+          "description": "Beautician arrives at your home or salon"
+        },
+        "step5": {
+          "title": "Pay Securely",
+          "description": "Pay via card or mobile money"
+        }
+      }
+    },
+    "whyChoose": {
+      "title": "Why Choose Home Bonzenga?",
+      "subtitle": "We ensure professional, safe, and reliable services",
+      "features": {
+        "verified": {
+          "title": "Verified Specialists",
+          "description": "Only certified professionals"
+        },
+        "flexible": {
+          "title": "Flexible Scheduling",
+          "description": "Book when it suits you"
+        },
+        "secure": {
+          "title": "Secure Payments",
+          "description": "Trusted and encrypted system"
+        },
+        "updates": {
+          "title": "Real-Time Updates",
+          "description": "Stay informed about your bookings"
+        }
+      }
+    },
+    "newsletter": {
+      "title": "Stay Updated",
+      "subtitle": "Get the latest offers and beauty tips",
+      "placeholder": "Enter your email",
+      "button": "Subscribe"
+    },
+    "cta": {
+      "title": "Ready to Get Started?",
+      "subtitle": "Join thousands of satisfied customers who trust HOME BONZENGA for their beauty needs.",
+      "bookFirstService": "Book Your First Service",
+      "browseServices": "Browse Services"
+    }
+  },
+  "auth": {
+    "login": {
+      "title": "Welcome Back",
+      "subtitle": "Sign in to your account to continue",
+      "signIn": "Sign In",
+      "email": "Email Address",
+      "password": "Password",
+      "enterEmail": "Enter your email",
+      "enterPassword": "Enter your password",
+      "signingIn": "Signing In...",
+      "noAccount": "Don't have an account?",
+      "signUp": "Sign up",
+      "demoAccounts": "Demo Accounts:",
+      "adminDemo": "Admin: admin@beautybook.com / admin123",
+      "customerDemo": "Customer: customer@demo.com / demo123",
+      "vendorDemo": "Vendor: vendor@demo.com / demo123"
+    },
+    "register": {
+      "title": "Create Account",
+      "subtitle": "Join HOME BONZENGA and start your journey",
+      "signUp": "Sign Up",
+      "accountType": "Account Type",
+      "customer": "Customer",
+      "professional": "Professional",
+      "firstName": "First Name",
+      "lastName": "Last Name",
+      "email": "Email Address",
+      "phone": "Phone Number (Optional)",
+      "password": "Password",
+      "confirmPassword": "Confirm Password",
+      "createPassword": "Create a password",
+      "confirmYourPassword": "Confirm your password",
+      "creatingAccount": "Creating Account...",
+      "hasAccount": "Already have an account?",
+      "signIn": "Sign in",
+      "vendorRedirect": "We’ll take you to the full vendor application to finish your registration."
+    },
+    "verifyEmail": {
+      "titleSuccess": "Email Verified",
+      "titlePending": "Email Verified – Pending Approval",
+      "titleError": "Verification Failed",
+      "verifying": "Verifying your account...",
+      "pleaseWait": "Please wait while we verify your email.",
+      "success": "Email verified successfully!",
+      "pendingApproval": "Account verified. Waiting for manager approval.",
+      "error": "We couldn't verify your email. The link may have expired.",
+      "missingToken": "Verification token is missing.",
+      "goToLogin": "Go to login",
+      "contactSupport": "Contact support"
+    }
+  },
+  "dashboard": {
+    "customer": {
+      "hello": "Hello, {{name}}",
+      "valuedCustomer": "Valued Customer",
+      "manageAppointments": "Manage your appointments and explore services.",
+      "upcomingAppointment": "Upcoming Appointment",
+      "date": "Date",
+      "status": "Status",
+      "yourExpert": "Your Expert",
+      "expertAssignedShortly": "Expert will be assigned shortly",
+      "viewDetails": "View Details",
+      "noUpcomingAppointments": "No upcoming appointments",
+      "scheduleClear": "Your schedule is clear. Treat yourself to a premium beauty experience today.",
+      "bookAtHomeService": "Book At-Home Service",
+      "quickActions": "Quick Actions",
+      "atHomeService": "At-Home Service",
+      "salonVisit": "Salon Visit",
+      "myHistory": "My History",
+      "editProfile": "Edit Profile",
+      "recentBeautyJourney": "Recent Beauty Journey",
+      "viewAllHistory": "View All History",
+      "beautyService": "Beauty Service",
+      "service": "Service",
+      "details": "Details",
+      "rebook": "Rebook",
+      "noHistoryYet": "No history yet. Start your journey by booking a service above!",
+      "welcome": "Welcome back, {{name}}!",
+      "subtitle": "Manage your beauty appointments and discover new services",
+      "upcomingAppointments": "Upcoming Appointments",
+      "noUpcoming": "No upcoming appointments",
+      "bookNewAppointment": "Book New Appointment",
+      "recentBookings": "Recent Bookings",
+      "noRecentBookings": "No recent bookings",
+      "viewAllBookings": "View All Bookings",
+      "searchServices": "Search Services",
+      "viewProfile": "View Profile",
+      "featuredServices": "Featured Services",
+      "manicure": "Manicure",
+      "manicureDesc": "Professional nail care",
+      "hairStyling": "Hair Styling",
+      "hairStylingDesc": "Cut, color & styling",
+      "facial": "Facial",
+      "facialDesc": "Rejuvenating treatments",
+      "makeup": "Makeup",
+      "makeupDesc": "Professional application"
+    },
+    "vendor": {
+      "welcome": "Welcome back, {{name}}!",
+      "subtitle": "Manage your services and appointments",
+      "todayAppointments": "Today's Appointments",
+      "pendingBookings": "Pending Bookings",
+      "completedServices": "Completed Services",
+      "earnings": "Earnings",
+      "addService": "Add New Service",
+      "manageServices": "Manage Services",
+      "viewSchedule": "View Schedule"
+    },
+    "admin": {
+      "welcome": "Admin Dashboard",
+      "subtitle": "Manage the entire platform",
+      "totalUsers": "Total Users",
+      "totalVendors": "Total Vendors",
+      "totalBookings": "Total Bookings",
+      "totalRevenue": "Total Revenue",
+      "recentActivity": "Recent Activity",
+      "manageUsers": "Manage Users",
+      "manageVendors": "Manage Vendors",
+      "viewAnalytics": "View Analytics"
+    }
+  },
+  "bookings": {
+    "title": "My Bookings",
+    "subtitle": "View and manage all your beauty service appointments",
+    "totalBookings": "Total Bookings",
+    "searchPlaceholder": "Search bookings...",
+    "filterByStatus": "Filter by status",
+    "filterByPayment": "Filter by payment",
+    "allStatuses": "All Statuses",
+    "allPayments": "All Payments",
+    "clearFilters": "Clear Filters",
+    "bookingHistory": "Booking History",
+    "bookingId": "Booking ID",
+    "service": "Service",
+    "type": "Type",
+    "beautician": "Beautician",
+    "dateTime": "Date & Time",
+    "status": "Status",
+    "payment": "Payment",
+    "total": "Total",
+    "actions": "Actions",
+    "atHome": "At Home",
+    "salon": "Salon",
+    "notAssigned": "Not assigned",
+    "view": "View",
+    "services": "services",
+    "pending": "Pending",
+    "confirmed": "Confirmed",
+    "completed": "Completed",
+    "cancelled": "Cancelled",
+    "paid": "Paid",
+    "unpaid": "Unpaid",
+    "refunded": "Refunded",
+    "noBookingsFound": "No bookings found",
+    "noMatchingBookings": "No bookings match your current filters. Try adjusting your search criteria.",
+    "noBookingsYet": "You haven't made any bookings yet. Start by booking a beauty service!",
+    "bookService": "Book a Service",
+    "salonBookingUnavailable": "Salon booking details are currently unavailable.",
+    "details": {
+      "backToBookings": "Back to Bookings",
+      "bookingId": "Booking #",
+      "bookedOn": "Booked on",
+      "downloadInvoice": "Download Invoice",
+      "assignedBeautician": "Assigned Beautician",
+      "beauticianAssignedDesc": "A beautician will be assigned shortly by the manager.",
+      "scheduledTime": "Scheduled Time",
+      "location": "Location",
+      "orderSummary": "Order Summary",
+      "markServiceCompleted": "Mark Service Completed",
+      "completionWarning": "Please click this ONLY after the beautician has finished the service.",
+      "liveTracking": "Live Tracking",
+      "steps": {
+        "paymentSuccess": "Payment Successful",
+        "beauticianAssigned": "Beautician Assigned",
+        "serviceCompleted": "Service Completed",
+        "beauticianAssignedSmall": "Beautician assigned"
+      },
+      "generatingInvoice": "Generating invoice...",
+      "invoiceReady": "Invoice ready! Downloading...",
+      "failedToGenerateInvoice": "Failed to generate invoice",
+      "errorDownloadingInvoice": "Error downloading invoice",
+      "confirmCompletion": "Are you sure you want to mark this service as completed? This will finalize the booking.",
+      "updatingStatus": "Updating booking status...",
+      "serviceMarkedCompleted": "Service marked as completed!",
+      "failedToUpdateStatus": "Failed to update status",
+      "failedToLoadDetails": "Failed to load booking details"
+    }
+  },
+  "profile": {
+    "title": "My Profile",
+    "subtitle": "Manage your personal information and preferences",
+    "personalInfo": "Personal Information",
+    "firstName": "First Name",
+    "lastName": "Last Name",
+    "email": "Email Address",
+    "phone": "Phone Number",
+    "address": "Address",
+    "street": "Street Address",
+    "city": "City",
+    "state": "State/Province",
+    "zipCode": "ZIP/Postal Code",
+    "saveChanges": "Save Changes",
+    "cancel": "Cancel",
+    "saving": "Saving...",
+    "profileUpdated": "Profile updated successfully!",
+    "updateFailed": "Failed to update profile. Please try again.",
+    "contactInfo": "Contact Information",
+    "preferences": "Preferences",
+    "success": "Profile updated successfully!",
+    "error": "Failed to update profile. Please try again."
+  },
+  "atHome": {
+    "intro": {
+      "title": "At-Home Beauty Services",
+      "subtitle": "Professional beauty services delivered to your doorstep",
+      "withProducts": "With Products",
+      "withProductsDesc": "We bring everything you need",
+      "withoutProducts": "Without Products",
+      "withoutProductsDesc": "Use your own products",
+      "howItWorks": "How It Works",
+      "step1": "Choose your services",
+      "step2": "Select date and time",
+      "step3": "Confirm your address",
+      "step4": "Beautician arrives at your door",
+      "getStarted": "Get Started"
+    },
+    "selection": {
+      "title": "Select Your Services",
+      "subtitle": "Choose the beauty services you'd like",
+      "selectServices": "Select Services",
+      "selectedServices": "Selected Services",
+      "noServicesSelected": "No services selected yet",
+      "totalAmount": "Total Amount",
+      "continue": "Continue to Booking",
+      "addMore": "Add More Services"
+    },
+    "booking": {
+      "title": "Book Your Appointment",
+      "selectDate": "Select Date",
+      "selectTime": "Select Time",
+      "yourAddress": "Your Address",
+      "specialRequests": "Special Requests",
+      "specialRequestsPlaceholder": "Any special instructions for the beautician?",
+      "confirmBooking": "Confirm Booking",
+      "bookingDetails": "Booking Details"
+    }
+  },
+  "salon": {
+    "title": "Salon Visit",
+    "subtitle": "Book an appointment at our partner salons",
+    "findSalon": "Find a Salon",
+    "selectSalon": "Select Salon",
+    "viewDetails": "View Details",
+    "bookNow": "Book Now",
+    "location": "Location",
+    "rating": "Rating",
+    "reviews": "Reviews",
+    "openNow": "Open Now",
+    "closed": "Closed"
+  },
+  "bookingConfirmation": {
+    "title": "Booking Confirmation",
+    "subtitle": "Review your booking details",
+    "bookingSummary": "Booking Summary",
+    "serviceDetails": "Service Details",
+    "dateTime": "Date & Time",
+    "location": "Location",
+    "beautician": "Beautician",
+    "totalCost": "Total Cost",
+    "confirmAndPay": "Confirm & Pay",
+    "editBooking": "Edit Booking",
+    "termsAgree": "I agree to the terms and conditions"
+  },
+  "paymentPage": {
+    "title": "Payment",
+    "subtitle": "Complete your payment",
+    "paymentMethod": "Payment Method",
+    "creditCard": "Credit/Debit Card",
+    "mobileMoney": "Mobile Money",
+    "cardNumber": "Card Number",
+    "expiryDate": "Expiry Date",
+    "cvv": "CVV",
+    "cardholderName": "Cardholder Name",
+    "mobileProvider": "Mobile Provider",
+    "mobileNumber": "Mobile Number",
+    "payNow": "Pay Now",
+    "processing": "Processing payment...",
+    "securePayment": "Secure Payment",
+    "orderSummary": "Order Summary",
+    "subtotal": "Subtotal",
+    "tax": "Tax",
+    "total": "Total"
+  },
+  "search": {
+    "title": "Find Beauty Services",
+    "subtitle": "Discover and book appointments with top-rated beauty professionals",
+    "searchServices": "Search Services",
+    "searchPlaceholder": "e.g., manicure, haircut, facial...",
+    "category": "Category",
+    "allCategories": "All Categories",
+    "salon": "Salon",
+    "nailServices": "Nail Services",
+    "makeup": "Makeup",
+    "spaWellness": "Spa & Wellness",
+    "barberShop": "Barber Shop",
+    "location": "Location",
+    "allLocations": "All Locations",
+    "downtown": "Downtown",
+    "westside": "Westside",
+    "eastside": "Eastside",
+    "northside": "Northside",
+    "southside": "Southside",
+    "availableVendors": "Available Vendors",
+    "bookAppointment": "Book Appointment"
+  },
+  "payment": {
+    "title": "Payment",
+    "paymentMethod": "Payment Method",
+    "card": "Card",
+    "upi": "UPI",
+    "wallet": "Wallet",
+    "cardNumber": "Card Number",
+    "expiryDate": "Expiry Date",
+    "cvv": "CVV",
+    "cardholderName": "Cardholder Name",
+    "payNow": "Pay Now",
+    "processing": "Processing...",
+    "paymentSuccessful": "Payment Successful!",
+    "paymentFailed": "Payment Failed",
+    "tryAgain": "Try Again",
+    "success": {
+      "title": "Payment Successful!",
+      "subtitle": "Your booking has been confirmed and payment processed successfully.",
+      "transactionId": "Transaction ID",
+      "loadingConfirmation": "Loading payment confirmation...",
+      "noDataFound": "No payment data found",
+      "goToDashboard": "Go to Dashboard",
+      "bookingDetails": "Booking Details",
+      "serviceType": "Service Type",
+      "scheduledDate": "Scheduled Date",
+      "scheduledTime": "Scheduled Time",
+      "atHomeService": "At-Home Service",
+      "contactNumber": "Contact Number",
+      "notProvided": "Not provided",
+      "beauticianPreference": "Beautician Preference",
+      "paymentDetails": "Payment Details",
+      "creditDebitCard": "Credit/Debit Card",
+      "mobileMoney": "Mobile Money",
+      "mobileNumber": "Mobile Number",
+      "amountPaid": "Amount Paid",
+      "paymentStatus": "Payment Status",
+      "paid": "PAID",
+      "servicesBooked": "Services Booked",
+      "quantity": "Quantity",
+      "duration": "Duration",
+      "totalAmount": "Total Amount",
+      "whatsNext": "What's Next?",
+      "nextSteps": {
+        "confirmationEmail": "You will receive a confirmation email shortly",
+        "assignBeautician": "Our team will assign a beautician to your booking",
+        "notifyBeautician": "You'll receive a notification with beautician details",
+        "beauticianArrival": "The beautician will arrive at the scheduled time",
+        "specialNotes": "Your special notes"
+      },
+      "downloadInvoice": "Download Invoice",
+      "bookAnother": "Book Another Service",
+      "invoiceDownloaded": "Invoice downloaded successfully!",
+      "invoiceHeader": "HOME BONZENGA - INVOICE",
+      "invoiceDate": "Date",
+      "invoiceBookingDetails": "BOOKING DETAILS",
+      "invoiceServices": "SERVICES",
+      "invoiceTotal": "TOTAL",
+      "invoiceThankYou": "Thank you for choosing Home Bonzenga!"
+    }
+  },
+  "footer": {
+    "company": {
+      "about": "About Us",
+      "careers": "Careers",
+      "contact": "Contact Us",
+      "terms": "Terms & Conditions",
+      "privacy": "Privacy Policy"
+    },
+    "services": {
+      "title": "Services",
+      "atHome": "At-Home Services",
+      "salons": "Salon Visits",
+      "categories": "Categories",
+      "booking": "For Beauticians"
+    },
+    "brand": {
+      "subtitle": "Premium Beauty Services",
+      "name": "HOME BONZENGA"
+    },
+    "support": {
+      "title": "Support",
+      "help": "Help Center",
+      "faq": "FAQ"
+    },
+    "social": {
+      "title": "Follow Us"
+    },
+    "copyright": "© 2025 Home Bonzenga. All rights reserved."
+  },
+  "language": {
+    "english": "English",
+    "french": "French",
+    "lingala": "Lingala",
+    "switchLanguage": "Switch Language"
+  },
+  "vendor": {
+    "details": {
+      "title": "Vendor Details",
+      "services": "Services",
+      "products": "Products",
+      "reviews": "Reviews",
+      "bookNow": "Book Now",
+      "addToCart": "Add to Cart",
+      "removeFromCart": "Remove from Cart",
+      "workingHours": "Working Hours",
+      "contact": "Contact Information",
+      "address": "Address",
+      "phone": "Phone",
+      "email": "Email",
+      "rating": "Rating",
+      "experience": "Experience",
+      "specialties": "Specialties",
+      "availability": "Availability",
+      "price": "Price",
+      "duration": "Duration",
+      "description": "Description",
+      "category": "Category",
+      "inStock": "In Stock",
+      "outOfStock": "Out of Stock"
+    },
+    "registration": {
+      "title": "Join as a Professional",
+      "subtitle": "Start your beauty business with HOME BONZENGA",
+      "step1": "Personal Information",
+      "step2": "Business Details",
+      "step3": "Review & Submit",
+      "firstName": "First Name",
+      "lastName": "Last Name",
+      "email": "Email Address",
+      "phone": "Phone Number",
+      "password": "Password",
+      "confirmPassword": "Confirm Password",
+      "shopName": "Business Name",
+      "description": "Business Description",
+      "address": "Address",
+      "city": "City",
+      "state": "State/Province",
+      "zipCode": "ZIP/Postal Code",
+      "country": "Country",
+      "businessType": "Business Type",
+      "yearsInBusiness": "Years in Business",
+      "specialties": "Specialties",
+      "businessTypes": {
+        "beautySalon": "Beauty Salon",
+        "hairSalon": "Hair Salon",
+        "nailSalon": "Nail Salon",
+        "spaCenter": "Spa Center",
+        "barbershop": "Barbershop",
+        "beautyClinic": "Beauty Clinic",
+        "mobileBeautyService": "Mobile Beauty Service",
+        "other": "Other"
+      },
+      "specialtyOptions": {
+        "hairStyling": "Hair Styling",
+        "hairColoring": "Hair Coloring",
+        "hairCutting": "Hair Cutting",
+        "facialTreatments": "Facial Treatments",
+        "makeup": "Makeup",
+        "nailArt": "Nail Art",
+        "manicure": "Manicure",
+        "pedicure": "Pedicure",
+        "massage": "Massage",
+        "spaTreatments": "Spa Treatments",
+        "bridalServices": "Bridal Services",
+        "mensGrooming": "Men's Grooming"
+      },
+      "next": "Next",
+      "previous": "Previous",
+      "submit": "Submit Application",
+      "submitting": "Submitting...",
+      "success": "Application submitted successfully!",
+      "error": "Failed to submit application. Please try again."
+    },
+    "auth": {
+      "verificationSent": "Verification email sent. Please check your inbox.",
+      "waitingApproval": "Account verified. Waiting for manager approval. You will be notified.",
+      "rejectionReasonLabel": "Manager's note",
+      "backendError": "Vendor registration failed. Please try again.",
+      "backendUnavailable": "Backend API is unavailable. Falling back to Supabase...",
+      "noBackendOrSupabase": "Vendor registration requires either the backend API or a configured Supabase project.",
+      "supabaseSignupError": "Supabase signup failed. Please check your email and try again.",
+      "supabaseMissingUser": "Supabase did not return a user identifier. Please retry the registration.",
+      "supabaseVendorError": "Unable to save vendor details in Supabase. Please try again.",
+      "supabaseSuccess": "Registration successful! Please confirm your email to continue."
+    },
+    "pending": {
+      "titlePending": "Account Under Review",
+      "titleRejected": "Application Not Approved",
+      "subtitlePending": "We are currently reviewing your vendor application.",
+      "subtitleRejected": "We could not approve your application at this time.",
+      "applicationStatus": "Application Status",
+      "badgePending": "PENDING APPROVAL",
+      "badgeRejected": "REJECTED",
+      "steps": {
+        "received": {
+          "title": "Application Received",
+          "description": "Your application is in the review queue."
+        },
+        "review": {
+          "title": "Under Review",
+          "description": "Our management team is reviewing your details. This typically takes 1-2 business days."
+        },
+        "decision": {
+          "title": "Approval Decision",
+          "description": "You'll receive an email notification once a decision is made."
+        }
+      },
+      "rejectedNote": "The manager shared the following reason:",
+      "rejectedDefault": "No additional details were provided.",
+      "nextSteps": {
+        "email": {
+          "title": "Email Notification",
+          "description": "You'll receive an email at {{email}} with the approval decision."
+        },
+        "access": {
+          "title": "Access Granted",
+          "description": "Once approved, you'll have full access to manage services, products, and employees."
+        },
+        "prepare": {
+          "title": "Prepare Your Listings",
+          "description": "Start collecting service details, pricing, and team information so you're ready once approved."
+        }
+      },
+      "reapplyHint": "If you believe this decision was a mistake, contact support to discuss next steps.",
+      "supportPrompt": "Need assistance? Contact our support team"
+    },
+    "dashboard": {
+      "title": "Welcome back, {{name}}!",
+      "subtitle": "Here's what's happening with your business today"
+    },
+    "stats": {
+      "newBookings": "New Bookings",
+      "pending": "pending",
+      "completedServices": "Completed Services",
+      "thisMonth": "This month",
+      "monthlyRevenue": "Monthly Revenue",
+      "revenueGrowth": "from last month",
+      "totalCustomers": "Total Customers",
+      "avgRating": "avg rating"
+    },
+    "recentAppointments": {
+      "title": "Recent Appointments",
+      "viewAll": "View All",
+      "noAppointments": "No recent appointments"
+    },
+    "quickActions": {
+      "title": "Quick Actions",
+      "addService": "Add New Service",
+      "profileSettings": "Profile Settings"
+    },
+    "services": {
+      "title": "Services",
+      "manage": "Manage",
+      "active": "Active",
+      "inactive": "Inactive",
+      "noServices": "No services yet"
+    },
+    "businessOverview": {
+      "title": "Business Overview",
+      "totalServices": "Total Services",
+      "activeServices": "Active Services",
+      "customerRating": "Customer Rating",
+      "totalReviews": "Total Reviews"
+    },
+    "appointments": {
+      "title": "Appointments",
+      "description": "Manage customer appointments and bookings",
+      "total": "{{count}} Total",
+      "searchPlaceholder": "Search by customer name or email...",
+      "status": {
+        "all": "All Appointments",
+        "pending": "Pending",
+        "awaiting_vendor_response": "Awaiting Vendor Response",
+        "vendor_confirmed": "Vendor Confirmed",
+        "confirmed": "Confirmed",
+        "started": "Started",
+        "in_progress": "In Progress",
+        "completed": "Completed",
+        "cancelled": "Cancelled"
+      },
+      "no_appointments": "No Appointments Found",
+      "try_adjusting": "Try adjusting your search criteria.",
+      "no_appointments_desc": "You don't have any appointments yet.",
+      "confirm": "Confirm",
+      "cancel": "Cancel",
+      "complete": "Complete",
+      "assign_beautician": "Assign Beautician",
+      "confirm_assignment": "Confirm Assignment",
+      "failed_assign": "Failed to assign beautician. Try again.",
+      "no_services": "No services listed",
+      "services_label": "Services:"
+    }
+  },
+  "contact": {
+    "title": "Get in Touch",
+    "subtitle": "We'd love to hear from you. Send us a message and we'll respond as soon as possible.",
+    "form": {
+      "name": "Full Name",
+      "email": "Email Address",
+      "subject": "Subject",
+      "message": "Message",
+      "send": "Send Message",
+      "sending": "Sending...",
+      "success": "Message Sent! Thank you for reaching out. We'll get back to you soon.",
+      "error": "Failed to send message. Please try again."
+    },
+    "info": {
+      "email": {
+        "title": "Email Us",
+        "content": "hello@homebonzenga.com",
+        "description": "Send us an email anytime"
+      },
+      "phone": {
+        "title": "Call Us",
+        "content": "+243 123 456 789",
+        "description": "Mon-Fri from 8am to 6pm"
+      },
+      "address": {
+        "title": "Visit Us",
+        "content": "Kinshasa, Democratic Republic of Congo",
+        "description": "Come say hello at our office"
+      },
+      "hours": {
+        "title": "Working Hours",
+        "content": "Mon-Fri: 8am-6pm",
+        "description": "Weekend support available"
+      }
+    }
+  },
+  "about": {
+    "title": "About Us",
+    "subtitle": "Passion Meets Precision",
+    "description": "We are dedicated to creating exceptional beauty experiences that combine cutting-edge technology with thoughtful service. Every appointment is an opportunity to deliver excellence.",
+    "mission": "Our Mission",
+    "missionText": "To connect beauty professionals with clients through a seamless, secure, and innovative platform.",
+    "vision": "Our Vision",
+    "visionText": "To be the leading beauty services platform in Africa, empowering professionals and delighting customers.",
+    "values": "Our Values",
+    "valuesText": "Quality, Trust, Innovation, and Customer Satisfaction are at the heart of everything we do."
+  },
+  "services": {
+    "management": {
+      "title": "Manage Services",
+      "addService": "Add New Service",
+      "editService": "Edit Service",
+      "deleteService": "Delete Service",
+      "serviceName": "Service Name",
+      "description": "Description",
+      "price": "Price",
+      "duration": "Duration (minutes)",
+      "category": "Category",
+      "isActive": "Active",
+      "save": "Save Service",
+      "cancel": "Cancel",
+      "confirmDelete": "Are you sure you want to delete this service?",
+      "success": "Service saved successfully!",
+      "error": "Failed to save service. Please try again."
+    }
+  },
+  "appointments": {
+    "title": "Appointments",
+    "upcoming": "Upcoming Appointments",
+    "past": "Past Appointments",
+    "noAppointments": "No appointments found",
+    "bookNew": "Book New Appointment",
+    "viewDetails": "View Details",
+    "cancel": "Cancel Appointment",
+    "reschedule": "Reschedule",
+    "status": {
+      "pending": "Pending",
+      "confirmed": "Confirmed",
+      "inProgress": "In Progress",
+      "completed": "Completed",
+      "cancelled": "Cancelled"
+    }
+  },
+  "validation": {
+    "required": "This field is required",
+    "email": "Please enter a valid email address",
+    "phone": "Please enter a valid phone number",
+    "password": "Password must be at least 8 characters",
+    "passwordMatch": "Passwords do not match",
+    "minLength": "Must be at least {{count}} characters",
+    "maxLength": "Must be no more than {{count}} characters"
+  },
+  "notFound": {
+    "title": "Page Not Found",
+    "description": "The page you're looking for doesn't exist or has been moved.",
+    "goHome": "Go Home",
+    "searchServices": "Search Services"
+  },
+  "manager": {
+    "pending": {
+      "pageTitle": "Pending Vendor Applications",
+      "pageSubtitle": "Review and approve vendor registration applications",
+      "statusCount": "{{count}} Pending",
+      "statusPending": "Pending Approval",
+      "searchPlaceholder": "Search by shop name, owner name, or city...",
+      "approve": "Approve",
+      "reject": "Reject",
+      "loadSuccess": "Loaded {{count}} pending vendor(s)",
+      "loadError": "Failed to load pending vendors. Please ensure the backend server is running.",
+      "toastApproveSuccess": "Vendor approved successfully! Email notification sent.",
+      "toastRejectSuccess": "Vendor rejected successfully. Email notification sent.",
+      "toastApproveDescription": "The vendor can now access their dashboard.",
+      "toastRejectDescription": "Rejection email sent to vendor.",
+      "toastApproveError": "Failed to approve vendor. Please try again.",
+      "toastRejectError": "Failed to reject vendor. Please try again.",
+      "rejectDialogTitle": "Reject Vendor Application",
+      "rejectDialogDescription": "Are you sure you want to reject this vendor application? The vendor will receive an email notification.",
+      "rejectionReasonLabel": "Rejection Reason (Optional)",
+      "rejectionReasonPlaceholder": "e.g., Application does not meet our current requirements...",
+      "rejectionReasonHint": "This reason will be included in the rejection email sent to the vendor.",
+      "confirmRejection": "Confirm Rejection",
+      "processing": "Processing...",
+      "emptyTitle": "No Pending Applications",
+      "emptyFiltered": "No vendors match your search criteria.",
+      "emptyDefault": "All vendor applications have been reviewed."
+    },
+    "dashboard": {
+      "title": "Manager Dashboard",
+      "welcome": "Welcome back, {{name}}! Manage assignments and monitor operations.",
+      "refresh": "Refresh"
+    },
+    "stats": {
+      "pending_vendors": "Pending Vendor Applications",
+      "active_vendors": "Total Active Vendors",
+      "total_appointments": "Total Appointments",
+      "rejected_vendors": "Rejected Vendors",
+      "requires_approval": "Requires approval",
+      "out_of_total": "Out of {{total}} total",
+      "completed": "{{count}} completed",
+      "not_approved": "Not approved"
+    },
+    "pending_vendors": {
+      "title": "Pending Vendor Applications",
+      "no_applications": "No pending vendor applications",
+      "view_more": "View more ({{count}})",
+      "services": "Services",
+      "products": "Products",
+      "employees": "Employees"
+    },
+    "actions": {
+      "approve": "Approve",
+      "reject": "Reject"
+    },
+    "quick_actions": {
+      "title": "Quick Actions",
+      "pending_vendors": "Pending Vendors",
+      "review_applications": "Review applications",
+      "all_vendors": "All Vendors",
+      "manage_vendors": "Manage vendors"
+    }
+  },
+  "admin": {
+    "dashboard": {
+      "title": "Admin Dashboard",
+      "welcome": "Welcome back, {{name}}! Here's your platform overview.",
+      "refresh": "Refresh"
+    },
+    "financial": {
+      "title": "Financial Overview (Audited)",
+      "total_invoiced": "Total Invoiced Revenue",
+      "from_invoices": "From generated invoices",
+      "commission": "Platform Commission",
+      "net_earnings": "Net Earnings",
+      "payouts": "Beautician Payouts",
+      "payable": "Payable Amount"
+    },
+    "stats": {
+      "total_users": "Total Users",
+      "active": "{{count}} Active",
+      "total_vendors": "Total Vendors",
+      "pending": "{{count}} Pending",
+      "pending_approvals": "Pending Approvals",
+      "requires_action": "Requires Action",
+      "at_home_bookings": "At Home Bookings",
+      "salon_bookings": "At Salon Bookings",
+      "lifetime_total": "Lifetime Total",
+      "pending_payouts": "Pending Payouts",
+      "awaiting_approval": "Awaiting Approval",
+      "bookings_monitor": "Bookings Monitor",
+      "at_home_live": "At-Home Live",
+      "view_details": "View details",
+      "salon_monitor": "Salon Services Monitor",
+      "salon_live": "Salon Live"
+    },
+    "pending_vendors": {
+      "title": "Pending Vendor Approvals",
+      "view_all": "View All",
+      "approve": "Approve",
+      "reject": "Reject"
+    },
+    "catalog": {
+      "title": "At-Home Catalog Management",
+      "new_flow": "New Flow",
+      "services": {
+        "title": "Service Master Catalog",
+        "description": "Manage the official list of at-home services. View vendor references, set platform prices, and standardize descriptions.",
+        "manage": "Manage Master Services"
+      },
+      "products": {
+        "title": "Product Master Catalog",
+        "description": "Curate products that beauticians use or sell during at-home visits. Standardize pricing and categories.",
+        "manage": "Manage Master Products"
+      }
+    }
+  }
+}
