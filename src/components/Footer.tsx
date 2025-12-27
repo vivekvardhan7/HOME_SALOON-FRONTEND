@@ -1,7 +1,9 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
-import { usePlatformSettings } from "@/contexts/PlatformSettingsContext"; // Added
+import { usePlatformSettings } from "@/contexts/PlatformSettingsContext";
+import { useCookieConsent } from "@/contexts/CookieConsentContext";
+// Added
 import {
     Phone,
     Mail,
@@ -13,7 +15,9 @@ import logo from '@/assets/logo.jpg';
 
 const Footer = () => {
     const { t } = useTranslation();
-    const { config } = usePlatformSettings(); // Added
+    const { config } = usePlatformSettings();
+    const { openPreferences } = useCookieConsent();
+    // Added
 
     return (
         <footer id="contact" className="bg-[#3b2c26] text-white">
@@ -58,6 +62,8 @@ const Footer = () => {
                             <Link to="/help-center" className="block text-white/70 hover:text-[#f8d7da] transition-colors duration-300">{t('footer.support.help')}</Link>
                             <Link to="/terms-and-conditions" className="block text-white/70 hover:text-[#f8d7da] transition-colors duration-300">{t('footer.company.terms')}</Link>
                             <Link to="/privacy-policy" className="block text-white/70 hover:text-[#f8d7da] transition-colors duration-300">{t('footer.company.privacy')}</Link>
+                            <Link to="/cookie-policy" className="block text-white/70 hover:text-[#f8d7da] transition-colors duration-300">Cookie Policy</Link>
+                            <button onClick={openPreferences} className="block text-white/70 hover:text-[#f8d7da] transition-colors duration-300 text-left">Cookie Settings</button>
                             <Link to="/faq" className="block text-white/70 hover:text-[#f8d7da] transition-colors duration-300">{t('footer.support.faq')}</Link>
                         </div>
                     </div>
@@ -66,25 +72,28 @@ const Footer = () => {
                     <div>
                         <h4 className="text-lg font-serif font-semibold mb-6 text-white">{t('footer.social.title')}</h4>
                         <div className="space-y-3 text-white/70 mb-6 font-sans">
-                            <div className="flex items-center">
-                                <Phone className="w-4 h-4 mr-2" />
-                                <span>{config.supportPhone}</span>
+                            <div className="flex items-start">
+                                <span className="font-bold text-white">HOME BONZENGA (HBZ)</span>
                             </div>
                             <div className="flex items-center">
-                                <Mail className="w-4 h-4 mr-2" />
-                                <span>{config.supportEmail}</span>
+                                <MapPin className="w-4 h-4 mr-2 flex-shrink-0" />
+                                <span>Kinshasa, R. D. CONGO</span>
                             </div>
                             <div className="flex items-center">
-                                <MapPin className="w-4 h-4 mr-2" />
-                                <span>{config.platformAddress}</span>
+                                <Mail className="w-4 h-4 mr-2 flex-shrink-0" />
+                                <span>homebonzenga@outlook.com</span>
+                            </div>
+                            <div className="flex items-center">
+                                <Phone className="w-4 h-4 mr-2 flex-shrink-0" />
+                                <span>+32 495 84 68 66</span>
                             </div>
                         </div>
 
                         <div className="flex space-x-4">
-                            <a href={`mailto:${config.supportEmail}`} className="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center hover:bg-[#f8d7da] hover:text-[#3b2c26] transition-all duration-300">
+                            <a href="mailto:homebonzenga@outlook.com" className="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center hover:bg-[#f8d7da] hover:text-[#3b2c26] transition-all duration-300">
                                 <Mail className="w-4 h-4" />
                             </a>
-                            <a href={`tel:${config.supportPhone}`} className="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center hover:bg-[#f8d7da] hover:text-[#3b2c26] transition-all duration-300">
+                            <a href="tel:+32495846866" className="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center hover:bg-[#f8d7da] hover:text-[#3b2c26] transition-all duration-300">
                                 <Phone className="w-4 h-4" />
                             </a>
                             <a href="#" className="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center hover:bg-[#f8d7da] hover:text-[#3b2c26] transition-all duration-300">

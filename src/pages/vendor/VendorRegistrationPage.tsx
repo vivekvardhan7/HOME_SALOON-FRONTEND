@@ -9,14 +9,14 @@ import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Separator } from '@/components/ui/separator';
 import DashboardLayout from '@/components/DashboardLayout';
-import { 
-  Building, 
-  User, 
-  Mail, 
-  Phone, 
-  MapPin, 
-  Scissors, 
-  Sparkles, 
+import {
+  Building,
+  User,
+  Mail,
+  Phone,
+  MapPin,
+  Scissors,
+  Sparkles,
   Heart,
   CheckCircle,
   ArrowLeft,
@@ -85,7 +85,7 @@ const VendorRegistrationPage = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     // Validation
     if (!form.shopname || !form.ownerFirstName || !form.ownerLastName || !form.email || !form.phone) {
       toast.error('Please fill in all required fields');
@@ -102,7 +102,7 @@ const VendorRegistrationPage = () => {
     try {
       // Simulate vendor registration
       await new Promise(resolve => setTimeout(resolve, 2000));
-      
+
       // Store vendor data (in a real app, this would be sent to the backend)
       const vendorData = {
         id: Date.now().toString(),
@@ -128,9 +128,9 @@ const VendorRegistrationPage = () => {
 
       // Store in session storage for demo purposes
       sessionStorage.setItem('pendingVendor', JSON.stringify(vendorData));
-      
+
       toast.success('Vendor registration submitted successfully!');
-      
+
       // Navigate to login or success page
       setTimeout(() => {
         navigate('/login');
@@ -156,7 +156,7 @@ const VendorRegistrationPage = () => {
             <ArrowLeft className="w-4 h-4 mr-2" />
             Back
           </Button>
-          
+
           <h1 className="text-3xl font-serif font-bold text-[#4e342e] mb-4">
             Register Your Salon/Shop
           </h1>
@@ -409,7 +409,7 @@ const VendorRegistrationPage = () => {
 
           {/* Submit Button */}
           <div className="flex justify-center">
-            <Button 
+            <Button
               type="submit"
               className="bg-[#4e342e] hover:bg-[#3b2c26] text-white px-12 py-4 text-lg font-semibold"
               disabled={loading}

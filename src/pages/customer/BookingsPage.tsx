@@ -77,7 +77,7 @@ const CustomerBookingsPage = () => {
     if (booking.bookingType === 'AT_HOME') {
       navigate(`/customer/athome-bookings/${booking.id}`);
     } else {
-      toast.info(t('bookings.salonBookingUnavailable'));
+      navigate(`/customer/salon-bookings/${booking.id}`);
     }
   };
 
@@ -106,12 +106,11 @@ const CustomerBookingsPage = () => {
 
       const userId = user.id;
 
-      // 1. Fetch SALON bookings
-      // 1. Fetch SALON bookings
+      // 1. Fetch SALON bookings from vendor_orders (linked by email)
       const { data: salonData } = await supabase
-        .from('bookings')
-        .select(`*, address:addresses(*), vendor:vendor(*), booking_items(*), payments(*)`)
-        .eq('customer_id', userId)
+        .from('vendor_orders')
+        .select(`*, vendor:vendor!vendor_id(*)`)
+        .eq('customer_email', user.email)
         .order('created_at', { ascending: false });
 
       // 2. Fetch AT-HOME bookings
@@ -128,28 +127,23 @@ const CustomerBookingsPage = () => {
 
       // Process Salon Bookings
       if (salonData) {
-        const bookingItemIds = salonData.flatMap((b: any) => (b.booking_items || []).map((item: any) => item.service_id)).filter(Boolean);
-        let servicesMap: Record<string, any> = {};
-        if (bookingItemIds.length > 0) {
-          const { data: sData } = await supabase.from('services').select('id, name, price, duration').in('id', [...new Set(bookingItemIds)]);
-          if (sData) sData.forEach((s: any) => servicesMap[s.id] = s);
-        }
-
         const processedSalon = salonData.map((b: any) => {
-          const services = (b.booking_items || []).map((item: any) => ({
-            id: item.service_id,
-            name: servicesMap[item.service_id]?.name || 'Service',
-            price: item.price,
-            duration: servicesMap[item.service_id]?.duration || 60
-          }));
+          // vendor_orders has services as a JSON array snapshot
+          const services = Array.isArray(b.services) ? b.services.map((item: any) => ({
+            id: item.id || '',
+            name: item.name || 'Service',
+            price: item.price || 0,
+            duration: item.duration || 60
+          })) : [];
+
           return {
             id: b.id,
-            bookingNumber: b.id.substring(0, 8).toUpperCase(),
-            status: mapBookingStatus(b.status),
-            paymentStatus: mapPaymentStatus(b.payments?.some((p: any) => p.status === 'COMPLETED') ? 'PAID' : 'UNPAID'),
-            scheduledDate: b.scheduled_date,
-            scheduledTime: b.scheduled_time,
-            total: parseFloat(b.total),
+            bookingNumber: b.id.toString().substring(0, 8).toUpperCase(),
+            status: mapBookingStatus(b.booking_status),
+            paymentStatus: mapPaymentStatus(b.payment_status || 'PAID'),
+            scheduledDate: b.appointment_date,
+            scheduledTime: b.appointment_time,
+            total: parseFloat(b.total_amount || '0'),
             bookingType: 'SALON',
             serviceAddress: b.vendor ? `${b.vendor.address}, ${b.vendor.city}` : 'Salon',
             serviceType: determineServiceType(b),
@@ -245,8 +239,15 @@ const CustomerBookingsPage = () => {
 
   // Helper function to determine service type based on booking
   const determineServiceType = (booking: any): 'hair' | 'face' | 'extras' => {
+    // Check items (At-Home or legacy Salon)
     if (booking.items && booking.items.length > 0) {
       const serviceName = booking.items[0]?.service?.name?.toLowerCase() || '';
+      if (serviceName.includes('hair')) return 'hair';
+      if (serviceName.includes('facial') || serviceName.includes('face')) return 'face';
+    }
+    // Check services (vendor_orders for Salon)
+    if (booking.services && Array.isArray(booking.services) && booking.services.length > 0) {
+      const serviceName = booking.services[0]?.name?.toLowerCase() || '';
       if (serviceName.includes('hair')) return 'hair';
       if (serviceName.includes('facial') || serviceName.includes('face')) return 'face';
     }

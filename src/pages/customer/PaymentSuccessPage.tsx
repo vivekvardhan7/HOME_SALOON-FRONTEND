@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import DashboardLayout from '@/components/DashboardLayout';
-import { 
+import {
   CheckCircle,
   Calendar,
   Clock,
@@ -16,7 +16,8 @@ import {
   Home,
   Building,
   CreditCard,
-  Smartphone
+  Smartphone,
+  Wallet
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { toast } from 'sonner';
@@ -24,7 +25,7 @@ import { useSupabaseAuth } from "@/contexts/SupabaseAuthContext";
 
 interface PaymentData {
   bookingData: {
-    services: Array<{ id?: string; name: string; price: number; quantity: number; duration?: number }>;
+    services: Array<{ id?: string; name: string; price: number; quantity: number; duration?: number; category?: string }>;
     serviceDetails?: Array<{ id?: string; name: string; price: number; quantity?: number; duration?: number; category?: string }>;
     date: string;
     time: string;
@@ -41,7 +42,17 @@ interface PaymentData {
     zipCode?: string;
     phone?: string;
   };
-  paymentForm: {
+  // New Structure
+  cardDetails?: {
+    number: string;
+    name: string;
+  };
+  walletDetails?: {
+    provider: string;
+    phone: string;
+  };
+  // Keeping paymentForm optional for backward compatibility cleanup or just ignore
+  paymentForm?: {
     method: string;
     cardNumber?: string;
     mobileNumber?: string;
@@ -50,6 +61,7 @@ interface PaymentData {
   transactionId: string;
   paymentStatus: string;
   booking?: any;
+  bookingId?: string;
 }
 
 const PaymentSuccessPage = () => {
@@ -82,14 +94,23 @@ const PaymentSuccessPage = () => {
     }
   };
 
+  const getPaymentMethodDisplay = () => {
+    if (!paymentData) return 'Unknown';
+    if (paymentData.cardDetails) return 'Credit/Debit Card';
+    if (paymentData.walletDetails) return 'Digital Wallet';
+    if (paymentData.paymentForm?.method === 'card') return 'Credit/Debit Card';
+    if (paymentData.paymentForm?.method === 'mobile') return 'Mobile Money';
+    return 'Unknown';
+  };
+
   const downloadInvoice = () => {
     if (!paymentData) return;
-    
-    // Create a simple invoice content
+
     const servicesForInvoice =
       paymentData.bookingData.serviceDetails && paymentData.bookingData.serviceDetails.length > 0
         ? paymentData.bookingData.serviceDetails
         : paymentData.bookingData.services;
+
     const addressLine = [
       paymentData.contactDetails?.street,
       paymentData.contactDetails?.city,
@@ -105,7 +126,7 @@ HOME BONZENGA - INVOICE
 
 Transaction ID: ${paymentData.transactionId}
 Date: ${format(new Date(), "PPP")}
-Payment Method: ${paymentData.paymentForm.method === 'card' ? 'Credit/Debit Card' : 'Mobile Money'}
+Payment Method: ${getPaymentMethodDisplay()}
 
 BOOKING DETAILS:
 - Service Type: ${paymentData.bookingData.type}
@@ -116,8 +137,8 @@ BOOKING DETAILS:
 
 SERVICES:
 ${servicesForInvoice
-  .map(service => `- ${service.name} (x${service.quantity || 1}) - ${(service.price * (service.quantity || 1)).toLocaleString()} CDF`)
-  .join('\n')}
+        .map(service => `- ${service.name} (x${service.quantity || 1}) - ${(service.price * (service.quantity || 1)).toLocaleString()} CDF`)
+        .join('\n')}
 
 TOTAL: ${paymentData.bookingData.totalPrice.toLocaleString()} CDF
 
@@ -126,7 +147,6 @@ Payment Status: ${paymentData.paymentStatus.toUpperCase()}
 Thank you for choosing Home Bonzenga!
     `;
 
-    // Create and download the file
     const blob = new Blob([invoiceContent], { type: 'text/plain' });
     const url = window.URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -136,7 +156,7 @@ Thank you for choosing Home Bonzenga!
     a.click();
     document.body.removeChild(a);
     window.URL.revokeObjectURL(url);
-    
+
     toast.success('Invoice downloaded successfully!');
   };
 
@@ -146,19 +166,24 @@ Thank you for choosing Home Bonzenga!
     sessionStorage.removeItem('paymentData');
   };
 
-  // After successful payment, update dashboard mock data so counts reflect
   useEffect(() => {
     if (!paymentData || !user?.id) return;
     try {
-      // Read and update local mock data cache in localStorage per user
       const key = `hb_dashboard_${user.id}`;
       const existingRaw = localStorage.getItem(key);
       let existing = existingRaw ? JSON.parse(existingRaw) : { bookings: [] };
-      const newBookingId = `BK-${Date.now()}`;
+
+      // Avoid duplicates if reloading page
+      if (existing.bookings.some((b: any) => b.id === paymentData.booking?.id)) {
+        return;
+      }
+
+      const newBookingId = paymentData.bookingId || `BK-${Date.now()}`;
       const primaryService =
         paymentData.bookingData.serviceDetails && paymentData.bookingData.serviceDetails.length > 0
           ? paymentData.bookingData.serviceDetails[0]
           : paymentData.bookingData.services[0];
+
       const newBooking = {
         id: newBookingId,
         bookingNumber: newBookingId,
@@ -203,7 +228,7 @@ Thank you for choosing Home Bonzenga!
         <div className="min-h-screen bg-background flex items-center justify-center">
           <div className="text-center">
             <div className="text-[#4e342e] text-xl">No payment data found</div>
-            <Button 
+            <Button
               className="mt-4 bg-[#4e342e] hover:bg-[#3b2c26] text-white"
               onClick={() => navigate('/customer')}
             >
@@ -223,6 +248,9 @@ Thank you for choosing Home Bonzenga!
   ]
     .filter(Boolean)
     .join(', ');
+
+  const isCard = !!paymentData.cardDetails || paymentData.paymentForm?.method === 'card';
+  const isWallet = !!paymentData.walletDetails || paymentData.paymentForm?.method === 'mobile';
 
   return (
     <DashboardLayout>
@@ -304,7 +332,7 @@ Thank you for choosing Home Bonzenga!
                   </div>
                 </div>
 
-                {paymentData.bookingData.beauticianPreference !== 'any' && (
+                {paymentData.bookingData.beauticianPreference && paymentData.bookingData.beauticianPreference !== 'any' && (
                   <div className="flex items-center gap-3">
                     <User className="w-5 h-5 text-[#4e342e]" />
                     <div>
@@ -323,10 +351,10 @@ Thank you for choosing Home Bonzenga!
           <Card className="border-0 shadow-lg">
             <CardHeader>
               <CardTitle className="text-xl font-serif text-[#4e342e] flex items-center gap-2">
-                {paymentData.paymentForm.method === 'card' ? (
+                {isCard ? (
                   <CreditCard className="w-5 h-5" />
                 ) : (
-                  <Smartphone className="w-5 h-5" />
+                  <Wallet className="w-5 h-5" />
                 )}
                 Payment Details
               </CardTitle>
@@ -335,25 +363,39 @@ Thank you for choosing Home Bonzenga!
               <div className="space-y-3">
                 <div>
                   <p className="font-medium text-[#4e342e]">
-                    {paymentData.paymentForm.method === 'card' ? 'Credit/Debit Card' : 'Mobile Money'}
+                    {getPaymentMethodDisplay()}
                   </p>
                   <p className="text-sm text-[#6d4c41]">Payment Method</p>
                 </div>
 
-                {paymentData.paymentForm.method === 'card' && paymentData.paymentForm.cardNumber && (
+                {isCard && (
                   <div>
                     <p className="font-medium text-[#4e342e]">
-                      **** **** **** {paymentData.paymentForm.cardNumber.slice(-4)}
+                      {paymentData.cardDetails?.number
+                        ? `**** **** **** ${paymentData.cardDetails.number.slice(-4)}`
+                        : paymentData.paymentForm?.cardNumber
+                          ? `**** **** **** ${paymentData.paymentForm.cardNumber.slice(-4)}`
+                          : '****'}
                     </p>
                     <p className="text-sm text-[#6d4c41]">Card Number</p>
                   </div>
                 )}
 
-                {paymentData.paymentForm.method === 'mobile' && paymentData.paymentForm.mobileNumber && (
-                  <div>
-                    <p className="font-medium text-[#4e342e]">{paymentData.paymentForm.mobileNumber}</p>
-                    <p className="text-sm text-[#6d4c41]">Mobile Number</p>
-                  </div>
+                {isWallet && (
+                  <>
+                    <div>
+                      <p className="font-medium text-[#4e342e]">
+                        {paymentData.walletDetails?.provider || paymentData.paymentForm?.mobileProvider || 'Wallet'}
+                      </p>
+                      <p className="text-sm text-[#6d4c41]">Provider</p>
+                    </div>
+                    <div>
+                      <p className="font-medium text-[#4e342e]">
+                        {paymentData.walletDetails?.phone || paymentData.paymentForm?.mobileNumber}
+                      </p>
+                      <p className="text-sm text-[#6d4c41]">Mobile Number</p>
+                    </div>
+                  </>
                 )}
 
                 <div>
@@ -392,7 +434,7 @@ Thank you for choosing Home Bonzenga!
                     <p className="font-medium text-[#4e342e]">{service.name}</p>
                     <p className="text-sm text-[#6d4c41]">
                       {service.quantity > 1 && `Quantity: ${service.quantity} • `}
-                      Duration: {service.duration} min
+                      Duration: {service.duration || 60} min
                     </p>
                   </div>
                   <div className="text-right">
@@ -402,9 +444,9 @@ Thank you for choosing Home Bonzenga!
                   </div>
                 </div>
               ))}
-              
+
               <Separator />
-              
+
               <div className="flex justify-between items-center text-lg font-semibold">
                 <span className="text-[#4e342e]">Total Amount</span>
                 <span className="text-[#4e342e]">
@@ -437,7 +479,7 @@ Thank you for choosing Home Bonzenga!
 
         {/* Action Buttons */}
         <div className="flex flex-col sm:flex-row gap-4 mt-8">
-          <Button 
+          <Button
             className="flex-1 bg-[#4e342e] hover:bg-[#3b2c26] text-white"
             onClick={() => {
               clearSessionData();
@@ -446,8 +488,8 @@ Thank you for choosing Home Bonzenga!
           >
             Go to Dashboard
           </Button>
-          
-          <Button 
+
+          <Button
             variant="outline"
             className="flex-1 border-[#4e342e] text-[#4e342e] hover:bg-[#4e342e] hover:text-white"
             onClick={downloadInvoice}
@@ -455,8 +497,8 @@ Thank you for choosing Home Bonzenga!
             <Download className="w-4 h-4 mr-2" />
             Download Invoice
           </Button>
-          
-          <Button 
+
+          <Button
             variant="outline"
             className="flex-1 border-[#4e342e] text-[#4e342e] hover:bg-[#4e342e] hover:text-white"
             onClick={() => {

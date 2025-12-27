@@ -34,10 +34,6 @@ import {
 
 // Assets
 import hero3 from '@/assets/hero3.jpg';
-import hair4 from '@/assets/hair4.jpg';
-import makeup5 from '@/assets/makeup5.jpg';
-import spa1 from '@/assets/spa1.jpg';
-import nail from '@/assets/nail.jpg';
 
 interface Vendor {
   id: string;
@@ -48,6 +44,41 @@ interface Vendor {
   state: string;
   status: string;
 }
+
+const Pagination = ({ page, total, onChange }: { page: number; total: number; onChange: (p: number) => void }) => {
+  if (total <= 1) return null;
+  const pages = Array.from({ length: total }, (_, i) => i + 1);
+  return (
+    <div className="flex items-center justify-center gap-2 mt-10">
+      <Button
+        variant="outline"
+        className="border-[#4e342e] text-[#4e342e]"
+        disabled={page === 1}
+        onClick={() => onChange(page - 1)}
+      >
+        Previous
+      </Button>
+      {pages.map((p) => (
+        <button
+          key={p}
+          className={`px-3 py-1 rounded-md text-sm ${p === page ? 'bg-[#4e342e] text-white' : 'bg-white text-[#4e342e] border border-[#d7ccc8]'
+            }`}
+          onClick={() => onChange(p)}
+        >
+          {p}
+        </button>
+      ))}
+      <Button
+        variant="outline"
+        className="border-[#4e342e] text-[#4e342e]"
+        disabled={page === total}
+        onClick={() => onChange(page + 1)}
+      >
+        Next
+      </Button>
+    </div>
+  );
+};
 
 const SalonVisitPage = () => {
   const { t } = useTranslation();
@@ -133,42 +164,20 @@ const SalonVisitPage = () => {
   };
 
   const totalSalonPages = Math.max(1, Math.ceil(vendors.length / pageSize));
-  const paginatedVendors = vendors.slice((salonPage - 1) * pageSize, salonPage * pageSize);
 
-  const Pagination = ({ page, total, onChange }: { page: number; total: number; onChange: (p: number) => void }) => {
-    if (total <= 1) return null;
-    const pages = Array.from({ length: total }, (_, i) => i + 1);
-    return (
-      <div className="flex items-center justify-center gap-2 mt-10">
-        <Button
-          variant="outline"
-          className="border-[#4e342e] text-[#4e342e]"
-          disabled={page === 1}
-          onClick={() => onChange(page - 1)}
-        >
-          Previous
-        </Button>
-        {pages.map((p) => (
-          <button
-            key={p}
-            className={`px-3 py-1 rounded-md text-sm ${p === page ? 'bg-[#4e342e] text-white' : 'bg-white text-[#4e342e] border border-[#d7ccc8]'
-              }`}
-            onClick={() => onChange(p)}
-          >
-            {p}
-          </button>
-        ))}
-        <Button
-          variant="outline"
-          className="border-[#4e342e] text-[#4e342e]"
-          disabled={page === total}
-          onClick={() => onChange(page + 1)}
-        >
-          Next
-        </Button>
-      </div>
-    );
-  };
+  // Fix: Ensure salonPage is clamped to totalSalonPages when vendors list changes
+  useEffect(() => {
+    if (salonPage > totalSalonPages && totalSalonPages > 0) {
+      setSalonPage(totalSalonPages);
+    }
+  }, [vendors.length, totalSalonPages, salonPage]);
+
+  // Fix: Reset page when search changes to avoid Page 2 bug on new results
+  useEffect(() => {
+    setSalonPage(1);
+  }, [searchInputValue]);
+
+  const paginatedVendors = vendors.slice((salonPage - 1) * pageSize, salonPage * pageSize);
 
   const handleBookAppointment = (vendorId: string) => {
     if (!user) {
@@ -228,23 +237,6 @@ const SalonVisitPage = () => {
               >
                 {t('salon.subtitle')}
               </motion.p>
-
-              {!user && (
-                <motion.div
-                  className="flex flex-col sm:flex-row gap-4"
-                  variants={fadeInUp}
-                >
-                  <Link to="/register">
-                    <Button
-                      variant="outline"
-                      className="border-2 border-[#4e342e] text-[#4e342e] hover:bg-[#4e342e] hover:text-white px-8 py-4 text-lg font-semibold rounded-xl transition-all duration-300"
-                    >
-                      <UserCheck className="w-5 h-5 mr-2" />
-                      {t('auth.signUp')}
-                    </Button>
-                  </Link>
-                </motion.div>
-              )}
             </motion.div>
 
             {/* Right Content - Hero Image */}
@@ -426,66 +418,50 @@ const SalonVisitPage = () => {
           )}
 
           <motion.div
+            key={`grid-${searchInputValue}-${salonPage}`}
             className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 transition-opacity duration-300 ${isSearching ? 'opacity-40' : 'opacity-100'}`}
             variants={stagger}
             initial="initial"
-            whileInView="animate"
-            viewport={{ once: true }}
+            animate="animate"
           >
             {paginatedVendors.map((salon) => (
               <motion.div key={salon.id} variants={fadeInUp} className="h-full">
-                <Card className="group h-full flex flex-col hover:shadow-2xl hover:shadow-[#4e342e]/10 transition-all duration-500 border-0 bg-white overflow-hidden rounded-3xl relative isolate">
-                  <div className="relative h-56 flex-shrink-0 overflow-hidden bg-gradient-to-br from-[#4e342e] to-[#6d4c41]">
-                    <div className="absolute inset-0 flex items-center justify-center">
-                      <Building className="w-16 h-16 text-white/20 transform group-hover:scale-110 transition-transform duration-700" />
-                    </div>
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-80" />
-
-                    {salon.status === 'APPROVED' && (
-                      <div className="absolute top-4 right-4 z-10">
-                        <div className="w-8 h-8 bg-emerald-500/90 backdrop-blur-sm rounded-full flex items-center justify-center shadow-lg ring-2 ring-white/20">
-                          <CheckCircle className="w-5 h-5 text-white" />
+                <Card className="group h-full flex flex-col hover:shadow-xl transition-all duration-300 border-0 bg-white rounded-2xl p-8 relative isolate">
+                  <div className="flex-grow flex flex-col">
+                    {/* Header: Shop Name & Status */}
+                    <div className="flex justify-between items-start mb-4">
+                      <h3 className="text-2xl font-serif font-bold text-[#4e342e] leading-tight">
+                        {salon.shopName}
+                      </h3>
+                      {salon.status === 'APPROVED' && (
+                        <div className="flex-shrink-0 ml-4">
+                          <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-emerald-50 text-emerald-700 text-[10px] font-bold uppercase tracking-wider rounded-full border border-emerald-100">
+                            <CheckCircle className="w-3.5 h-3.5" />
+                            Verified
+                          </span>
                         </div>
-                      </div>
-                    )}
-
-                    <div className="absolute bottom-3 left-3 z-10 max-w-[90%]">
-                      <div className="inline-flex items-center px-3 py-1.5 rounded-full bg-black/40 backdrop-blur-md border border-white/20 shadow-lg ring-1 ring-white/10">
-                        <Building className="w-3.5 h-3.5 text-white mr-2 flex-shrink-0" />
-                        <span className="text-white text-xs font-medium tracking-wide truncate">
-                          {salon.shopName}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-
-                  <CardContent className="p-6 flex flex-col flex-grow relative">
-                    <div className="mb-4">
-                      {/* Shop Name removed from here to avoid duplication as requested */}
-                      <div className="flex items-start text-[#6d4c41]/80 min-h-[40px]">
-                        <MapPin className="w-4 h-4 mr-2 mt-0.5 flex-shrink-0 opacity-70" />
-                        <span className="text-sm font-medium leading-relaxed line-clamp-2">
-                          {salon.address}, {salon.city}, {salon.state}
-                        </span>
-                      </div>
+                      )}
                     </div>
 
-                    <div className="flex-grow mb-6"></div>
+                    {/* Body: Location */}
+                    <div className="flex items-center text-[#6d4c41]/80 mb-8">
+                      <MapPin className="w-4 h-4 mr-2 flex-shrink-0 text-[#4e342e]/40" />
+                      <span className="text-sm font-medium">
+                        {salon.address}, {salon.city}
+                      </span>
+                    </div>
 
-                    <div className="mt-auto pt-5 border-t border-[#f2e6e1]">
-                      <div className="flex flex-wrap gap-2 mb-5">
-                        <span className="text-xs text-[#8d6e63] italic">Experience premium care</span>
-                      </div>
-
+                    {/* Footer: CTA Button */}
+                    <div className="mt-auto">
                       <Button
-                        className="w-full h-12 bg-[#4e342e] hover:bg-[#3b2c26] text-white text-sm font-semibold tracking-wide uppercase rounded-xl shadow-lg hover:shadow-xl hover:shadow-[#4e342e]/20 transition-all duration-300 group-hover:-translate-y-0.5"
+                        className="w-full h-12 bg-[#4e342e] hover:bg-[#3b2c26] text-white text-xs font-bold tracking-widest uppercase rounded-xl shadow-lg transition-all duration-300"
                         onClick={() => handleBookAppointment(salon.id)}
                       >
                         {t('salon.bookNow')}
-                        <ArrowRight className="w-4 h-4 ml-2" />
+                        <ArrowRight className="w-4 h-4 ml-2 transition-transform group-hover:translate-x-1" />
                       </Button>
                     </div>
-                  </CardContent>
+                  </div>
                 </Card>
               </motion.div>
             ))}

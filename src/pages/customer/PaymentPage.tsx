@@ -76,22 +76,31 @@ interface PaymentForm {
   mobileProvider: string;
 }
 
+// ... imports ...
+import {
+  MESSAGES,
+  formatCardNumber,
+  formatExpiryDate,
+  formatCVV,
+  formatName,
+  formatPhoneNumber,
+  validateCard,
+  validateWallet,
+} from '@/utils/paymentValidation';
+
+// ... interfaces ...
+
 const PaymentPage = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { user } = useSupabaseAuth();
   const [bookingData, setBookingData] = useState<BookingData | null>(null);
-  const [paymentForm, setPaymentForm] = useState<PaymentForm>({
-    method: 'card',
-    cardNumber: '',
-    expiryDate: '',
-    cvv: '',
-    cardName: '',
-    mobileNumber: '',
-    mobileProvider: 'mpesa'
-  });
-  const [loading, setLoading] = useState(true);
-  const [processing, setProcessing] = useState(false);
+
+  // Refactored State
+  const [method, setMethod] = useState('card');
+  const [cardDetails, setCardDetails] = useState({ number: '', expiry: '', cvv: '', name: '' });
+  const [walletDetails, setWalletDetails] = useState({ provider: '', phone: '' });
+
   const [contactDetails, setContactDetails] = useState({
     street: '',
     city: '',
@@ -99,6 +108,10 @@ const PaymentPage = () => {
     zipCode: '',
     phone: ''
   });
+
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [loading, setLoading] = useState(true);
+  const [processing, setProcessing] = useState(false);
 
   useEffect(() => {
     loadBookingData();
@@ -130,18 +143,48 @@ const PaymentPage = () => {
     }
   };
 
-  const handlePayment = async () => {
-    if (paymentForm.method === 'card') {
-      if (!paymentForm.cardNumber || !paymentForm.expiryDate || !paymentForm.cvv || !paymentForm.cardName) {
-        toast.error('Please fill in all card details');
-        return;
-      }
-    } else {
-      if (!paymentForm.mobileNumber) {
-        toast.error('Please enter your mobile number');
-        return;
-      }
+  const handleMethodChange = (val: string) => {
+    setMethod(val);
+    setErrors({});
+    // Reset inputs if needed, or keep for UX
+  };
+
+  // Validation
+  const validateForm = () => {
+    const newErrors: Record<string, string> = {};
+    let isValid = true;
+
+    // Validate Contact Details
+    if (!contactDetails.street) newErrors.street = MESSAGES.REQ_FIELDS;
+    if (!contactDetails.city) newErrors.city = MESSAGES.REQ_FIELDS;
+    if (contactDetails.street.length > 250) newErrors.street = MESSAGES.ADDRESS_LENGTH;
+
+    // Strict Phone Validation for Contact
+    if (!/^[0-9]{10}$/.test(contactDetails.phone.replace(/\D/g, ''))) {
+      newErrors.contactPhone = MESSAGES.PHONE;
     }
+
+    // Validate Payment
+    if (method === 'card') {
+      const cardErrors = validateCard(cardDetails.number, cardDetails.expiry, cardDetails.cvv, cardDetails.name);
+      Object.assign(newErrors, cardErrors);
+    } else {
+      const walletErrors = validateWallet(walletDetails.provider, walletDetails.phone);
+      Object.assign(newErrors, walletErrors);
+    }
+
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      isValid = false;
+      toast.error(MESSAGES.REQ_FIELDS);
+    } else {
+      setErrors({});
+    }
+    return isValid;
+  };
+
+  const handlePayment = async () => {
+    if (!validateForm()) return;
 
     setProcessing(true);
 
@@ -157,20 +200,9 @@ const PaymentPage = () => {
         return;
       }
 
-      if (!contactDetails.street || !contactDetails.city) {
-        toast.error('Please provide the service address (street and city)');
-        return;
-      }
-
-      if (!contactDetails.phone) {
-        toast.error('Please provide a contact phone number');
-        return;
-      }
-
       await new Promise(resolve => setTimeout(resolve, 1500)); // Simulate processing delay
 
-      // Prepare payload for Backend API
-      // Construct full address string
+      // ... (Rest of payload construction logic remains largely same, just using new state variables)
       const fullAddress = [
         contactDetails.street,
         contactDetails.city,
@@ -178,45 +210,33 @@ const PaymentPage = () => {
         contactDetails.zipCode
       ].filter(Boolean).join(', ');
 
-      // Combine date and time for slot
-      // Assuming date is ISO string YYYY-MM-DD... and time is HH:MM
       const slotDate = new Date(bookingData.date);
       const [hours, minutes] = bookingData.time.split(':');
       slotDate.setHours(parseInt(hours, 10), parseInt(minutes, 10), 0, 0);
 
-      // Prepare Services
-      // We prioritize serviceDetails if available, otherwise map services array
       const servicesPayload = bookingData.serviceDetails
         ? bookingData.serviceDetails.map(s => ({
-          id: s.catalogServiceId || s.id, // This should map to admin_service_id
+          id: s.catalogServiceId || s.id,
           price: s.price,
           duration: s.duration,
           genderPreference: bookingData.beauticianPreference || 'any'
         }))
         : bookingData.services.map(s => ({
-          // Fallback if no IDs (legacy), this might fail if backend enforces IDs. 
-          // Assuming current flow sets serviceDetails properly in WithProductsBooking/Confirmation.
-          // If we don't have IDs, we might skip or error. 
-          // But existing flow seems to set catalogServiceId.
           id: 'legacy_id_placeholder',
           price: s.price,
           duration: 60,
           genderPreference: bookingData.beauticianPreference || 'any'
         }));
 
-      // Prepare Products
       const productsPayload = bookingData.productDetails
         ? bookingData.productDetails
           .filter(p => (p.quantity || 0) > 0)
           .map(p => ({
-            id: p.productCatalogId || p.id, // Maps to admin_product_id
+            id: p.productCatalogId || p.id,
             price: p.price,
             quantity: p.quantity
           }))
         : [];
-
-      // Calculate total (Frontend calculation, backend should verify ideally but we follow prompt)
-      // We use the bookingData.totalPrice calculated previously
 
       const payload = {
         totalAmount: bookingData.totalPrice,
@@ -230,15 +250,6 @@ const PaymentPage = () => {
         services: servicesPayload,
         products: productsPayload
       };
-
-      // Call Backend API
-      // We need to import 'api' from '@/lib/api' if not already imported. 
-      // It wasn't in original file imports, so we might need to add it or use fetch.
-      // Ideally I should add `import { api } from '@/lib/api'` at top, but I'm in a function replacement.
-      // I'll assume `api` is available or use `fetch` with token. 
-      // Checking file imports... `api` is NOT imported.
-      // I cannot add import here easily without multi-replace or assume global.
-      // Accessing `getApiUrl` is available.
 
       const { session } = await import('@/lib/supabase').then(m => m.supabase.auth.getSession()).then(r => r.data);
       const token = session?.access_token || localStorage.getItem('token');
@@ -261,24 +272,22 @@ const PaymentPage = () => {
         throw new Error(result.message || 'Booking failed');
       }
 
-      // Success
       const bookingId = result.bookingId;
 
-      // Navigate to success page
-      // Create a mock completeBooking object for the success page state
       const completeBooking = {
         id: bookingId,
-        status: 'AWAITING_MANAGER', // Initial state
+        status: 'AWAITING_MANAGER',
         total: bookingData.totalPrice,
         scheduled_date: bookingData.date,
         scheduled_time: bookingData.time,
-        address: { street: contactDetails.street, city: contactDetails.city } // specialized obj
+        address: { street: contactDetails.street, city: contactDetails.city }
       };
 
       const paymentData = {
         bookingData,
         contactDetails,
-        paymentForm,
+        cardDetails: method === 'card' ? cardDetails : undefined, // Store safe details? Maybe just last 4?
+        walletDetails: method === 'wallet' ? walletDetails : undefined,
         transactionId: `TXN-MOCK-${Date.now()}`,
         paymentStatus: 'COMPLETED',
         booking: completeBooking,
@@ -299,30 +308,29 @@ const PaymentPage = () => {
     }
   };
 
-  const formatCardNumber = (value: string) => {
-    const v = value.replace(/\s+/g, '').replace(/[^0-9]/gi, '');
-    const matches = v.match(/\d{4,16}/g);
-    const match = matches && matches[0] || '';
-    const parts = [];
-    for (let i = 0, len = match.length; i < len; i += 4) {
-      parts.push(match.substring(i, i + 4));
-    }
-    if (parts.length) {
-      return parts.join(' ');
-    } else {
-      return v;
-    }
-  };
+  // Handlers
+  const handleCardChange = (field: string, value: string) => {
+    let formatted = value;
+    if (field === 'number') formatted = formatCardNumber(value);
+    if (field === 'expiry') formatted = formatExpiryDate(value);
+    if (field === 'cvv') formatted = formatCVV(value);
+    if (field === 'name') formatted = formatName(value);
 
-  const formatExpiryDate = (value: string) => {
-    const v = value.replace(/\s+/g, '').replace(/[^0-9]/gi, '');
-    if (v.length >= 2) {
-      return v.substring(0, 2) + '/' + v.substring(2, 4);
+    setCardDetails(prev => ({ ...prev, [field]: formatted }));
+
+    // Clear specific error
+    const errField = field === 'name' ? 'cardName' : field === 'number' ? 'cardNumber' : field === 'expiry' ? 'expiryDate' : 'cvv';
+    if (errors[errField]) {
+      setErrors(prev => {
+        const newErr = { ...prev };
+        delete newErr[errField];
+        return newErr;
+      });
     }
-    return v;
   };
 
   if (loading) {
+    // ... (Keep existing loading UI)
     return (
       <DashboardLayout>
         <div className="min-h-screen bg-background flex items-center justify-center">
@@ -339,6 +347,7 @@ const PaymentPage = () => {
     .join(', ');
 
   if (!bookingData) {
+    // ... (Keep existing no data UI)
     return (
       <DashboardLayout>
         <div className="min-h-screen bg-background flex items-center justify-center">
@@ -359,109 +368,80 @@ const PaymentPage = () => {
   return (
     <DashboardLayout>
       <div className="container mx-auto py-8 px-4 max-w-4xl">
+        {/* ... Header ... */}
         <div className="mb-8">
-          <Button
-            variant="ghost"
-            onClick={() => navigate(-1)}
-            className="mb-4 text-[#4e342e] hover:text-[#3b2c26]"
-          >
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Back to Booking
+          <Button variant="ghost" onClick={() => navigate(-1)} className="mb-4 text-[#4e342e] hover:text-[#3b2c26]">
+            <ArrowLeft className="w-4 h-4 mr-2" /> Back to Booking
           </Button>
-
-          <h1 className="text-3xl font-serif font-bold text-[#4e342e] mb-4">
-            Complete Your Payment
-          </h1>
-          <p className="text-lg text-[#6d4c41]">
-            Secure payment for your beauty service booking
-          </p>
+          <h1 className="text-3xl font-serif font-bold text-[#4e342e] mb-4">Complete Your Payment</h1>
+          <p className="text-lg text-[#6d4c41]">Secure payment for your beauty service booking</p>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Payment Form */}
           <div className="lg:col-span-2 space-y-6">
-            {/* Payment Method Selection */}
+            {/* Method Selection */}
             <Card className="border-0 shadow-lg">
               <CardHeader>
-                <CardTitle className="text-xl font-serif text-[#4e342e]">
-                  Choose Payment Method
-                </CardTitle>
+                <CardTitle className="text-xl font-serif text-[#4e342e]">Choose Payment Method</CardTitle>
               </CardHeader>
               <CardContent>
-                <RadioGroup
-                  value={paymentForm.method}
-                  onValueChange={(value) => setPaymentForm(prev => ({ ...prev, method: value }))}
-                  className="space-y-4"
-                >
-                  <div className="flex items-center space-x-2 p-4 border border-[#fdf6f0] rounded-lg hover:bg-[#fdf6f0] transition-colors">
+                <RadioGroup value={method} onValueChange={handleMethodChange} className="space-y-4">
+                  <div className={`flex items-center space-x-2 p-4 border rounded-lg transition-colors cursor-pointer ${method === 'card' ? 'border-[#4e342e] bg-[#4e342e]/5' : 'border-[#fdf6f0] hover:bg-[#fdf6f0]'}`}>
                     <RadioGroupItem value="card" id="card" />
-                    <Label htmlFor="card" className="flex items-center gap-3 cursor-pointer">
+                    <Label htmlFor="card" className="flex items-center gap-3 cursor-pointer flex-1">
                       <CreditCard className="w-5 h-5 text-[#4e342e]" />
                       <span className="text-[#4e342e] font-medium">Credit/Debit Card</span>
                     </Label>
                   </div>
 
-                  <div className="flex items-center space-x-2 p-4 border border-[#fdf6f0] rounded-lg hover:bg-[#fdf6f0] transition-colors">
-                    <RadioGroupItem value="mobile" id="mobile" />
-                    <Label htmlFor="mobile" className="flex items-center gap-3 cursor-pointer">
+                  <div className={`flex items-center space-x-2 p-4 border rounded-lg transition-colors cursor-pointer ${method === 'wallet' ? 'border-[#4e342e] bg-[#4e342e]/5' : 'border-[#fdf6f0] hover:bg-[#fdf6f0]'}`}>
+                    <RadioGroupItem value="wallet" id="wallet" />
+                    <Label htmlFor="wallet" className="flex items-center gap-3 cursor-pointer flex-1">
                       <Smartphone className="w-5 h-5 text-[#4e342e]" />
-                      <span className="text-[#4e342e] font-medium">Mobile Money</span>
+                      <span className="text-[#4e342e] font-medium">Digital Wallet / UPI</span>
                     </Label>
                   </div>
                 </RadioGroup>
               </CardContent>
             </Card>
 
-            {/* Service contact and address */}
+            {/* Service Location */}
             <Card className="border-0 shadow-lg">
               <CardHeader>
                 <CardTitle className="text-xl font-serif text-[#4e342e] flex items-center gap-2">
-                  <MapPin className="w-5 h-5" />
-                  Service Location & Contact
+                  <MapPin className="w-5 h-5" /> Service Location & Contact
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div>
-                  <Label htmlFor="serviceStreet" className="text-[#4e342e] font-medium">
-                    Street Address *
-                  </Label>
+                  <Label htmlFor="serviceStreet">Street Address *</Label>
                   <Input
                     id="serviceStreet"
                     value={contactDetails.street}
-                    onChange={(e) =>
-                      setContactDetails(prev => ({ ...prev, street: e.target.value }))
-                    }
-                    placeholder="123 Beauty Avenue"
-                    className="border-[#4e342e] text-[#4e342e]"
+                    onChange={(e) => setContactDetails(prev => ({ ...prev, street: e.target.value.slice(0, 250) }))}
+                    className={errors.street ? 'border-red-500' : 'border-[#4e342e] text-[#4e342e]'}
                   />
+                  {errors.street && <span className="text-xs text-red-500">{errors.street}</span>}
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <Label htmlFor="serviceCity" className="text-[#4e342e] font-medium">
-                      City *
-                    </Label>
+                    <Label htmlFor="serviceCity">City *</Label>
                     <Input
                       id="serviceCity"
                       value={contactDetails.city}
-                      onChange={(e) =>
-                        setContactDetails(prev => ({ ...prev, city: e.target.value }))
-                      }
-                      placeholder="City"
-                      className="border-[#4e342e] text-[#4e342e]"
+                      onChange={(e) => setContactDetails(prev => ({ ...prev, city: e.target.value }))}
+                      className={errors.city ? 'border-red-500' : 'border-[#4e342e] text-[#4e342e]'}
                     />
+                    {errors.city && <span className="text-xs text-red-500">{errors.city}</span>}
                   </div>
                   <div>
-                    <Label htmlFor="serviceState" className="text-[#4e342e] font-medium">
-                      State/Province
-                    </Label>
+                    <Label htmlFor="serviceState">State/Province</Label>
                     <Input
                       id="serviceState"
                       value={contactDetails.state}
-                      onChange={(e) =>
-                        setContactDetails(prev => ({ ...prev, state: e.target.value }))
-                      }
-                      placeholder="State or Province"
+                      onChange={(e) => setContactDetails(prev => ({ ...prev, state: e.target.value }))}
                       className="border-[#4e342e] text-[#4e342e]"
                     />
                   </div>
@@ -469,101 +449,91 @@ const PaymentPage = () => {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <Label htmlFor="serviceZip" className="text-[#4e342e] font-medium">
-                      Postal Code
-                    </Label>
+                    <Label htmlFor="serviceZip">Postal Code</Label>
                     <Input
                       id="serviceZip"
                       value={contactDetails.zipCode}
-                      onChange={(e) =>
-                        setContactDetails(prev => ({ ...prev, zipCode: e.target.value }))
-                      }
-                      placeholder="Postal code"
+                      onChange={(e) => setContactDetails(prev => ({ ...prev, zipCode: e.target.value }))}
                       className="border-[#4e342e] text-[#4e342e]"
                     />
                   </div>
                   <div>
-                    <Label htmlFor="servicePhone" className="text-[#4e342e] font-medium">
-                      Contact Phone *
-                    </Label>
+                    <Label htmlFor="servicePhone">Contact Phone *</Label>
                     <Input
                       id="servicePhone"
                       value={contactDetails.phone}
-                      onChange={(e) =>
-                        setContactDetails(prev => ({ ...prev, phone: e.target.value }))
-                      }
-                      placeholder="+243 123 456 789"
-                      className="border-[#4e342e] text-[#4e342e]"
+                      onChange={(e) => setContactDetails(prev => ({ ...prev, phone: formatPhoneNumber(e.target.value) }))}
+                      maxLength={10}
+                      inputMode="numeric"
+                      className={errors.contactPhone ? 'border-red-500' : 'border-[#4e342e] text-[#4e342e]'}
                     />
+                    {errors.contactPhone && <span className="text-xs text-red-500">{errors.contactPhone}</span>}
                   </div>
                 </div>
               </CardContent>
             </Card>
 
             {/* Payment Details */}
-            {paymentForm.method === 'card' ? (
+            {method === 'card' ? (
               <Card className="border-0 shadow-lg">
                 <CardHeader>
                   <CardTitle className="text-xl font-serif text-[#4e342e] flex items-center gap-2">
-                    <CreditCard className="w-5 h-5" />
-                    Card Details
+                    <CreditCard className="w-5 h-5" /> Card Details
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
+                  <div className="p-3 bg-yellow-50 text-yellow-800 text-sm rounded mb-2">
+                    <span className="font-bold">Demo Mode:</span> Use any 16-digit number.
+                  </div>
                   <div>
-                    <Label htmlFor="cardName" className="text-[#4e342e] font-medium">
-                      Cardholder Name *
-                    </Label>
+                    <Label htmlFor="cardName">Cardholder Name *</Label>
                     <Input
                       id="cardName"
-                      value={paymentForm.cardName}
-                      onChange={(e) => setPaymentForm(prev => ({ ...prev, cardName: e.target.value }))}
-                      placeholder="John Doe"
-                      className="border-[#4e342e] text-[#4e342e]"
+                      value={cardDetails.name}
+                      onChange={(e) => handleCardChange('name', e.target.value)}
+                      className={errors.cardName ? 'border-red-500' : 'border-[#4e342e] text-[#4e342e]'}
                     />
+                    {errors.cardName && <span className="text-xs text-red-500">{errors.cardName}</span>}
                   </div>
-
                   <div>
-                    <Label htmlFor="cardNumber" className="text-[#4e342e] font-medium">
-                      Card Number *
-                    </Label>
+                    <Label htmlFor="cardNumber">Card Number *</Label>
                     <Input
                       id="cardNumber"
-                      value={paymentForm.cardNumber}
-                      onChange={(e) => setPaymentForm(prev => ({ ...prev, cardNumber: formatCardNumber(e.target.value) }))}
-                      placeholder="1234 5678 9012 3456"
+                      value={cardDetails.number}
+                      onChange={(e) => handleCardChange('number', e.target.value)}
+                      placeholder="XXXX XXXX XXXX XXXX"
                       maxLength={19}
-                      className="border-[#4e342e] text-[#4e342e]"
+                      inputMode="numeric"
+                      className={errors.cardNumber ? 'border-red-500' : 'border-[#4e342e] text-[#4e342e]'}
                     />
+                    {errors.cardNumber && <span className="text-xs text-red-500">{errors.cardNumber}</span>}
                   </div>
-
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <Label htmlFor="expiryDate" className="text-[#4e342e] font-medium">
-                        Expiry Date *
-                      </Label>
+                      <Label htmlFor="expiryDate">Expiry Date *</Label>
                       <Input
                         id="expiryDate"
-                        value={paymentForm.expiryDate}
-                        onChange={(e) => setPaymentForm(prev => ({ ...prev, expiryDate: formatExpiryDate(e.target.value) }))}
+                        value={cardDetails.expiry}
+                        onChange={(e) => handleCardChange('expiry', e.target.value)}
                         placeholder="MM/YY"
                         maxLength={5}
-                        className="border-[#4e342e] text-[#4e342e]"
+                        className={errors.expiryDate ? 'border-red-500' : 'border-[#4e342e] text-[#4e342e]'}
                       />
+                      {errors.expiryDate && <span className="text-xs text-red-500">{errors.expiryDate}</span>}
                     </div>
-
                     <div>
-                      <Label htmlFor="cvv" className="text-[#4e342e] font-medium">
-                        CVV *
-                      </Label>
+                      <Label htmlFor="cvv">CVV *</Label>
                       <Input
                         id="cvv"
-                        value={paymentForm.cvv}
-                        onChange={(e) => setPaymentForm(prev => ({ ...prev, cvv: e.target.value.replace(/\D/g, '') }))}
-                        placeholder="123"
-                        maxLength={4}
-                        className="border-[#4e342e] text-[#4e342e]"
+                        value={cardDetails.cvv}
+                        onChange={(e) => handleCardChange('cvv', e.target.value)}
+                        placeholder="•••"
+                        type="password"
+                        maxLength={3}
+                        inputMode="numeric"
+                        className={errors.cvv ? 'border-red-500' : 'border-[#4e342e] text-[#4e342e]'}
                       />
+                      {errors.cvv && <span className="text-xs text-red-500">{errors.cvv}</span>}
                     </div>
                   </div>
                 </CardContent>
@@ -572,58 +542,53 @@ const PaymentPage = () => {
               <Card className="border-0 shadow-lg">
                 <CardHeader>
                   <CardTitle className="text-xl font-serif text-[#4e342e] flex items-center gap-2">
-                    <Smartphone className="w-5 h-5" />
-                    Mobile Money Details
+                    <Smartphone className="w-5 h-5" /> Digital Wallet Details
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div>
-                    <Label htmlFor="mobileProvider" className="text-[#4e342e] font-medium">
-                      Mobile Provider
-                    </Label>
-                    <select
-                      id="mobileProvider"
-                      value={paymentForm.mobileProvider}
-                      onChange={(e) => setPaymentForm(prev => ({ ...prev, mobileProvider: e.target.value }))}
-                      className="w-full p-2 border border-[#4e342e] rounded-md text-[#4e342e] bg-white"
-                    >
-                      <option value="mpesa">M-Pesa</option>
-                      <option value="airtel">Airtel Money</option>
-                      <option value="orange">Orange Money</option>
-                      <option value="vodacom">Vodacom M-Pesa</option>
-                    </select>
+                    <Label>Select Wallet Provider</Label>
+                    <div className="flex gap-4 mt-2">
+                      {['PhonePe', 'Google Pay', 'Paytm'].map(provider => (
+                        <div
+                          key={provider}
+                          onClick={() => setWalletDetails(prev => ({ ...prev, provider }))}
+                          className={`flex-1 text-center border p-3 rounded-md cursor-pointer text-sm font-medium transition-all ${walletDetails.provider === provider ? 'bg-[#4e342e] text-white border-[#4e342e]' : 'bg-white text-[#4e342e] hover:bg-[#f8d7da]/20'}`}
+                        >
+                          {provider}
+                        </div>
+                      ))}
+                    </div>
+                    {errors.walletProvider && <span className="text-xs text-red-500 mt-1 block">{errors.walletProvider}</span>}
                   </div>
 
                   <div>
-                    <Label htmlFor="mobileNumber" className="text-[#4e342e] font-medium">
-                      Mobile Number *
-                    </Label>
+                    <Label htmlFor="walletPhone">Wallet Mobile Number *</Label>
                     <Input
-                      id="mobileNumber"
-                      value={paymentForm.mobileNumber}
-                      onChange={(e) => setPaymentForm(prev => ({ ...prev, mobileNumber: e.target.value }))}
-                      placeholder="+243 123 456 789"
-                      className="border-[#4e342e] text-[#4e342e]"
+                      id="walletPhone"
+                      value={walletDetails.phone}
+                      onChange={(e) => setWalletDetails(prev => ({ ...prev, phone: formatPhoneNumber(e.target.value) }))}
+                      placeholder="10-digit number"
+                      maxLength={10}
+                      inputMode="numeric"
+                      className={errors.walletPhone ? 'border-red-500' : 'border-[#4e342e] text-[#4e342e]'}
                     />
+                    {errors.walletPhone && <span className="text-xs text-red-500">{errors.walletPhone}</span>}
                   </div>
                 </CardContent>
               </Card>
             )}
 
-            {/* Security Notice */}
+            {/* Security */}
             <Card className="border-0 shadow-lg bg-[#fdf6f0]">
-              <CardContent className="p-4">
-                <div className="flex items-center gap-2 text-[#4e342e]">
-                  <Lock className="w-4 h-4" />
-                  <span className="text-sm font-medium">
-                    Your payment information is secure and encrypted
-                  </span>
-                </div>
+              <CardContent className="p-4 flex items-center gap-2 text-[#4e342e]">
+                <Lock className="w-4 h-4" /> <span className="text-sm font-medium">Your payment information is secure and encrypted</span>
               </CardContent>
             </Card>
           </div>
 
-          {/* Payment Summary */}
+          {/* Dictionary Summary (Right Column) - Keep exactly as is, just ensure variable names match */}
+          {/* ... Summary UI ... */}
           <div className="lg:col-span-1">
             <Card className="border-0 shadow-lg sticky top-8">
               <CardHeader>

@@ -13,7 +13,6 @@ import { useSupabaseAuth } from '@/contexts/SupabaseAuthContext';
 import { toast } from 'sonner';
 import {
   Calendar,
-  Clock,
   MapPin,
   CreditCard,
   Smartphone,
@@ -21,13 +20,23 @@ import {
   ArrowLeft,
   CheckCircle,
   User,
-  Phone,
-  Mail,
-  MessageSquare,
   Building,
   ShoppingCart,
   Shield
 } from 'lucide-react';
+import {
+  MESSAGES,
+  formatCardNumber,
+  formatExpiryDate,
+  formatCVV,
+  formatName,
+  formatUPI,
+  formatPhoneNumber,
+  validateCustomerInfo,
+  validateCard,
+  validateUPI,
+  validateWallet
+} from '@/utils/paymentValidation';
 
 interface BookingData {
   vendor: any;
@@ -44,14 +53,22 @@ const BookingCheckoutPage = () => {
   const [selectedDate, setSelectedDate] = useState('');
   const [selectedTime, setSelectedTime] = useState('');
   const [paymentMethod, setPaymentMethod] = useState('card');
+
+  // Payment States
+  const [cardDetails, setCardDetails] = useState({ number: '', expiry: '', cvv: '', name: '' });
+  const [upiId, setUpiId] = useState('');
+  const [walletDetails, setWalletDetails] = useState({ provider: '', phone: '' });
+
+  // Customer Info State
   const [customerInfo, setCustomerInfo] = useState({
     name: '',
     phone: '',
     email: '',
     address: '',
     notes: '',
-    addressId: ''
   });
+
+  const [errors, setErrors] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(false);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
 
@@ -75,10 +92,58 @@ const BookingCheckoutPage = () => {
     return servicesTotal + productsTotal;
   };
 
+  const validateCurrentSection = () => {
+    const newErrors: Record<string, string> = {};
+    let isValid = true;
+
+    // Validate Customer Info
+    const infoErrors = validateCustomerInfo(customerInfo.name, customerInfo.phone, customerInfo.email);
+    Object.assign(newErrors, infoErrors);
+    if (customerInfo.address.length > 250) newErrors.address = MESSAGES.ADDRESS_LENGTH;
+
+    // Validate Payment
+    if (paymentMethod === 'card') {
+      const cardErrors = validateCard(cardDetails.number, cardDetails.expiry, cardDetails.cvv, cardDetails.name);
+      Object.assign(newErrors, cardErrors);
+    } else if (paymentMethod === 'upi') {
+      const upiErrors = validateUPI(upiId);
+      Object.assign(newErrors, upiErrors);
+    } else if (paymentMethod === 'wallet') {
+      const walletErrors = validateWallet(walletDetails.provider, walletDetails.phone);
+      Object.assign(newErrors, walletErrors);
+    }
+
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      isValid = false;
+      toast.error(MESSAGES.REQ_FIELDS);
+    } else {
+      setErrors({});
+    }
+
+    return isValid;
+  };
+
+  const handlePaymentMethodChange = (value: string) => {
+    setPaymentMethod(value);
+    setErrors({});
+    if (value === 'card') {
+      setUpiId('');
+      setWalletDetails({ provider: '', phone: '' });
+    } else if (value === 'upi') {
+      setCardDetails({ number: '', expiry: '', cvv: '', name: '' });
+      setWalletDetails({ provider: '', phone: '' });
+    } else {
+      setCardDetails({ number: '', expiry: '', cvv: '', name: '' });
+      setUpiId('');
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Show payment modal first
-    setShowPaymentModal(true);
+    if (validateCurrentSection()) {
+      setShowPaymentModal(true);
+    }
   };
 
   const confirmBooking = async () => {
@@ -87,12 +152,8 @@ const BookingCheckoutPage = () => {
 
     try {
       const token = localStorage.getItem('token');
+      // const currentUser = user || { id: 'guest', email: customerInfo.email }; // Unused
 
-      // Get user from context or fallback (though auth is required usually)
-      const currentUser = user || { id: 'guest', email: customerInfo.email };
-
-      // Transform services to match backend expectation
-      // Payload: { id, name, price, duration }
       const transformedServices = (bookingData?.services || []).map((service: any) => ({
         id: service.id,
         name: service.name,
@@ -100,7 +161,6 @@ const BookingCheckoutPage = () => {
         duration: service.duration
       }));
 
-      // Construct payload for POST /api/bookings/at-salon
       const bookingPayload = {
         vendorId: bookingData?.vendor?.id,
         customer: {
@@ -119,7 +179,6 @@ const BookingCheckoutPage = () => {
 
       console.log('Sending At-Salon Booking Payload:', bookingPayload);
 
-      // Call the new independent endpoint
       const response = await fetch('http://localhost:3001/api/at-salon-booking', {
         method: 'POST',
         headers: {
@@ -150,7 +209,6 @@ const BookingCheckoutPage = () => {
           throw new Error(result.error || 'Booking failed');
         }
       } else {
-        // Handle non-JSON response (e.g. 404 HTML)
         const text = await response.text();
         console.error('Non-JSON response:', text);
         throw new Error(`Server returned unexpected status: ${response.status}`);
@@ -160,6 +218,27 @@ const BookingCheckoutPage = () => {
       toast.error(error.message || 'Failed to create booking. Please try again.');
     } finally {
       setLoading(false);
+    }
+  };
+
+  // Input Handlers
+  const handleCardChange = (field: string, value: string) => {
+    let formatted = value;
+    if (field === 'number') formatted = formatCardNumber(value);
+    if (field === 'expiry') formatted = formatExpiryDate(value);
+    if (field === 'cvv') formatted = formatCVV(value);
+    if (field === 'name') formatted = formatName(value);
+
+    setCardDetails(prev => ({ ...prev, [field]: formatted }));
+
+    // Clear specific error
+    const errField = field === 'name' ? 'cardName' : field === 'number' ? 'cardNumber' : field === 'expiry' ? 'expiryDate' : 'cvv';
+    if (errors[errField]) {
+      setErrors(prev => {
+        const newErr = { ...prev };
+        delete newErr[errField];
+        return newErr;
+      });
     }
   };
 
@@ -289,10 +368,11 @@ const BookingCheckoutPage = () => {
                         <Input
                           id="name"
                           value={customerInfo.name}
-                          onChange={(e) => setCustomerInfo(prev => ({ ...prev, name: e.target.value }))}
-                          className="mt-2 border-[#f8d7da] focus:border-[#4e342e] focus:ring-[#4e342e]/20"
+                          onChange={(e) => setCustomerInfo(prev => ({ ...prev, name: formatName(e.target.value) }))}
+                          className={`mt-2 border-[#f8d7da] focus:border-[#4e342e] focus:ring-[#4e342e]/20 ${errors.name ? 'border-red-500' : ''}`}
                           required
                         />
+                        {errors.name && <span className="text-xs text-red-500">{errors.name}</span>}
                       </div>
                       <div>
                         <Label htmlFor="phone" className="text-[#4e342e] font-medium">Phone Number</Label>
@@ -300,10 +380,13 @@ const BookingCheckoutPage = () => {
                           id="phone"
                           type="tel"
                           value={customerInfo.phone}
-                          onChange={(e) => setCustomerInfo(prev => ({ ...prev, phone: e.target.value }))}
-                          className="mt-2 border-[#f8d7da] focus:border-[#4e342e] focus:ring-[#4e342e]/20"
+                          onChange={(e) => setCustomerInfo(prev => ({ ...prev, phone: formatPhoneNumber(e.target.value) }))}
+                          maxLength={10}
+                          inputMode="numeric"
+                          className={`mt-2 border-[#f8d7da] focus:border-[#4e342e] focus:ring-[#4e342e]/20 ${errors.phone ? 'border-red-500' : ''}`}
                           required
                         />
+                        {errors.phone && <span className="text-xs text-red-500">{errors.phone}</span>}
                       </div>
                     </div>
 
@@ -314,9 +397,10 @@ const BookingCheckoutPage = () => {
                         type="email"
                         value={customerInfo.email}
                         onChange={(e) => setCustomerInfo(prev => ({ ...prev, email: e.target.value }))}
-                        className="mt-2 border-[#f8d7da] focus:border-[#4e342e] focus:ring-[#4e342e]/20"
+                        className={`mt-2 border-[#f8d7da] focus:border-[#4e342e] focus:ring-[#4e342e]/20 ${errors.email ? 'border-red-500' : ''}`}
                         required
                       />
+                      {errors.email && <span className="text-xs text-red-500">{errors.email}</span>}
                     </div>
 
                     <div>
@@ -324,11 +408,12 @@ const BookingCheckoutPage = () => {
                       <Textarea
                         id="address"
                         value={customerInfo.address}
-                        onChange={(e) => setCustomerInfo(prev => ({ ...prev, address: e.target.value }))}
-                        className="mt-2 border-[#f8d7da] focus:border-[#4e342e] focus:ring-[#4e342e]/20"
+                        onChange={(e) => setCustomerInfo(prev => ({ ...prev, address: e.target.value.slice(0, 250) }))}
+                        className={`mt-2 border-[#f8d7da] focus:border-[#4e342e] focus:ring-[#4e342e]/20 ${errors.address ? 'border-red-500' : ''}`}
                         rows={3}
                         required
                       />
+                      {errors.address && <span className="text-xs text-red-500">{errors.address}</span>}
                     </div>
 
                     <div>
@@ -336,7 +421,7 @@ const BookingCheckoutPage = () => {
                       <Textarea
                         id="notes"
                         value={customerInfo.notes}
-                        onChange={(e) => setCustomerInfo(prev => ({ ...prev, notes: e.target.value }))}
+                        onChange={(e) => setCustomerInfo(prev => ({ ...prev, notes: e.target.value.slice(0, 200) }))}
                         className="mt-2 border-[#f8d7da] focus:border-[#4e342e] focus:ring-[#4e342e]/20"
                         rows={3}
                         placeholder="Any special requests or notes for your appointment..."
@@ -354,9 +439,9 @@ const BookingCheckoutPage = () => {
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <RadioGroup value={paymentMethod} onValueChange={setPaymentMethod}>
+                    <RadioGroup value={paymentMethod} onValueChange={handlePaymentMethodChange}>
                       <div className="space-y-4">
-                        <div className="flex items-center space-x-3 p-4 border border-[#f8d7da] rounded-lg hover:bg-[#f8d7da]/10">
+                        <div className={`flex items-center space-x-3 p-4 border rounded-lg cursor-pointer transition-colors ${paymentMethod === 'card' ? 'border-[#4e342e] bg-[#4e342e]/5' : 'border-[#f8d7da] hover:bg-[#f8d7da]/10'}`}>
                           <RadioGroupItem value="card" id="card" />
                           <Label htmlFor="card" className="flex items-center space-x-3 cursor-pointer flex-1">
                             <CreditCard className="w-5 h-5 text-[#4e342e]" />
@@ -364,7 +449,7 @@ const BookingCheckoutPage = () => {
                           </Label>
                         </div>
 
-                        <div className="flex items-center space-x-3 p-4 border border-[#f8d7da] rounded-lg hover:bg-[#f8d7da]/10">
+                        <div className={`flex items-center space-x-3 p-4 border rounded-lg cursor-pointer transition-colors ${paymentMethod === 'upi' ? 'border-[#4e342e] bg-[#4e342e]/5' : 'border-[#f8d7da] hover:bg-[#f8d7da]/10'}`}>
                           <RadioGroupItem value="upi" id="upi" />
                           <Label htmlFor="upi" className="flex items-center space-x-3 cursor-pointer flex-1">
                             <Smartphone className="w-5 h-5 text-[#4e342e]" />
@@ -372,7 +457,7 @@ const BookingCheckoutPage = () => {
                           </Label>
                         </div>
 
-                        <div className="flex items-center space-x-3 p-4 border border-[#f8d7da] rounded-lg hover:bg-[#f8d7da]/10">
+                        <div className={`flex items-center space-x-3 p-4 border rounded-lg cursor-pointer transition-colors ${paymentMethod === 'wallet' ? 'border-[#4e342e] bg-[#4e342e]/5' : 'border-[#f8d7da] hover:bg-[#f8d7da]/10'}`}>
                           <RadioGroupItem value="wallet" id="wallet" />
                           <Label htmlFor="wallet" className="flex items-center space-x-3 cursor-pointer flex-1">
                             <Wallet className="w-5 h-5 text-[#4e342e]" />
@@ -382,21 +467,109 @@ const BookingCheckoutPage = () => {
                       </div>
                     </RadioGroup>
 
-                    {paymentMethod === 'card' && (
-                      <div className="mt-6 p-4 bg-[#f8d7da]/10 rounded-lg">
-                        <p className="text-sm text-[#6d4c41] mb-4">
-                          💳 This is a demo payment. No real payment will be processed.
-                        </p>
-                        <div className="space-y-3">
-                          <Input placeholder="Card Number" className="border-[#f8d7da] focus:border-[#4e342e]" />
-                          <div className="grid grid-cols-2 gap-3">
-                            <Input placeholder="MM/YY" className="border-[#f8d7da] focus:border-[#4e342e]" />
-                            <Input placeholder="CVV" className="border-[#f8d7da] focus:border-[#4e342e]" />
+                    <div className="mt-6 p-4 bg-[#fdf6f0] rounded-lg border border-[#f8d7da]">
+                      {paymentMethod === 'card' && (
+                        <div className="space-y-4">
+                          <div className="flex items-center gap-2 text-[#6d4c41] text-sm font-medium">
+                            <Shield className='w-4 h-4' />
+                            Demo Payment - No real transaction
                           </div>
-                          <Input placeholder="Cardholder Name" className="border-[#f8d7da] focus:border-[#4e342e]" />
+                          <div className="space-y-2">
+                            <Label>Card Number</Label>
+                            <Input
+                              placeholder="XXXX XXXX XXXX XXXX"
+                              value={cardDetails.number}
+                              onChange={e => handleCardChange('number', e.target.value)}
+                              maxLength={19}
+                              inputMode="numeric"
+                              className={errors.cardNumber ? 'border-red-500' : 'border-[#f8d7da] focus:border-[#4e342e]'}
+                            />
+                            {errors.cardNumber && <span className="text-xs text-red-500">{errors.cardNumber}</span>}
+                          </div>
+                          <div className="grid grid-cols-2 gap-4">
+                            <div className="space-y-2">
+                              <Label>Expiry Date</Label>
+                              <Input
+                                placeholder="MM/YY"
+                                value={cardDetails.expiry}
+                                onChange={e => handleCardChange('expiry', e.target.value)}
+                                maxLength={5}
+                                className={errors.expiryDate ? 'border-red-500' : 'border-[#f8d7da] focus:border-[#4e342e]'}
+                              />
+                              {errors.expiryDate && <span className="text-xs text-red-500">{errors.expiryDate}</span>}
+                            </div>
+                            <div className="space-y-2">
+                              <Label>CVV</Label>
+                              <Input
+                                placeholder="•••"
+                                type="password"
+                                value={cardDetails.cvv}
+                                onChange={e => handleCardChange('cvv', e.target.value)}
+                                maxLength={3}
+                                inputMode="numeric"
+                                className={errors.cvv ? 'border-red-500' : 'border-[#f8d7da] focus:border-[#4e342e]'}
+                              />
+                              {errors.cvv && <span className="text-xs text-red-500">{errors.cvv}</span>}
+                            </div>
+                          </div>
+                          <div className="space-y-2">
+                            <Label>Cardholder Name</Label>
+                            <Input
+                              placeholder="Name on card"
+                              value={cardDetails.name}
+                              onChange={e => handleCardChange('name', e.target.value)}
+                              className={errors.cardName ? 'border-red-500' : 'border-[#f8d7da] focus:border-[#4e342e]'}
+                            />
+                            {errors.cardName && <span className="text-xs text-red-500">{errors.cardName}</span>}
+                          </div>
                         </div>
-                      </div>
-                    )}
+                      )}
+
+                      {paymentMethod === 'upi' && (
+                        <div className="space-y-4">
+                          <Label>UPI ID</Label>
+                          <Input
+                            placeholder="username@bank"
+                            value={upiId}
+                            onChange={e => setUpiId(formatUPI(e.target.value))}
+                            className={errors.upiId ? 'border-red-500' : 'border-[#f8d7da] focus:border-[#4e342e]'}
+                          />
+                          {errors.upiId && <span className="text-xs text-red-500">{errors.upiId}</span>}
+                          <p className="text-xs text-[#6d4c41]">Example: yourname@oksbi</p>
+                        </div>
+                      )}
+
+                      {paymentMethod === 'wallet' && (
+                        <div className="space-y-4">
+                          <Label>Select Wallet</Label>
+                          <div className="flex gap-4">
+                            {['PhonePe', 'Google Pay', 'Paytm'].map(provider => (
+                              <div
+                                key={provider}
+                                onClick={() => setWalletDetails(prev => ({ ...prev, provider }))}
+                                className={`flex-1 text-center border p-3 rounded-md cursor-pointer text-sm font-medium transition-all ${walletDetails.provider === provider ? 'bg-[#4e342e] text-white border-[#4e342e]' : 'bg-white text-[#4e342e] hover:bg-[#f8d7da]/20'}`}
+                              >
+                                {provider}
+                              </div>
+                            ))}
+                          </div>
+                          {errors.walletProvider && <span className="text-xs text-red-500">{errors.walletProvider}</span>}
+
+                          <div className="space-y-2">
+                            <Label>Wallet Mobile Number</Label>
+                            <Input
+                              placeholder="10-digit number"
+                              value={walletDetails.phone}
+                              onChange={e => setWalletDetails(prev => ({ ...prev, phone: formatPhoneNumber(e.target.value) }))}
+                              maxLength={10}
+                              inputMode="numeric"
+                              className={errors.walletPhone ? 'border-red-500' : 'border-[#f8d7da] focus:border-[#4e342e]'}
+                            />
+                            {errors.walletPhone && <span className="text-xs text-red-500">{errors.walletPhone}</span>}
+                          </div>
+                        </div>
+                      )}
+                    </div>
                   </CardContent>
                 </Card>
               </div>

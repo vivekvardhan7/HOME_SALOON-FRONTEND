@@ -387,6 +387,9 @@
       "scheduledTime": "Scheduled Time",
       "location": "Location",
       "orderSummary": "Order Summary",
+      "totalAmount": "Total Amount",
+      "salonDetails": "Salon Details",
+      "customerDetails": "Customer Details",
       "markServiceCompleted": "Mark Service Completed",
       "completionWarning": "Please click this ONLY after the beautician has finished the service.",
       "liveTracking": "Live Tracking",
@@ -394,7 +397,9 @@
         "paymentSuccess": "Payment Successful",
         "beauticianAssigned": "Beautician Assigned",
         "serviceCompleted": "Service Completed",
-        "beauticianAssignedSmall": "Beautician assigned"
+        "beauticianAssignedSmall": "Beautician assigned",
+        "bookingConfirmed": "Booking Confirmed",
+        "inProgress": "In Progress"
       },
       "generatingInvoice": "Generating invoice...",
       "invoiceReady": "Invoice ready! Downloading...",

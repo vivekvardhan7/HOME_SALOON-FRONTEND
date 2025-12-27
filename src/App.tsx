@@ -12,6 +12,9 @@ import ScrollToTop from "./components/ScrollToTop";
 import SupabaseConfigStatus from "./components/SupabaseConfigStatus";
 import Navigation from "./components/Navigation";
 import ProtectedRoute from "./components/ProtectedRoute";
+import { CookieConsentProvider } from "./contexts/CookieConsentContext";
+import CookieBanner from "./components/cookie/CookieBanner";
+import CookiePreferencesModal from "./components/cookie/CookiePreferencesModal";
 import { supabaseConfig } from "@/config/supabase";
 import LandingPage from "@/pages/LandingPage";
 import LoginPage from "@/pages/auth/LoginPage";
@@ -20,6 +23,7 @@ import CustomerDashboard from "@/pages/customer/Dashboard";
 import CustomerProfilePage from "@/pages/customer/ProfilePage";
 import CustomerBookingsPage from "@/pages/customer/BookingsPage";
 import AtHomeBookingDetailsPage from "@/pages/customer/AtHomeBookingDetailsPage";
+import SalonBookingDetailsPage from "@/pages/customer/SalonBookingDetailsPage";
 import AtHomeServicesPage from "@/pages/AtHomeServicesPage";
 import SalonVisitPage from "@/pages/SalonVisitPage";
 import BookingConfirmationPage from "@/pages/customer/BookingConfirmationPage";
@@ -84,6 +88,7 @@ import SupabaseTest from "@/pages/SupabaseTest";
 import AboutUs from "./pages/footer_pages/AboutUs";
 import Contact from "./pages/footer_pages/Contact";
 import PrivacyPolicy from "./pages/footer_pages/PrivacyPolicy";
+import CookiePolicy from "./pages/footer_pages/CookiePolicy";
 import Careers from "./pages/footer_pages/Careers";
 import TermsAndConditions from "./pages/footer_pages/TermsAndConditions";
 import HelpCenter from "./pages/footer_pages/HelpCenter";
@@ -153,453 +158,466 @@ const App = () => {
           <ScrollToTop />
 
           <SupabaseAuthProvider>
-            <PlatformSettingsProvider>
-              <BookingProvider>
-                <CartProvider>
-                  <div className="min-h-screen flex flex-col bg-[#fdf6f0]">
-                    <Navigation />
-                    <Suspense fallback={<LoadingSpinner />}>
-                      <MainContent>
-                        <Routes>
-                          {/* Public routes */}
-                          <Route path="/" element={<LandingPage />} />
-                          <Route path="/index" element={<Index />} />
-                          <Route path="/login" element={<LoginPage />} />
-                          <Route path="/register" element={<RegisterPage />} />
-                          <Route path="/vendor/register" element={<VendorRegisterPage />} />
-                          <Route path="/auth-test" element={<AuthTest />} />
-                          <Route path="/supabase-test" element={<SupabaseTest />} />
-                          <Route path="/auth/callback" element={<OAuthCallbackPage />} />
-                          <Route path="/auth/confirm-email" element={<EmailConfirmationCallback />} />
-                          <Route path="/auth/verify" element={<VerifyPage />} />                        <Route path="/at-home-services" element={<AtHomeIntroPage />} />
-                          <Route path="/salon-visit" element={<SalonVisitPage />} />
-                          <Route path="/vendor/:id" element={<VendorDetailsPage />} />
-                          <Route path="/booking/checkout" element={<BookingCheckoutPage />} />
-                          <Route path="/booking/success" element={<BookingSuccessPage />} />
-                          <Route path="/about-us" element={<AboutUs />} />
-                          <Route path="/contact" element={<Contact />} />
-                          <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-                          <Route path="/careers" element={<Careers />} />
-                          <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
-                          <Route path="/help-center" element={<HelpCenter />} />
-                          <Route path="/faq" element={<FAQ />} />
+            <CookieConsentProvider>
+              <PlatformSettingsProvider>
+                <BookingProvider>
+                  <CartProvider>
+                    <div className="min-h-screen flex flex-col bg-[#fdf6f0]">
+                      <Navigation />
+                      <Suspense fallback={<LoadingSpinner />}>
+                        <MainContent>
+                          <Routes>
+                            {/* Public routes */}
+                            <Route path="/" element={<LandingPage />} />
+                            <Route path="/index" element={<Index />} />
+                            <Route path="/login" element={<LoginPage />} />
+                            <Route path="/register" element={<RegisterPage />} />
+                            <Route path="/vendor/register" element={<VendorRegisterPage />} />
+                            <Route path="/auth-test" element={<AuthTest />} />
+                            <Route path="/supabase-test" element={<SupabaseTest />} />
+                            <Route path="/auth/callback" element={<OAuthCallbackPage />} />
+                            <Route path="/auth/confirm-email" element={<EmailConfirmationCallback />} />
+                            <Route path="/auth/verify" element={<VerifyPage />} />                        <Route path="/at-home-services" element={<AtHomeIntroPage />} />
+                            <Route path="/salon-visit" element={<SalonVisitPage />} />
+                            <Route path="/vendor/:id" element={<VendorDetailsPage />} />
+                            <Route path="/booking/checkout" element={<BookingCheckoutPage />} />
+                            <Route path="/booking/success" element={<BookingSuccessPage />} />
+                            <Route path="/about-us" element={<AboutUs />} />
+                            <Route path="/contact" element={<Contact />} />
+                            <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+                            <Route path="/cookie-policy" element={<CookiePolicy />} />
+                            <Route path="/careers" element={<Careers />} />
+                            <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
+                            <Route path="/help-center" element={<HelpCenter />} />
+                            <Route path="/faq" element={<FAQ />} />
 
-                          {/* At-Home Service Booking Routes */}
-                          <Route path="/customer/at-home" element={<AtHomeIntroPage />} />
-                          <Route path="/customer/at-home-services/select-option" element={
-                            <ProtectedRoute allowedRoles={["CUSTOMER"]}>
-                              <SelectServiceOption />
-                            </ProtectedRoute>
-                          } />
-                          <Route path="/customer/at-home-with-products" element={
-                            <ProtectedRoute allowedRoles={["CUSTOMER"]}>
-                              <WithProductsBooking />
-                            </ProtectedRoute>
-                          } />
-                          <Route path="/customer/at-home-services/without-products" element={
-                            <ProtectedRoute allowedRoles={["CUSTOMER"]}>
-                              <WithoutProductsBooking />
-                            </ProtectedRoute>
-                          } />
-                          <Route path="/customer/at-home/selection" element={
-                            <ProtectedRoute allowedRoles={["CUSTOMER"]}>
-                              <AtHomeSelectionPage />
-                            </ProtectedRoute>
-                          } />
-                          <Route path="/customer/at-home-services/checkout/:serviceId" element={
-                            <ProtectedRoute allowedRoles={["CUSTOMER"]}>
-                              <Checkout />
-                            </ProtectedRoute>
-                          } />
-                          <Route path="/customer/at-home-services/checkout" element={
-                            <ProtectedRoute allowedRoles={["CUSTOMER"]}>
-                              <Checkout />
-                            </ProtectedRoute>
-                          } />
-                          {/* Manager Routes */}
-                          <Route
-                            path="/manager/pending-requests"
-                            element={
-                              <ProtectedRoute allowedRoles={["MANAGER"]}>
-                                <ManagerRequests />
-                              </ProtectedRoute>
-                            }
-                          />
-                          {/* Protected routes */}
-                          <Route
-                            path="/customer"
-                            element={
+                            {/* At-Home Service Booking Routes */}
+                            <Route path="/customer/at-home" element={<AtHomeIntroPage />} />
+                            <Route path="/customer/at-home-services/select-option" element={
                               <ProtectedRoute allowedRoles={["CUSTOMER"]}>
-                                <CustomerDashboard />
+                                <SelectServiceOption />
                               </ProtectedRoute>
-                            }
-                          />
-                          <Route
-                            path="/customer/profile"
-                            element={
+                            } />
+                            <Route path="/customer/at-home-with-products" element={
                               <ProtectedRoute allowedRoles={["CUSTOMER"]}>
-                                <CustomerProfilePage />
+                                <WithProductsBooking />
                               </ProtectedRoute>
-                            }
-                          />
-                          <Route
-                            path="/customer/bookings"
-                            element={
+                            } />
+                            <Route path="/customer/at-home-services/without-products" element={
                               <ProtectedRoute allowedRoles={["CUSTOMER"]}>
-                                <CustomerBookingsPage />
+                                <WithoutProductsBooking />
                               </ProtectedRoute>
-                            }
-                          />
-                          <Route
-                            path="/customer/athome-bookings/:id"
-                            element={
+                            } />
+                            <Route path="/customer/at-home/selection" element={
                               <ProtectedRoute allowedRoles={["CUSTOMER"]}>
-                                <AtHomeBookingDetailsPage />
+                                <AtHomeSelectionPage />
                               </ProtectedRoute>
-                            }
-                          />
-                          <Route
-                            path="/customer/at-home-services"
-                            element={<AtHomeIntroPage />}
-                          />
-                          <Route
-                            path="/customer/salon-visit"
-                            element={
+                            } />
+                            <Route path="/customer/at-home-services/checkout/:serviceId" element={
                               <ProtectedRoute allowedRoles={["CUSTOMER"]}>
-                                <SalonVisitPage />
+                                <Checkout />
                               </ProtectedRoute>
-                            }
-                          />
-                          <Route
-                            path="/customer/booking-confirmation"
-                            element={
+                            } />
+                            <Route path="/customer/at-home-services/checkout" element={
                               <ProtectedRoute allowedRoles={["CUSTOMER"]}>
-                                <BookingConfirmationPage />
+                                <Checkout />
                               </ProtectedRoute>
-                            }
-                          />
-                          <Route
-                            path="/customer/payment"
-                            element={
-                              <ProtectedRoute allowedRoles={["CUSTOMER"]}>
-                                <PaymentPage />
-                              </ProtectedRoute>
-                            }
-                          />
-                          <Route
-                            path="/customer/payment-success"
-                            element={
-                              <ProtectedRoute allowedRoles={["CUSTOMER"]}>
-                                <PaymentSuccessPage />
-                              </ProtectedRoute>
-                            }
-                          />
-                          <Route path="/search" element={<SearchPage />} />
+                            } />
+                            {/* Manager Routes */}
+                            <Route
+                              path="/manager/pending-requests"
+                              element={
+                                <ProtectedRoute allowedRoles={["MANAGER"]}>
+                                  <ManagerRequests />
+                                </ProtectedRoute>
+                              }
+                            />
+                            {/* Protected routes */}
+                            <Route
+                              path="/customer"
+                              element={
+                                <ProtectedRoute allowedRoles={["CUSTOMER"]}>
+                                  <CustomerDashboard />
+                                </ProtectedRoute>
+                              }
+                            />
+                            <Route
+                              path="/customer/profile"
+                              element={
+                                <ProtectedRoute allowedRoles={["CUSTOMER"]}>
+                                  <CustomerProfilePage />
+                                </ProtectedRoute>
+                              }
+                            />
+                            <Route
+                              path="/customer/bookings"
+                              element={
+                                <ProtectedRoute allowedRoles={["CUSTOMER"]}>
+                                  <CustomerBookingsPage />
+                                </ProtectedRoute>
+                              }
+                            />
+                            <Route
+                              path="/customer/athome-bookings/:id"
+                              element={
+                                <ProtectedRoute allowedRoles={["CUSTOMER"]}>
+                                  <AtHomeBookingDetailsPage />
+                                </ProtectedRoute>
+                              }
+                            />
+                            <Route
+                              path="/customer/salon-bookings/:id"
+                              element={
+                                <ProtectedRoute allowedRoles={["CUSTOMER"]}>
+                                  <SalonBookingDetailsPage />
+                                </ProtectedRoute>
+                              }
+                            />
+                            <Route
+                              path="/customer/at-home-services"
+                              element={<AtHomeIntroPage />}
+                            />
+                            <Route
+                              path="/customer/salon-visit"
+                              element={
+                                <ProtectedRoute allowedRoles={["CUSTOMER"]}>
+                                  <SalonVisitPage />
+                                </ProtectedRoute>
+                              }
+                            />
+                            <Route
+                              path="/customer/booking-confirmation"
+                              element={
+                                <ProtectedRoute allowedRoles={["CUSTOMER"]}>
+                                  <BookingConfirmationPage />
+                                </ProtectedRoute>
+                              }
+                            />
+                            <Route
+                              path="/customer/payment"
+                              element={
+                                <ProtectedRoute allowedRoles={["CUSTOMER"]}>
+                                  <PaymentPage />
+                                </ProtectedRoute>
+                              }
+                            />
+                            <Route
+                              path="/customer/payment-success"
+                              element={
+                                <ProtectedRoute allowedRoles={["CUSTOMER"]}>
+                                  <PaymentSuccessPage />
+                                </ProtectedRoute>
+                              }
+                            />
+                            <Route path="/search" element={<SearchPage />} />
 
-                          <Route
-                            path="/vendor"
-                            element={
-                              <ProtectedRoute allowedRoles={["VENDOR"]}>
-                                <VendorDashboard />
-                              </ProtectedRoute>
-                            }
-                          />
-                          <Route
-                            path="/vendor/pending-approval"
-                            element={
-                              <ProtectedRoute allowedRoles={["VENDOR"]}>
-                                <PendingApproval />
-                              </ProtectedRoute>
-                            }
-                          />
-                          <Route
-                            path="/vendor/services"
-                            element={
-                              <ProtectedRoute allowedRoles={["VENDOR"]}>
-                                <ProtectedVendorRoute>
-                                  <VendorServicesPage />
-                                </ProtectedVendorRoute>
-                              </ProtectedRoute>
-                            }
-                          />
-                          <Route
-                            path="/vendor/services/add"
-                            element={
-                              <ProtectedRoute allowedRoles={["VENDOR"]}>
-                                <ProtectedVendorRoute>
-                                  <AddServicePage />
-                                </ProtectedVendorRoute>
-                              </ProtectedRoute>
-                            }
-                          />
-                          <Route
-                            path="/vendor/services/edit/:id"
-                            element={
-                              <ProtectedRoute allowedRoles={["VENDOR"]}>
-                                <ProtectedVendorRoute>
-                                  <EditServicePage />
-                                </ProtectedVendorRoute>
-                              </ProtectedRoute>
-                            }
-                          />
-                          <Route
-                            path="/vendor/appointments"
-                            element={
-                              <ProtectedRoute allowedRoles={["VENDOR"]}>
-                                <ProtectedVendorRoute>
-                                  <VendorAppointmentsPage />
-                                </ProtectedVendorRoute>
-                              </ProtectedRoute>
-                            }
-                          />
-                          <Route
-                            path="/vendor/revenue"
-                            element={
-                              <ProtectedRoute allowedRoles={["VENDOR"]}>
-                                <ProtectedVendorRoute>
-                                  <VendorRevenuePage />
-                                </ProtectedVendorRoute>
-                              </ProtectedRoute>
-                            }
-                          />
-                          <Route
-                            path="/vendor/profile"
-                            element={
-                              <ProtectedRoute allowedRoles={["VENDOR"]}>
-                                <ProtectedVendorRoute>
-                                  <VendorProfilePage />
-                                </ProtectedVendorRoute>
-                              </ProtectedRoute>
-                            }
-                          />
-                          <Route
-                            path="/vendor/employees"
-                            element={
-                              <ProtectedRoute allowedRoles={["VENDOR"]}>
-                                <ProtectedVendorRoute>
-                                  <VendorEmployeesPage />
-                                </ProtectedVendorRoute>
-                              </ProtectedRoute>
-                            }
-                          />
-                          <Route
-                            path="/vendor/products"
-                            element={
-                              <ProtectedRoute allowedRoles={["VENDOR"]}>
-                                <ProtectedVendorRoute>
-                                  <VendorProductsPage />
-                                </ProtectedVendorRoute>
-                              </ProtectedRoute>
-                            }
-                          />
-                          <Route
-                            path="/manager"
-                            element={
-                              <ProtectedRoute allowedRoles={["MANAGER"]}>
-                                <ManagerDashboard />
-                              </ProtectedRoute>
-                            }
-                          />
-                          <Route
-                            path="/manager/pending-vendors"
-                            element={
-                              <ProtectedRoute allowedRoles={["MANAGER"]}>
-                                <PendingVendorsPage />
-                              </ProtectedRoute>
-                            }
-                          />
-                          <Route
-                            path="/manager/vendors"
-                            element={
-                              <ProtectedRoute allowedRoles={["MANAGER"]}>
-                                <AllVendorsPage />
-                              </ProtectedRoute>
-                            }
-                          />
-                          <Route
-                            path="/manager/vendors/:vendorId"
-                            element={
-                              <ProtectedRoute allowedRoles={["MANAGER"]}>
-                                <ManagerVendorDetailsPage />
-                              </ProtectedRoute>
-                            }
-                          />
-                          <Route
-                            path="/manager/appointments"
-                            element={
-                              <ProtectedRoute allowedRoles={["MANAGER"]}>
-                                <ManagerAppointmentsPage />
-                              </ProtectedRoute>
-                            }
-                          />
-                          <Route
-                            path="/manager/bookings"
-                            element={
-                              <ProtectedRoute allowedRoles={["MANAGER"]}>
-                                <ManagerBookingsPage />
-                              </ProtectedRoute>
-                            }
-                          />
-                          <Route
-                            path="/manager/at-home-appointments"
-                            element={
-                              <ProtectedRoute allowedRoles={["MANAGER"]}>
-                                <AtHomeAppointmentsPage />
-                              </ProtectedRoute>
-                            }
-                          />
-                          <Route
-                            path="/manager/at-home-bookings"
-                            element={
-                              <ProtectedRoute allowedRoles={["MANAGER"]}>
-                                <AtHomeBookingsPage />
-                              </ProtectedRoute>
-                            }
-                          />
-                          <Route
-                            path="/manager/reports"
-                            element={
-                              <ProtectedRoute allowedRoles={["MANAGER"]}>
-                                <ManagerReportsPage />
-                              </ProtectedRoute>
-                            }
-                          />
-                          <Route
-                            path="/manager/profile"
-                            element={
-                              <ProtectedRoute allowedRoles={["MANAGER"]}>
-                                <ManagerProfilePage />
-                              </ProtectedRoute>
-                            }
-                          />
-                          <Route
-                            path="/admin"
-                            element={
-                              <ProtectedRoute allowedRoles={["ADMIN"]}>
-                                <AdminDashboard />
-                              </ProtectedRoute>
-                            }
-                          />
-                          <Route
-                            path="/admin/activities"
-                            element={
-                              <ProtectedRoute allowedRoles={["ADMIN"]}>
-                                <AdminActivitiesPage />
-                              </ProtectedRoute>
-                            }
-                          />
-                          <Route
-                            path="/admin/users"
-                            element={
-                              <ProtectedRoute allowedRoles={["ADMIN"]}>
-                                <AdminUsersPage />
-                              </ProtectedRoute>
-                            }
-                          />
-                          <Route
-                            path="/admin/vendors"
-                            element={
-                              <ProtectedRoute allowedRoles={["ADMIN"]}>
-                                <AdminVendorsPage />
-                              </ProtectedRoute>
-                            }
-                          />
-                          <Route
-                            path="/admin/at-salon-services"
-                            element={
-                              <ProtectedRoute allowedRoles={["ADMIN"]}>
-                                <AdminAtSalonServicesPage />
-                              </ProtectedRoute>
-                            }
-                          />
-                          <Route
-                            path="/admin/vendors/:vendorId"
-                            element={
-                              <ProtectedRoute allowedRoles={["ADMIN"]}>
-                                <AdminVendorDetailsPage />
-                              </ProtectedRoute>
-                            }
-                          />
-                          <Route
-                            path="/admin/managers"
-                            element={
-                              <ProtectedRoute allowedRoles={["ADMIN"]}>
-                                <AdminManagersPage />
-                              </ProtectedRoute>
-                            }
-                          />
-                          <Route
-                            path="/admin/beauticians"
-                            element={
-                              <ProtectedRoute allowedRoles={["ADMIN"]}>
-                                <AdminBeauticiansPage />
-                              </ProtectedRoute>
-                            }
-                          />
-                          <Route
-                            path="/admin/settings"
-                            element={
-                              <ProtectedRoute allowedRoles={["ADMIN"]}>
-                                <AdminSettingsPage />
-                              </ProtectedRoute>
-                            }
-                          />
-                          <Route
-                            path="/admin/profile"
-                            element={
-                              <ProtectedRoute allowedRoles={["ADMIN"]}>
-                                <AdminProfilePage />
-                              </ProtectedRoute>
-                            }
-                          />
-                          <Route
-                            path="/admin/at-home-services"
-                            element={
-                              <ProtectedRoute allowedRoles={["ADMIN"]}>
-                                <AdminAtHomeServicesPage />
-                              </ProtectedRoute>
-                            }
-                          />
-                          <Route
-                            path="/admin/at-home-products"
-                            element={
-                              <ProtectedRoute allowedRoles={["ADMIN"]}>
-                                <AdminAtHomeProductsPage />
-                              </ProtectedRoute>
-                            }
-                          />
-                          <Route
-                            path="/admin/at-home-bookings"
-                            element={
-                              <ProtectedRoute allowedRoles={["ADMIN"]}>
-                                <AdminAtHomeBookingsPage />
-                              </ProtectedRoute>
-                            }
-                          />
-                          <Route
-                            path="/admin/finance"
-                            element={
-                              <ProtectedRoute allowedRoles={["ADMIN"]}>
-                                <AdminFinancePage />
-                              </ProtectedRoute>
-                            }
-                          />
+                            <Route
+                              path="/vendor"
+                              element={
+                                <ProtectedRoute allowedRoles={["VENDOR"]}>
+                                  <VendorDashboard />
+                                </ProtectedRoute>
+                              }
+                            />
+                            <Route
+                              path="/vendor/pending-approval"
+                              element={
+                                <ProtectedRoute allowedRoles={["VENDOR"]}>
+                                  <PendingApproval />
+                                </ProtectedRoute>
+                              }
+                            />
+                            <Route
+                              path="/vendor/services"
+                              element={
+                                <ProtectedRoute allowedRoles={["VENDOR"]}>
+                                  <ProtectedVendorRoute>
+                                    <VendorServicesPage />
+                                  </ProtectedVendorRoute>
+                                </ProtectedRoute>
+                              }
+                            />
+                            <Route
+                              path="/vendor/services/add"
+                              element={
+                                <ProtectedRoute allowedRoles={["VENDOR"]}>
+                                  <ProtectedVendorRoute>
+                                    <AddServicePage />
+                                  </ProtectedVendorRoute>
+                                </ProtectedRoute>
+                              }
+                            />
+                            <Route
+                              path="/vendor/services/edit/:id"
+                              element={
+                                <ProtectedRoute allowedRoles={["VENDOR"]}>
+                                  <ProtectedVendorRoute>
+                                    <EditServicePage />
+                                  </ProtectedVendorRoute>
+                                </ProtectedRoute>
+                              }
+                            />
+                            <Route
+                              path="/vendor/appointments"
+                              element={
+                                <ProtectedRoute allowedRoles={["VENDOR"]}>
+                                  <ProtectedVendorRoute>
+                                    <VendorAppointmentsPage />
+                                  </ProtectedVendorRoute>
+                                </ProtectedRoute>
+                              }
+                            />
+                            <Route
+                              path="/vendor/revenue"
+                              element={
+                                <ProtectedRoute allowedRoles={["VENDOR"]}>
+                                  <ProtectedVendorRoute>
+                                    <VendorRevenuePage />
+                                  </ProtectedVendorRoute>
+                                </ProtectedRoute>
+                              }
+                            />
+                            <Route
+                              path="/vendor/profile"
+                              element={
+                                <ProtectedRoute allowedRoles={["VENDOR"]}>
+                                  <ProtectedVendorRoute>
+                                    <VendorProfilePage />
+                                  </ProtectedVendorRoute>
+                                </ProtectedRoute>
+                              }
+                            />
+                            <Route
+                              path="/vendor/employees"
+                              element={
+                                <ProtectedRoute allowedRoles={["VENDOR"]}>
+                                  <ProtectedVendorRoute>
+                                    <VendorEmployeesPage />
+                                  </ProtectedVendorRoute>
+                                </ProtectedRoute>
+                              }
+                            />
+                            <Route
+                              path="/vendor/products"
+                              element={
+                                <ProtectedRoute allowedRoles={["VENDOR"]}>
+                                  <ProtectedVendorRoute>
+                                    <VendorProductsPage />
+                                  </ProtectedVendorRoute>
+                                </ProtectedRoute>
+                              }
+                            />
+                            <Route
+                              path="/manager"
+                              element={
+                                <ProtectedRoute allowedRoles={["MANAGER"]}>
+                                  <ManagerDashboard />
+                                </ProtectedRoute>
+                              }
+                            />
+                            <Route
+                              path="/manager/pending-vendors"
+                              element={
+                                <ProtectedRoute allowedRoles={["MANAGER"]}>
+                                  <PendingVendorsPage />
+                                </ProtectedRoute>
+                              }
+                            />
+                            <Route
+                              path="/manager/vendors"
+                              element={
+                                <ProtectedRoute allowedRoles={["MANAGER"]}>
+                                  <AllVendorsPage />
+                                </ProtectedRoute>
+                              }
+                            />
+                            <Route
+                              path="/manager/vendors/:vendorId"
+                              element={
+                                <ProtectedRoute allowedRoles={["MANAGER"]}>
+                                  <ManagerVendorDetailsPage />
+                                </ProtectedRoute>
+                              }
+                            />
+                            <Route
+                              path="/manager/appointments"
+                              element={
+                                <ProtectedRoute allowedRoles={["MANAGER"]}>
+                                  <ManagerAppointmentsPage />
+                                </ProtectedRoute>
+                              }
+                            />
+                            <Route
+                              path="/manager/bookings"
+                              element={
+                                <ProtectedRoute allowedRoles={["MANAGER"]}>
+                                  <ManagerBookingsPage />
+                                </ProtectedRoute>
+                              }
+                            />
+                            <Route
+                              path="/manager/at-home-appointments"
+                              element={
+                                <ProtectedRoute allowedRoles={["MANAGER"]}>
+                                  <AtHomeAppointmentsPage />
+                                </ProtectedRoute>
+                              }
+                            />
+                            <Route
+                              path="/manager/at-home-bookings"
+                              element={
+                                <ProtectedRoute allowedRoles={["MANAGER"]}>
+                                  <AtHomeBookingsPage />
+                                </ProtectedRoute>
+                              }
+                            />
+                            <Route
+                              path="/manager/reports"
+                              element={
+                                <ProtectedRoute allowedRoles={["MANAGER"]}>
+                                  <ManagerReportsPage />
+                                </ProtectedRoute>
+                              }
+                            />
+                            <Route
+                              path="/manager/profile"
+                              element={
+                                <ProtectedRoute allowedRoles={["MANAGER"]}>
+                                  <ManagerProfilePage />
+                                </ProtectedRoute>
+                              }
+                            />
+                            <Route
+                              path="/admin"
+                              element={
+                                <ProtectedRoute allowedRoles={["ADMIN"]}>
+                                  <AdminDashboard />
+                                </ProtectedRoute>
+                              }
+                            />
+                            <Route
+                              path="/admin/activities"
+                              element={
+                                <ProtectedRoute allowedRoles={["ADMIN"]}>
+                                  <AdminActivitiesPage />
+                                </ProtectedRoute>
+                              }
+                            />
+                            <Route
+                              path="/admin/users"
+                              element={
+                                <ProtectedRoute allowedRoles={["ADMIN"]}>
+                                  <AdminUsersPage />
+                                </ProtectedRoute>
+                              }
+                            />
+                            <Route
+                              path="/admin/vendors"
+                              element={
+                                <ProtectedRoute allowedRoles={["ADMIN"]}>
+                                  <AdminVendorsPage />
+                                </ProtectedRoute>
+                              }
+                            />
+                            <Route
+                              path="/admin/at-salon-services"
+                              element={
+                                <ProtectedRoute allowedRoles={["ADMIN"]}>
+                                  <AdminAtSalonServicesPage />
+                                </ProtectedRoute>
+                              }
+                            />
+                            <Route
+                              path="/admin/vendors/:vendorId"
+                              element={
+                                <ProtectedRoute allowedRoles={["ADMIN"]}>
+                                  <AdminVendorDetailsPage />
+                                </ProtectedRoute>
+                              }
+                            />
+                            <Route
+                              path="/admin/managers"
+                              element={
+                                <ProtectedRoute allowedRoles={["ADMIN"]}>
+                                  <AdminManagersPage />
+                                </ProtectedRoute>
+                              }
+                            />
+                            <Route
+                              path="/admin/beauticians"
+                              element={
+                                <ProtectedRoute allowedRoles={["ADMIN"]}>
+                                  <AdminBeauticiansPage />
+                                </ProtectedRoute>
+                              }
+                            />
+                            <Route
+                              path="/admin/settings"
+                              element={
+                                <ProtectedRoute allowedRoles={["ADMIN"]}>
+                                  <AdminSettingsPage />
+                                </ProtectedRoute>
+                              }
+                            />
+                            <Route
+                              path="/admin/profile"
+                              element={
+                                <ProtectedRoute allowedRoles={["ADMIN"]}>
+                                  <AdminProfilePage />
+                                </ProtectedRoute>
+                              }
+                            />
+                            <Route
+                              path="/admin/at-home-services"
+                              element={
+                                <ProtectedRoute allowedRoles={["ADMIN"]}>
+                                  <AdminAtHomeServicesPage />
+                                </ProtectedRoute>
+                              }
+                            />
+                            <Route
+                              path="/admin/at-home-products"
+                              element={
+                                <ProtectedRoute allowedRoles={["ADMIN"]}>
+                                  <AdminAtHomeProductsPage />
+                                </ProtectedRoute>
+                              }
+                            />
+                            <Route
+                              path="/admin/at-home-bookings"
+                              element={
+                                <ProtectedRoute allowedRoles={["ADMIN"]}>
+                                  <AdminAtHomeBookingsPage />
+                                </ProtectedRoute>
+                              }
+                            />
+                            <Route
+                              path="/admin/finance"
+                              element={
+                                <ProtectedRoute allowedRoles={["ADMIN"]}>
+                                  <AdminFinancePage />
+                                </ProtectedRoute>
+                              }
+                            />
 
-                          {/* Catch-all */}
-                          <Route path="*" element={<NotFound />} />
-                        </Routes>
-                      </MainContent>
-                    </Suspense>
-                    <Footer />
-                  </div>
-                </CartProvider>
-              </BookingProvider>
-            </PlatformSettingsProvider>
+                            {/* Catch-all */}
+                            <Route path="*" element={<NotFound />} />
+                          </Routes>
+                        </MainContent>
+                      </Suspense>
+                      <Footer />
+                      <CookieBanner />
+                      <CookiePreferencesModal />
+                    </div>
+                  </CartProvider>
+                </BookingProvider>
+              </PlatformSettingsProvider>
+            </CookieConsentProvider>
           </SupabaseAuthProvider>
         </BrowserRouter>
         <Toaster richColors position="top-right" />
       </TooltipProvider>
-    </QueryClientProvider>
+    </QueryClientProvider >
   );
 };
 
