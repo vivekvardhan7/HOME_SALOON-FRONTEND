@@ -8,6 +8,7 @@ import { componentTagger } from "lovable-tagger";
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
   // Use OS temp directory for cache to avoid OneDrive permission issues on Windows
+  base: "/",
   cacheDir: path.join(os.tmpdir(), 'vite-cache-homebonzenga'),
   server: {
     host: "::",
