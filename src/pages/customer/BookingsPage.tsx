@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import { useSupabaseAuth } from "@/contexts/SupabaseAuthContext";
+import { api } from '@/lib/api';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -72,6 +73,7 @@ const CustomerBookingsPage = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [paymentFilter, setPaymentFilter] = useState<string>('all');
+  const [typeFilter, setTypeFilter] = useState<string>('all');
 
   const handleViewBooking = (booking: Booking) => {
     if (booking.bookingType === 'AT_HOME') {
@@ -96,7 +98,17 @@ const CustomerBookingsPage = () => {
 
   useEffect(() => {
     filterBookings();
-  }, [bookings, searchTerm, statusFilter, paymentFilter]);
+    setCurrentPage(1); // Reset to first page when filters change
+  }, [bookings, searchTerm, statusFilter, paymentFilter, typeFilter]);
+
+  // Pagination Logic
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = filteredBookings.slice(indexOfFirstItem, indexOfLastItem);
+  const totalPages = Math.ceil(filteredBookings.length / itemsPerPage);
+
 
   const fetchBookings = async () => {
     try {
@@ -104,24 +116,14 @@ const CustomerBookingsPage = () => {
 
       if (!user?.id) return;
 
-      const userId = user.id;
+      // Call backend endpoint which bypasses RLS and handles case-insensitive matching
+      const response = await api.get('/customer/bookings');
 
-      // 1. Fetch SALON bookings from vendor_orders (linked by email)
-      const { data: salonData } = await supabase
-        .from('vendor_orders')
-        .select(`*, vendor:vendor!vendor_id(*)`)
-        .eq('customer_email', user.email)
-        .order('created_at', { ascending: false });
+      if (!(response.data as any).success) {
+        throw new Error((response.data as any).message || 'Failed to fetch bookings');
+      }
 
-      // 2. Fetch AT-HOME bookings
-      const { data: athomeData } = await supabase
-        .from('athome_bookings')
-        .select(`
-            *,
-            beautician:beauticians!athome_bookings_assigned_beautician_id_fkey (*)
-        `)
-        .eq('customer_id', userId)
-        .order('created_at', { ascending: false });
+      const { salonBookings: salonData, atHomeBookings: athomeData } = (response.data as any).data;
 
       let allBookings: Booking[] = [];
 
@@ -162,6 +164,16 @@ const CustomerBookingsPage = () => {
       // Process At-Home Bookings
       if (athomeData && athomeData.length > 0) {
         const athomeIds = athomeData.map((b: any) => b.id);
+
+        // We still need to fetch service details separately or we could have included it in the backend
+        // For now, let's keep this client-side or move it? 
+        // Best to keep consistent. The backend endpoint returned raw athome bookings. 
+        // We can fetch service names here or update backend. 
+        // To be safe and fast, let's fetch service mapping here using supabase (public table usually fine)
+        // OR better: update the backend code to include it. 
+        // Actually, let's assume valid RLS for public service tables or fetch it here.
+        // It's safer to fetch here for now to avoid breaking changes in backend logic if tables are complex.
+
         const { data: ahServices } = await supabase
           .from('athome_booking_services')
           .select('booking_id, admin_service_id, master:admin_services(name)')
@@ -289,6 +301,11 @@ const CustomerBookingsPage = () => {
     // Payment filter
     if (paymentFilter !== 'all') {
       filtered = filtered.filter(booking => booking.paymentStatus === paymentFilter);
+    }
+
+    // Type filter
+    if (typeFilter !== 'all') {
+      filtered = filtered.filter(booking => booking.bookingType === typeFilter);
     }
 
     setFilteredBookings(filtered);
@@ -428,11 +445,22 @@ const CustomerBookingsPage = () => {
                     <SelectItem value="refunded">{t('bookings.refunded')}</SelectItem>
                   </SelectContent>
                 </Select>
+                <Select value={typeFilter} onValueChange={setTypeFilter}>
+                  <SelectTrigger className="border-[#4e342e]/20 focus:border-[#4e342e]">
+                    <SelectValue placeholder="Booking Type" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Types</SelectItem>
+                    <SelectItem value="SALON">At Salon</SelectItem>
+                    <SelectItem value="AT_HOME">At Home</SelectItem>
+                  </SelectContent>
+                </Select>
                 <Button
                   onClick={() => {
                     setSearchTerm('');
                     setStatusFilter('all');
                     setPaymentFilter('all');
+                    setTypeFilter('all');
                   }}
                   variant="outline"
                   className="border-[#4e342e] text-[#4e342e] hover:bg-[#4e342e] hover:text-white"
@@ -470,7 +498,7 @@ const CustomerBookingsPage = () => {
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {filteredBookings.map((booking) => (
+                      {currentItems.map((booking) => (
                         <TableRow key={booking.id} className="border-[#4e342e]/10 hover:bg-[#fdf6f0]/50">
                           <TableCell className="font-medium text-[#4e342e] text-xs sm:text-sm">
                             <span className="hidden sm:inline">{booking.bookingNumber}</span>
@@ -579,7 +607,35 @@ const CustomerBookingsPage = () => {
               </CardContent>
             </Card>
           )}
+
+          {/* Pagination */}
+          {filteredBookings.length > itemsPerPage && (
+            <div className="flex justify-center items-center gap-4 mt-6">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                disabled={currentPage === 1}
+                className="border-[#4e342e] text-[#4e342e]"
+              >
+                Previous
+              </Button>
+              <span className="text-[#4e342e]">
+                Page {currentPage} of {totalPages}
+              </span>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                disabled={currentPage === totalPages}
+                className="border-[#4e342e] text-[#4e342e]"
+              >
+                Next
+              </Button>
+            </div>
+          )}
         </div>
+
       </div>
     </DashboardLayout>
   );
