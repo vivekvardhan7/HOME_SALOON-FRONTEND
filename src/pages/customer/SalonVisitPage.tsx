@@ -261,7 +261,7 @@ const SalonVisitPage = () => {
                             <div className="flex items-center justify-between mb-3">
                               <div className="flex items-center gap-1 text-[#6d4c41]">
                                 <DollarSign className="w-4 h-4" />
-                                <span className="font-medium">{service.price.toLocaleString()} CDF</span>
+                                <span className="font-medium">${service.price.toLocaleString()}</span>
                               </div>
                             </div>
 
@@ -324,7 +324,7 @@ const SalonVisitPage = () => {
                           <p className="text-xs text-[#6d4c41] mb-2">{service.salonName}</p>
 
                           <div className="flex items-center justify-between text-sm text-[#6d4c41] mb-2">
-                            <span>{service.price.toLocaleString()} CDF</span>
+                            <span>${service.price.toLocaleString()}</span>
                             <div className="flex items-center gap-2">
                               <Button
                                 variant="outline"
@@ -347,7 +347,7 @@ const SalonVisitPage = () => {
                           </div>
 
                           <div className="text-sm font-medium text-[#4e342e]">
-                            Total: {(service.price * service.quantity).toLocaleString()} CDF
+                            Total: ${(service.price * service.quantity).toLocaleString()}
                           </div>
                         </div>
                       );
@@ -362,7 +362,7 @@ const SalonVisitPage = () => {
                       </div>
                       <div className="flex justify-between text-lg font-semibold">
                         <span className="text-[#4e342e]">{t('booking.totalPrice')}:</span>
-                        <span className="text-[#4e342e]">{getTotalPrice().toLocaleString()} CDF</span>
+                        <span className="text-[#4e342e]">${getTotalPrice().toLocaleString()}</span>
                       </div>
                     </div>
 

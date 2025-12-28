@@ -4,7 +4,7 @@ import { useSupabaseAuth } from "@/contexts/SupabaseAuthContext";
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import DashboardLayout from '@/components/DashboardLayout';
-import { 
+import {
   DollarSign,
   TrendingUp,
   TrendingDown,
@@ -52,9 +52,9 @@ const RevenuePage = () => {
       setLoading(true);
       const mockData = await import('@/mockData/vendors.json');
       const vendorData = mockData.default.vendors.find(v => v.status === 'approved') || mockData.default.vendors[0];
-      
+
       setRevenueData(vendorData.revenue);
-      
+
       // Calculate service revenue from appointments
       const serviceStats: { [key: string]: { revenue: number; bookings: number } } = {};
       vendorData.appointments.forEach((appointment: any) => {
@@ -100,25 +100,25 @@ const RevenuePage = () => {
 
   const exportRevenueReport = () => {
     if (!revenueData) return;
-    
+
     const reportContent = `
 REVENUE REPORT
 ==============
 
-Total Revenue: ${revenueData.total.toLocaleString()} CDF
-This Month: ${revenueData.thisMonth.toLocaleString()} CDF
-Last Month: ${revenueData.lastMonth.toLocaleString()} CDF
+Total Revenue: $${revenueData.total.toLocaleString()}
+This Month: $${revenueData.thisMonth.toLocaleString()}
+Last Month: $${revenueData.lastMonth.toLocaleString()}
 Growth: ${getGrowthPercentage().toFixed(1)}%
 
 MONTHLY BREAKDOWN:
-${revenueData.monthly.map(month => 
-  `${month.month}: ${month.amount.toLocaleString()} CDF`
-).join('\n')}
+${revenueData.monthly.map(month =>
+      `${month.month}: $${month.amount.toLocaleString()}`
+    ).join('\n')}
 
 SERVICE BREAKDOWN:
-${serviceRevenue.map(service => 
-  `${service.service}: ${service.revenue.toLocaleString()} CDF (${service.bookings} bookings)`
-).join('\n')}
+${serviceRevenue.map(service =>
+      `${service.service}: $${service.revenue.toLocaleString()} (${service.bookings} bookings)`
+    ).join('\n')}
 
 Generated on: ${new Date().toLocaleDateString()}
     `;
@@ -132,7 +132,7 @@ Generated on: ${new Date().toLocaleDateString()}
     a.click();
     document.body.removeChild(a);
     window.URL.revokeObjectURL(url);
-    
+
     toast.success('Revenue report downloaded successfully!');
   };
 
@@ -203,7 +203,7 @@ Generated on: ${new Date().toLocaleDateString()}
                 <div>
                   <p className="text-sm font-medium text-[#6d4c41]">Total Revenue</p>
                   <p className="text-2xl font-bold text-[#4e342e]">
-                    {revenueData.total.toLocaleString()} CDF
+                    ${revenueData.total.toLocaleString()}
                   </p>
                 </div>
                 <DollarSign className="w-8 h-8 text-[#4e342e]" />
@@ -217,7 +217,7 @@ Generated on: ${new Date().toLocaleDateString()}
                 <div>
                   <p className="text-sm font-medium text-[#6d4c41]">This Month</p>
                   <p className="text-2xl font-bold text-[#4e342e]">
-                    {revenueData.thisMonth.toLocaleString()} CDF
+                    ${revenueData.thisMonth.toLocaleString()}
                   </p>
                 </div>
                 <Calendar className="w-8 h-8 text-[#4e342e]" />
@@ -262,14 +262,14 @@ Generated on: ${new Date().toLocaleDateString()}
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis dataKey="month" />
                     <YAxis />
-                    <Tooltip 
-                      formatter={(value: number) => [`${value.toLocaleString()} CDF`, 'Revenue']}
+                    <Tooltip
+                      formatter={(value: number) => [`$${value.toLocaleString()}`, 'Revenue']}
                       labelStyle={{ color: '#4e342e' }}
                     />
-                    <Line 
-                      type="monotone" 
-                      dataKey="amount" 
-                      stroke="#4e342e" 
+                    <Line
+                      type="monotone"
+                      dataKey="amount"
+                      stroke="#4e342e"
                       strokeWidth={3}
                       dot={{ fill: '#4e342e', strokeWidth: 2, r: 4 }}
                     />
@@ -305,8 +305,8 @@ Generated on: ${new Date().toLocaleDateString()}
                         <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                       ))}
                     </Pie>
-                    <Tooltip 
-                      formatter={(value: number) => [`${value.toLocaleString()} CDF`, 'Revenue']}
+                    <Tooltip
+                      formatter={(value: number) => [`$${value.toLocaleString()}`, 'Revenue']}
                       labelStyle={{ color: '#4e342e' }}
                     />
                   </RechartsPieChart>
@@ -340,13 +340,13 @@ Generated on: ${new Date().toLocaleDateString()}
                     <tr key={service.service} className="border-b border-[#fdf6f0] hover:bg-[#fdf6f0]">
                       <td className="py-3 px-4 text-[#6d4c41]">{service.service}</td>
                       <td className="py-3 px-4 text-right font-medium text-[#4e342e]">
-                        {service.revenue.toLocaleString()} CDF
+                        ${service.revenue.toLocaleString()}
                       </td>
                       <td className="py-3 px-4 text-right text-[#6d4c41]">
                         {service.bookings}
                       </td>
                       <td className="py-3 px-4 text-right text-[#6d4c41]">
-                        {Math.round(service.revenue / service.bookings).toLocaleString()} CDF
+                        ${Math.round(service.revenue / service.bookings).toLocaleString()}
                       </td>
                     </tr>
                   ))}

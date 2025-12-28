@@ -571,7 +571,7 @@ const App = () => {
                               path="/admin/at-home-services"
                               element={
                                 <ProtectedRoute allowedRoles={["ADMIN"]}>
-                                  <AdminAtHomeServicesPage />
+                                  <ManageAtHomeCatalog defaultTab="services" />
                                 </ProtectedRoute>
                               }
                             />
@@ -579,7 +579,7 @@ const App = () => {
                               path="/admin/at-home-products"
                               element={
                                 <ProtectedRoute allowedRoles={["ADMIN"]}>
-                                  <AdminAtHomeProductsPage />
+                                  <ManageAtHomeCatalog defaultTab="products" />
                                 </ProtectedRoute>
                               }
                             />

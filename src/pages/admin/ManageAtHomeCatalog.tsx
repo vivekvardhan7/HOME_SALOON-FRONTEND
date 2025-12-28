@@ -11,7 +11,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import DashboardLayout from '@/components/DashboardLayout';
-import { 
+import {
   Scissors,
   Package,
   Search,
@@ -30,11 +30,11 @@ import { toast } from 'sonner';
 import { supabase } from '@/lib/supabase';
 import { supabaseCatalog, type CatalogService, type CatalogProduct } from '@/lib/supabaseCatalog';
 
-const ManageAtHomeCatalog = () => {
+const ManageAtHomeCatalog = ({ defaultTab = 'services' }: { defaultTab?: 'services' | 'products' }) => {
   const { user } = useSupabaseAuth();
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState<'services' | 'products'>('services');
-  
+  const [activeTab, setActiveTab] = useState<'services' | 'products'>(defaultTab);
+
   // Services state
   const [services, setServices] = useState<CatalogService[]>([]);
   const [servicesLoading, setServicesLoading] = useState(true);
@@ -99,7 +99,7 @@ const ManageAtHomeCatalog = () => {
     try {
       setServicesLoading(true);
       console.log('📡 Fetching services from Supabase...');
-      
+
       const { data, error } = await supabase
         .from('service_catalog')
         .select('*')
@@ -140,7 +140,7 @@ const ManageAtHomeCatalog = () => {
     try {
       setProductsLoading(true);
       console.log('📡 Fetching products from Supabase...');
-      
+
       const { data, error } = await supabase
         .from('product_catalog')
         .select('*')
@@ -408,7 +408,7 @@ const ManageAtHomeCatalog = () => {
   const filteredServices = services.filter(service => {
     const matchesSearch = service.name.toLowerCase().includes(servicesSearchTerm.toLowerCase()) ||
       (service.description || '').toLowerCase().includes(servicesSearchTerm.toLowerCase());
-    const matchesStatus = servicesStatusFilter === 'all' || 
+    const matchesStatus = servicesStatusFilter === 'all' ||
       (servicesStatusFilter === 'active' && service.isActive) ||
       (servicesStatusFilter === 'inactive' && !service.isActive);
     return matchesSearch && matchesStatus;
@@ -417,7 +417,7 @@ const ManageAtHomeCatalog = () => {
   const filteredProducts = products.filter(product => {
     const matchesSearch = product.name.toLowerCase().includes(productsSearchTerm.toLowerCase()) ||
       (product.description || '').toLowerCase().includes(productsSearchTerm.toLowerCase());
-    const matchesStatus = productsStatusFilter === 'all' || 
+    const matchesStatus = productsStatusFilter === 'all' ||
       (productsStatusFilter === 'active' && product.isActive) ||
       (productsStatusFilter === 'inactive' && !product.isActive);
     const matchesCategory = productsCategoryFilter === 'all' || product.category === productsCategoryFilter;
@@ -539,7 +539,7 @@ const ManageAtHomeCatalog = () => {
                       <p className="text-sm text-[#6d4c41] mb-4 line-clamp-2">
                         {service.description || 'No description'}
                       </p>
-                      
+
                       <div className="space-y-2 mb-4">
                         <div className="flex items-center gap-2 text-sm text-[#6d4c41]">
                           <Clock className="w-4 h-4" />
@@ -547,11 +547,11 @@ const ManageAtHomeCatalog = () => {
                         </div>
                         <div className="flex items-center gap-2 text-sm text-[#6d4c41]">
                           <DollarSign className="w-4 h-4" />
-                          <span>Customer: {service.customerPrice.toLocaleString()} CDF</span>
+                          <span>Customer: ${service.customerPrice.toLocaleString()}</span>
                         </div>
                         <div className="flex items-center gap-2 text-sm text-[#6d4c41]">
                           <DollarSign className="w-4 h-4" />
-                          <span>Vendor: {service.vendorPayout.toLocaleString()} CDF</span>
+                          <span>Vendor: ${service.vendorPayout.toLocaleString()}</span>
                         </div>
                         {service.allowsProducts && (
                           <div className="flex items-center gap-2 text-sm text-[#6d4c41]">
@@ -700,15 +700,15 @@ const ManageAtHomeCatalog = () => {
                       <p className="text-sm text-[#6d4c41] mb-4 line-clamp-2">
                         {product.description || 'No description'}
                       </p>
-                      
+
                       <div className="space-y-2 mb-4">
                         <div className="flex items-center gap-2 text-sm text-[#6d4c41]">
                           <DollarSign className="w-4 h-4" />
-                          <span>Customer: {product.customerPrice.toLocaleString()} CDF</span>
+                          <span>Customer: ${product.customerPrice.toLocaleString()}</span>
                         </div>
                         <div className="flex items-center gap-2 text-sm text-[#6d4c41]">
                           <DollarSign className="w-4 h-4" />
-                          <span>Vendor: {product.vendorPayout.toLocaleString()} CDF</span>
+                          <span>Vendor: ${product.vendorPayout.toLocaleString()}</span>
                         </div>
                         {product.sku && (
                           <div className="text-xs text-[#6d4c41]">
@@ -816,7 +816,7 @@ const ManageAtHomeCatalog = () => {
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <Label htmlFor="service-customer-price" className="text-[#4e342e]">Customer Price (CDF) *</Label>
+                  <Label htmlFor="service-customer-price" className="text-[#4e342e]">Customer Price ($) *</Label>
                   <Input
                     id="service-customer-price"
                     type="number"
@@ -826,7 +826,7 @@ const ManageAtHomeCatalog = () => {
                   />
                 </div>
                 <div>
-                  <Label htmlFor="service-vendor-payout" className="text-[#4e342e]">Vendor Payout (CDF) *</Label>
+                  <Label htmlFor="service-vendor-payout" className="text-[#4e342e]">Vendor Payout ($) *</Label>
                   <Input
                     id="service-vendor-payout"
                     type="number"
@@ -945,7 +945,7 @@ const ManageAtHomeCatalog = () => {
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <Label htmlFor="product-customer-price" className="text-[#4e342e]">Customer Price (CDF) *</Label>
+                  <Label htmlFor="product-customer-price" className="text-[#4e342e]">Customer Price ($) *</Label>
                   <Input
                     id="product-customer-price"
                     type="number"
@@ -955,7 +955,7 @@ const ManageAtHomeCatalog = () => {
                   />
                 </div>
                 <div>
-                  <Label htmlFor="product-vendor-payout" className="text-[#4e342e]">Vendor Payout (CDF) *</Label>
+                  <Label htmlFor="product-vendor-payout" className="text-[#4e342e]">Vendor Payout ($) *</Label>
                   <Input
                     id="product-vendor-payout"
                     type="number"

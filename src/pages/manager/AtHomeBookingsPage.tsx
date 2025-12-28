@@ -234,7 +234,7 @@ const AtHomeBookingsPage = () => {
                                             </TableCell>
                                             <TableCell>
                                                 <div className="font-medium text-[#4e342e]">
-                                                    {booking.total_amount?.toLocaleString()} CDF
+                                                    ${booking.total_amount?.toLocaleString()}
                                                 </div>
                                             </TableCell>
                                             <TableCell>

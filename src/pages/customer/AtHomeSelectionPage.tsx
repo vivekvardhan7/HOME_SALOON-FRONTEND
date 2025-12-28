@@ -147,7 +147,7 @@ const AtHomeSelectionPage = () => {
                                                 <div className="text-right">
                                                     <span className="text-xs text-[#8d6e63] font-bold uppercase tracking-wider">Price</span>
                                                     <p className="text-xl font-serif font-bold text-[#4e342e]">
-                                                        {s.price.toLocaleString()} <span className="text-xs font-sans">CDF</span>
+                                                        ${s.price.toLocaleString()}
                                                     </p>
                                                 </div>
                                             </div>
@@ -184,7 +184,7 @@ const AtHomeSelectionPage = () => {
                                                 <h4 className="font-bold text-[#4e342e] mb-1 truncate">{p.name}</h4>
                                                 <p className="text-xs text-[#6d4c41] line-clamp-1 mb-3">{p.description}</p>
                                                 <div className="flex items-center justify-between">
-                                                    <p className="font-serif font-bold text-[#4e342e]">{p.price.toLocaleString()} CDF</p>
+                                                    <p className="font-serif font-bold text-[#4e342e]">${p.price.toLocaleString()}</p>
                                                     <Button size="sm" variant="ghost" className="h-8 w-8 p-0 rounded-full border border-[#f8d7da] cursor-not-allowed" disabled>
                                                         <Plus className="w-4 h-4" />
                                                     </Button>
@@ -209,7 +209,7 @@ const AtHomeSelectionPage = () => {
                                         <Scissors className="w-4 h-4" /> 0 Selected
                                     </div>
                                     <div className="h-4 w-px bg-white/20" />
-                                    <div className="text-lg font-serif">0.00 CDF</div>
+                                    <div className="text-lg font-serif">$0.00</div>
                                 </div>
                             </div>
                             <Button

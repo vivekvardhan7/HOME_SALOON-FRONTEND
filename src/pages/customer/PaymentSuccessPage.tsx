@@ -137,10 +137,10 @@ BOOKING DETAILS:
 
 SERVICES:
 ${servicesForInvoice
-        .map(service => `- ${service.name} (x${service.quantity || 1}) - ${(service.price * (service.quantity || 1)).toLocaleString()} CDF`)
+        .map(service => `- ${service.name} (x${service.quantity || 1}) - $${(service.price * (service.quantity || 1)).toLocaleString()}`)
         .join('\n')}
 
-TOTAL: ${paymentData.bookingData.totalPrice.toLocaleString()} CDF
+TOTAL: $${paymentData.bookingData.totalPrice.toLocaleString()}
 
 Payment Status: ${paymentData.paymentStatus.toUpperCase()}
 
@@ -405,7 +405,7 @@ Thank you for choosing Home Bonzenga!
 
                 <div>
                   <p className="font-medium text-[#4e342e]">
-                    {paymentData.bookingData.totalPrice.toLocaleString()} CDF
+                    ${paymentData.bookingData.totalPrice.toLocaleString()}
                   </p>
                   <p className="text-sm text-[#6d4c41]">Amount Paid</p>
                 </div>
@@ -439,7 +439,7 @@ Thank you for choosing Home Bonzenga!
                   </div>
                   <div className="text-right">
                     <p className="font-medium text-[#4e342e]">
-                      {(service.price * service.quantity).toLocaleString()} CDF
+                      ${(service.price * service.quantity).toLocaleString()}
                     </p>
                   </div>
                 </div>
@@ -450,7 +450,7 @@ Thank you for choosing Home Bonzenga!
               <div className="flex justify-between items-center text-lg font-semibold">
                 <span className="text-[#4e342e]">Total Amount</span>
                 <span className="text-[#4e342e]">
-                  {paymentData.bookingData.totalPrice.toLocaleString()} CDF
+                  ${paymentData.bookingData.totalPrice.toLocaleString()}
                 </span>
               </div>
             </div>

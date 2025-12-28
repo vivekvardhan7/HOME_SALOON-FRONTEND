@@ -385,6 +385,56 @@ const WithProductsBooking: React.FC = () => {
     );
   };
 
+  const handleProceed = () => {
+    const services = (selectedCatalogServices.length > 0 ? selectedCatalogServices : selectedServices).map((svc: any) => ({
+      id: svc.id,
+      catalogServiceId: svc.id,
+      name: svc.name,
+      price: 'customerPrice' in svc ? svc.customerPrice : svc.price || 0,
+      duration: 'duration' in svc ? svc.duration : undefined,
+      vendorPayout: 'vendorPayout' in svc ? svc.vendorPayout : undefined,
+      allowsProducts: 'allowsProducts' in svc ? svc.allowsProducts : undefined
+    }));
+    const products = (selectedCatalogProducts.length > 0 ? selectedCatalogProducts : selectedProducts).map((product: any) => ({
+      id: product.id,
+      productCatalogId: product.id,
+      name: product.name,
+      price: 'customerPrice' in product ? product.customerPrice : product.price,
+      quantity: productQuantities[product.id] || 0,
+      vendorPayout: 'vendorPayout' in product ? product.vendorPayout : undefined
+    }));
+    const totalPrice =
+      services.reduce((sum, s) => sum + (s.price || 0), 0) +
+      products.reduce((sum, p) => sum + p.price * (p.quantity || 0), 0);
+    const totalDuration =
+      selectedCatalogServices.length > 0
+        ? selectedCatalogServices.reduce((sum, svc) => sum + (svc.duration || 0), 0)
+        : 0;
+    const bookingData = {
+      services: services.map(s => ({ name: s.name, price: s.price, quantity: 1 })),
+      catalogServiceIds: selectedCatalogServices.map(svc => svc.id),
+      productCatalogSelections: selectedCatalogProducts.map(prod => ({
+        id: prod.id,
+        quantity: productQuantities[prod.id] || 0
+      })),
+      serviceDetails: services,
+      productDetails: products,
+      date: new Date().toISOString(),
+      time: '10:00',
+      address: '',
+      phone: '',
+      notes: 'At-home with products',
+      beauticianPreference: 'any',
+      totalPrice,
+      totalDuration,
+      type: 'AT_HOME',
+      includeProducts: products.some(p => (p.quantity || 0) > 0),
+      flow: 'AT_HOME'
+    };
+    try { sessionStorage.setItem('bookingData', JSON.stringify(bookingData)); } catch { }
+    navigate('/customer/booking-confirmation');
+  };
+
 
   if (loading) {
     return (
@@ -400,7 +450,7 @@ const WithProductsBooking: React.FC = () => {
     <div className="min-h-screen bg-[#fdf6f0]">
       <Navigation />
       {/* Hero Section */}
-      <section className="pt-40 pb-16 bg-gradient-to-br from-[#4e342e] to-[#3b2c26] text-white">
+      <section className="pt-28 md:pt-40 pb-16 bg-gradient-to-br from-[#4e342e] to-[#3b2c26] text-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
             className="text-center"
@@ -586,55 +636,7 @@ const WithProductsBooking: React.FC = () => {
                   <div className="mt-3">
                     <Button
                       className="w-full bg-[#4e342e] hover:bg-[#3b2c26] text-white"
-                      onClick={() => {
-                        const services = (selectedCatalogServices.length > 0 ? selectedCatalogServices : selectedServices).map((svc: any) => ({
-                          id: svc.id,
-                          catalogServiceId: svc.id,
-                          name: svc.name,
-                          price: 'customerPrice' in svc ? svc.customerPrice : svc.price || 0,
-                          duration: 'duration' in svc ? svc.duration : undefined,
-                          vendorPayout: 'vendorPayout' in svc ? svc.vendorPayout : undefined,
-                          allowsProducts: 'allowsProducts' in svc ? svc.allowsProducts : undefined
-                        }));
-                        const products = (selectedCatalogProducts.length > 0 ? selectedCatalogProducts : selectedProducts).map((product: any) => ({
-                          id: product.id,
-                          productCatalogId: product.id,
-                          name: product.name,
-                          price: 'customerPrice' in product ? product.customerPrice : product.price,
-                          quantity: productQuantities[product.id] || 0,
-                          vendorPayout: 'vendorPayout' in product ? product.vendorPayout : undefined
-                        }));
-                        const totalPrice =
-                          services.reduce((sum, s) => sum + (s.price || 0), 0) +
-                          products.reduce((sum, p) => sum + p.price * (p.quantity || 0), 0);
-                        const totalDuration =
-                          selectedCatalogServices.length > 0
-                            ? selectedCatalogServices.reduce((sum, svc) => sum + (svc.duration || 0), 0)
-                            : 0;
-                        const bookingData = {
-                          services: services.map(s => ({ name: s.name, price: s.price, quantity: 1 })),
-                          catalogServiceIds: selectedCatalogServices.map(svc => svc.id),
-                          productCatalogSelections: selectedCatalogProducts.map(prod => ({
-                            id: prod.id,
-                            quantity: productQuantities[prod.id] || 0
-                          })),
-                          serviceDetails: services,
-                          productDetails: products,
-                          date: new Date().toISOString(),
-                          time: '10:00',
-                          address: '',
-                          phone: '',
-                          notes: 'At-home with products',
-                          beauticianPreference: 'any',
-                          totalPrice,
-                          totalDuration,
-                          type: 'AT_HOME',
-                          includeProducts: products.some(p => (p.quantity || 0) > 0),
-                          flow: 'AT_HOME'
-                        };
-                        try { sessionStorage.setItem('bookingData', JSON.stringify(bookingData)); } catch { }
-                        navigate('/customer/booking-confirmation');
-                      }}
+                      onClick={handleProceed}
                       disabled={selectedServiceIds.size === 0 || !catalogAvailable}
                     >
                       {catalogAvailable ? 'Proceed to Payment' : 'Catalog Unavailable'}
@@ -722,6 +724,22 @@ const WithProductsBooking: React.FC = () => {
           </Button>
         </div>
       </section>
+      {/* Mobile Sticky Footer */}
+      <div className={`fixed bottom-0 left-0 right-0 p-4 bg-white border-t border-[#d7ccc8] shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)] z-40 lg:hidden transform transition-transform duration-300 ${grandTotal > 0 ? 'translate-y-0' : 'translate-y-full'}`}>
+        <div className="flex items-center justify-between gap-4">
+          <div className="flex flex-col">
+            <span className="text-sm text-[#6d4c41]">Total</span>
+            <span className="text-xl font-bold text-[#4e342e]">${grandTotal.toFixed(2)}</span>
+          </div>
+          <Button
+            className="flex-1 bg-[#4e342e] hover:bg-[#3b2c26] text-white"
+            onClick={handleProceed}
+            disabled={selectedServiceIds.size === 0 || !catalogAvailable}
+          >
+            {catalogAvailable ? 'Proceed' : 'Unavailable'}
+          </Button>
+        </div>
+      </div>
     </div>
   );
 };

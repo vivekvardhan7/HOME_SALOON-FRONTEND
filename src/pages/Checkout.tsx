@@ -149,7 +149,7 @@ const Checkout: React.FC = () => {
       <div className="min-h-screen bg-[#fdf6f0] flex items-center justify-center">
         <div className="text-center">
           <div className="text-[#4e342e] text-xl">Service not found</div>
-          <Button 
+          <Button
             className="mt-4 bg-[#4e342e] hover:bg-[#3b2c26] text-white"
             onClick={() => navigate('/customer/at-home-services')}
           >
@@ -176,10 +176,10 @@ const Checkout: React.FC = () => {
             Booking Confirmed!
           </h2>
           <p className="text-[#6d4c41] mb-6">
-            Your booking has been submitted and is awaiting manager approval. 
+            Your booking has been submitted and is awaiting manager approval.
             You'll receive updates on your dashboard.
           </p>
-          <Button 
+          <Button
             className="bg-[#4e342e] hover:bg-[#3b2c26] text-white"
             onClick={() => navigate('/customer/dashboard')}
           >
@@ -208,7 +208,7 @@ const Checkout: React.FC = () => {
     <div className="min-h-screen bg-[#fdf6f0] py-20">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
-        <motion.div 
+        <motion.div
           className="text-center mb-12"
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
@@ -224,7 +224,7 @@ const Checkout: React.FC = () => {
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Booking Form */}
-          <motion.div 
+          <motion.div
             className="lg:col-span-2"
             variants={fadeInUp}
             initial="initial"
@@ -400,11 +400,11 @@ const Checkout: React.FC = () => {
                   <div className="flex justify-between items-center mb-4">
                     <span className="text-lg font-semibold text-[#4e342e]">Total Amount</span>
                     <span className="text-2xl font-bold text-[#4e342e]">
-                      {service.price.toLocaleString()} CDF
+                      ${service.price.toLocaleString()}
                     </span>
                   </div>
 
-                  <Button 
+                  <Button
                     className="w-full bg-[#4e342e] hover:bg-[#3b2c26] text-white py-4 text-lg font-semibold rounded-xl"
                     onClick={handleProceedToPayment}
                   >
@@ -418,7 +418,7 @@ const Checkout: React.FC = () => {
 
         {/* Back Button */}
         <div className="text-center mt-8">
-          <Button 
+          <Button
             variant="outline"
             className="border-2 border-[#4e342e] text-[#4e342e] hover:bg-[#4e342e] hover:text-white px-8 py-3 rounded-xl font-semibold transition-all duration-300"
             onClick={() => navigate(-1)}

@@ -628,7 +628,7 @@ const PaymentPage = () => {
                             {service.name} {service.quantity && service.quantity > 1 && `(x${service.quantity})`}
                           </span>
                           <span className="font-medium text-[#4e342e]">
-                            {(service.price * (service.quantity || 1)).toLocaleString()} CDF
+                            ${(service.price * (service.quantity || 1)).toLocaleString()}
                           </span>
                         </div>
                       ))}
@@ -649,7 +649,7 @@ const PaymentPage = () => {
                                   {product.name} {product.quantity && product.quantity > 1 && `(x${product.quantity})`}
                                 </span>
                                 <span className="font-medium text-[#4e342e]">
-                                  {(product.price * (product.quantity || 1)).toLocaleString()} CDF
+                                  ${(product.price * (product.quantity || 1)).toLocaleString()}
                                 </span>
                               </div>
                             ))}
@@ -664,15 +664,15 @@ const PaymentPage = () => {
                   <div className="space-y-2">
                     <div className="flex justify-between text-sm">
                       <span className="text-[#6d4c41]">Subtotal:</span>
-                      <span className="font-medium text-[#4e342e]">{bookingData.totalPrice.toLocaleString()} CDF</span>
+                      <span className="font-medium text-[#4e342e]">${bookingData.totalPrice.toLocaleString()}</span>
                     </div>
                     <div className="flex justify-between text-sm">
                       <span className="text-[#6d4c41]">Service Fee:</span>
-                      <span className="font-medium text-[#4e342e]">0 CDF</span>
+                      <span className="font-medium text-[#4e342e]">$0</span>
                     </div>
                     <div className="flex justify-between text-lg font-semibold">
                       <span className="text-[#4e342e]">Total:</span>
-                      <span className="text-[#4e342e]">{bookingData.totalPrice.toLocaleString()} CDF</span>
+                      <span className="text-[#4e342e]">${bookingData.totalPrice.toLocaleString()}</span>
                     </div>
                   </div>
 

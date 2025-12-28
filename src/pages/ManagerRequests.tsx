@@ -4,11 +4,11 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { 
-  Clock, 
-  User, 
-  MapPin, 
-  Phone, 
+import {
+  Clock,
+  User,
+  MapPin,
+  Phone,
   Calendar,
   CheckCircle,
   XCircle,
@@ -56,15 +56,15 @@ const ManagerRequests: React.FC = () => {
 
     try {
       setProcessing(bookingId);
-      
+
       // Assign beautician and update status
       const updatedBooking = assignBeauticianToBooking(bookingId, selectedBeautician);
-      
+
       if (updatedBooking) {
         // Refresh the list
         const updatedBookings = getManagerPendingBookings();
         setPendingBookings(updatedBookings);
-        
+
         toast.success('Booking approved and beautician assigned successfully!');
         setSelectedBooking(null);
         setSelectedBeautician('');
@@ -82,14 +82,14 @@ const ManagerRequests: React.FC = () => {
   const handleRejectBooking = async (bookingId: string) => {
     try {
       setProcessing(bookingId);
-      
+
       const updatedBooking = updateBookingStatus(bookingId, 'cancelled');
-      
+
       if (updatedBooking) {
         // Refresh the list
         const updatedBookings = getManagerPendingBookings();
         setPendingBookings(updatedBookings);
-        
+
         toast.success('Booking rejected');
       } else {
         toast.error('Failed to reject booking');
@@ -130,7 +130,7 @@ const ManagerRequests: React.FC = () => {
     <div className="min-h-screen bg-[#fdf6f0] py-20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
-        <motion.div 
+        <motion.div
           className="text-center mb-12"
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
@@ -145,7 +145,7 @@ const ManagerRequests: React.FC = () => {
         </motion.div>
 
         {/* Stats */}
-        <motion.div 
+        <motion.div
           className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12"
           variants={stagger}
           initial="initial"
@@ -207,7 +207,7 @@ const ManagerRequests: React.FC = () => {
             </p>
           </motion.div>
         ) : (
-          <motion.div 
+          <motion.div
             className="space-y-6"
             variants={stagger}
             initial="initial"
@@ -231,7 +231,7 @@ const ManagerRequests: React.FC = () => {
                           </div>
                           <div className="text-right">
                             <div className="text-2xl font-bold text-[#4e342e]">
-                              {booking.totalAmount.toLocaleString()} CDF
+                              ${booking.totalAmount.toLocaleString()}
                             </div>
                             <div className="text-sm text-[#6d4c41]">Total Amount</div>
                           </div>
@@ -276,8 +276,8 @@ const ManagerRequests: React.FC = () => {
                           <label className="text-sm font-semibold text-[#4e342e] mb-2 block">
                             Assign Beautician:
                           </label>
-                          <Select 
-                            value={selectedBeautician} 
+                          <Select
+                            value={selectedBeautician}
                             onValueChange={setSelectedBeautician}
                           >
                             <SelectTrigger className="w-full">

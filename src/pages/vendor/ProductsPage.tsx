@@ -408,7 +408,7 @@ const ProductsPage = () => {
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-1 text-[#6d4c41]">
                       <DollarSign className="w-4 h-4" />
-                      <span className="font-semibold text-lg">{product.price.toLocaleString()} CDF</span>
+                      <span className="font-semibold text-lg">${product.price.toLocaleString()}</span>
                     </div>
                     <div className="flex items-center gap-1 text-[#6d4c41]">
                       <ShoppingCart className="w-4 h-4" />
@@ -510,7 +510,7 @@ const ProductsPage = () => {
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <Label htmlFor="price" className="text-[#4e342e] font-medium">
-                    Price (CDF) *
+                    Price ($) *
                   </Label>
                   <Input
                     id="price"

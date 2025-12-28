@@ -5,10 +5,10 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { 
-  CreditCard, 
-  Smartphone, 
-  Wallet, 
+import {
+  CreditCard,
+  Smartphone,
+  Wallet,
   CheckCircle,
   Loader2,
   Shield,
@@ -29,11 +29,11 @@ interface PaymentData {
   timestamp: string;
 }
 
-const MockPayment: React.FC<MockPaymentProps> = ({ 
-  amount, 
-  onSuccess, 
-  onCancel, 
-  loading = false 
+const MockPayment: React.FC<MockPaymentProps> = ({
+  amount,
+  onSuccess,
+  onCancel,
+  loading = false
 }) => {
   const [selectedMethod, setSelectedMethod] = useState<string>('');
   const [cardNumber, setCardNumber] = useState('');
@@ -117,7 +117,7 @@ const MockPayment: React.FC<MockPaymentProps> = ({
           {/* Amount Display */}
           <div className="bg-[#f8d7da]/20 rounded-xl p-6 mb-8 text-center">
             <div className="text-3xl font-bold text-[#4e342e] mb-2">
-              {amount.toLocaleString()} CDF
+              ${amount.toLocaleString()}
             </div>
             <div className="text-[#6d4c41]">Total Amount</div>
           </div>
@@ -260,7 +260,7 @@ const MockPayment: React.FC<MockPaymentProps> = ({
               ) : (
                 <>
                   <CheckCircle className="w-4 h-4 mr-2" />
-                  Pay {amount.toLocaleString()} CDF
+                  Pay ${amount.toLocaleString()}
                 </>
               )}
             </Button>

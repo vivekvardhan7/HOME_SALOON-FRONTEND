@@ -120,7 +120,7 @@ const AdminAtHomeBookingsPage = () => {
     const [selectedBooking, setSelectedBooking] = useState<any | null>(null);
 
     const formatCurrency = (amount: number) => {
-        return new Intl.NumberFormat('en-CD', { style: 'currency', currency: 'CDF' }).format(amount);
+        return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(amount);
     };
 
     const formatDateTime = (dateString: string) => {

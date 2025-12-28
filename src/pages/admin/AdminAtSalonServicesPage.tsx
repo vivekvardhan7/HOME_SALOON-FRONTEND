@@ -257,7 +257,7 @@ const AdminAtSalonServicesPage = () => {
                                                     </div>
                                                 </TableCell>
                                                 <TableCell className="font-bold text-[#4e342e]">
-                                                    {order.totalAmount} CDF
+                                                    ${order.totalAmount}
                                                 </TableCell>
                                                 <TableCell>
                                                     {getPaymentBadge(order.paymentStatus)}
@@ -362,7 +362,7 @@ const AdminAtSalonServicesPage = () => {
                                     </div>
                                     <div className="text-right">
                                         <p className="text-sm text-gray-500">Amount Paid</p>
-                                        <p className="text-2xl font-bold text-[#4e342e]">{selectedOrder.totalAmount} CDF</p>
+                                        <p className="text-2xl font-bold text-[#4e342e]">${selectedOrder.totalAmount}</p>
                                     </div>
                                 </div>
 
@@ -419,12 +419,12 @@ const AdminAtSalonServicesPage = () => {
                                                     <TableRow key={`s-${i}`}>
                                                         <TableCell>{s.name}</TableCell>
                                                         <TableCell>{s.duration} min</TableCell>
-                                                        <TableCell className="text-right font-medium">{s.price} CDF</TableCell>
+                                                        <TableCell className="text-right font-medium">${s.price}</TableCell>
                                                     </TableRow>
                                                 ))}
                                                 <TableRow className="bg-gray-50 font-bold">
                                                     <TableCell colSpan={2}>Total</TableCell>
-                                                    <TableCell className="text-right">{selectedOrder.totalAmount} CDF</TableCell>
+                                                    <TableCell className="text-right">${selectedOrder.totalAmount}</TableCell>
                                                 </TableRow>
                                             </TableBody>
                                         </Table>

@@ -256,7 +256,7 @@ const AtHomeProductsPage = () => {
                           <div className="text-sm text-gray-500 line-clamp-2 max-w-[300px]">{product.description || '-'}</div>
                         </TableCell>
                         <TableCell>
-                          <div className="font-bold text-[#4e342e]">{product.price.toLocaleString()} CDF</div>
+                          <div className="font-bold text-[#4e342e]">${product.price.toLocaleString()}</div>
                         </TableCell>
                         <TableCell>
                           {product.is_active ? (
@@ -294,7 +294,7 @@ const AtHomeProductsPage = () => {
                     <TableRow key={i}>
                       <TableCell className="font-medium text-[#4e342e]">{ref.name}</TableCell>
                       <TableCell className="text-gray-500 text-sm">{ref.vendor_name}</TableCell>
-                      <TableCell className="text-right font-serif">{ref.price.toLocaleString()} CDF</TableCell>
+                      <TableCell className="text-right font-serif">${ref.price.toLocaleString()}</TableCell>
                       <TableCell className="text-right">
                         <Button size="sm" variant="outline" className="h-8" onClick={() => useTemplate(ref)}>
                           <Copy className="w-3 h-3 mr-2" />
@@ -329,9 +329,9 @@ const AtHomeProductsPage = () => {
               </div>
 
               <div className="space-y-2">
-                <Label>Price (CDF) <span className="text-red-500">*</span></Label>
+                <Label>Price ($) <span className="text-red-500">*</span></Label>
                 <div className="relative">
-                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs">CDF</span>
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs">$</span>
                   <Input
                     className="pl-8"
                     type="number"

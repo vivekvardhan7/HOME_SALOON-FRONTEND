@@ -515,7 +515,7 @@ const AtHomeAppointmentsPage = () => {
                     <div className="mt-4 pt-4 border-t border-[#d7ccc8] flex items-center justify-between">
                       <div className="flex items-center gap-4">
                         <div className="text-sm text-[#6d4c41]">
-                          Total: <span className="font-semibold text-[#4e342e]">{booking.total.toLocaleString()} CDF</span>
+                          Total: <span className="font-semibold text-[#4e342e]">${booking.total.toLocaleString()}</span>
                         </div>
                         <div className="text-sm text-[#6d4c41]">
                           Payment: <span className={`font-semibold ${booking.payments?.[0]?.status === 'COMPLETED' ? 'text-green-600' : 'text-red-600'}`}>

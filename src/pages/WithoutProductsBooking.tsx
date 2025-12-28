@@ -128,7 +128,7 @@ const WithoutProductsBooking: React.FC = () => {
     <div className="min-h-screen bg-[#fdf6f0]">
       <Navigation />
       {/* Hero Section */}
-      <section className="pt-40 pb-16 bg-gradient-to-br from-[#6d4c41] to-[#4e342e] text-white">
+      <section className="pt-28 md:pt-40 pb-16 bg-gradient-to-br from-[#6d4c41] to-[#4e342e] text-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
             className="text-center"

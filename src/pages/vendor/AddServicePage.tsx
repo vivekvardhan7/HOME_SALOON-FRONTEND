@@ -213,7 +213,7 @@ const AddServicePage = () => {
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
                                     <Label htmlFor="price" className="text-[#4e342e] font-medium">
-                                        Price (CDF) *
+                                        Price ($) *
                                     </Label>
                                     <Input
                                         id="price"

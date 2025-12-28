@@ -362,9 +362,9 @@ const CustomerBookingsPage = () => {
   };
 
   const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('fr-CD', {
+    return new Intl.NumberFormat('en-US', {
       style: 'currency',
-      currency: 'CDF',
+      currency: 'USD',
       minimumFractionDigits: 0
     }).format(amount);
   };

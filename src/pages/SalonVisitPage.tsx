@@ -250,7 +250,7 @@ const SalonVisitPage = () => {
                 <img
                   src={hero3}
                   alt="Salon Beauty Services"
-                  className="w-full h-[600px] object-cover"
+                  className="w-full h-[300px] sm:h-[400px] lg:h-[600px] object-cover"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-black/20" />
 

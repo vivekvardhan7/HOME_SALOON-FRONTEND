@@ -296,7 +296,7 @@ const AtHomeServicesPage = () => {
                           <Badge variant="outline" className="font-normal">{service.category}</Badge>
                         </TableCell>
                         <TableCell>
-                          <div className="font-bold text-[#4e342e]">{service.price.toLocaleString()} CDF</div>
+                          <div className="font-bold text-[#4e342e]">${service.price.toLocaleString()}</div>
                         </TableCell>
                         <TableCell>
                           <div className="flex items-center text-xs text-gray-500">
@@ -343,7 +343,7 @@ const AtHomeServicesPage = () => {
                       <TableCell className="font-medium text-[#4e342e]">{ref.name}</TableCell>
                       <TableCell>{ref.category}</TableCell>
                       <TableCell className="text-gray-500 text-sm">{ref.vendor_name}</TableCell>
-                      <TableCell className="text-right font-serif">{ref.price.toLocaleString()} CDF</TableCell>
+                      <TableCell className="text-right font-serif">${ref.price.toLocaleString()}</TableCell>
                       <TableCell className="text-right">
                         <Button size="sm" variant="outline" className="h-8" onClick={() => useTemplate(ref)}>
                           <Copy className="w-3 h-3 mr-2" />
@@ -394,9 +394,9 @@ const AtHomeServicesPage = () => {
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label>Price (CDF) <span className="text-red-500">*</span></Label>
+                  <Label>Price ($) <span className="text-red-500">*</span></Label>
                   <div className="relative">
-                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs">CDF</span>
+                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs">$</span>
                     <Input
                       className="pl-8"
                       type="number"

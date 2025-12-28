@@ -384,7 +384,7 @@ const FinanceCard = ({ title, amount, subtitle, color, isPrimary }: any) => {
           <div>
             <p className="text-sm font-semibold text-gray-500 uppercase tracking-wide">{title}</p>
             <h3 className={`text-3xl font-extrabold mt-2 ${textColors}`}>
-              {new Intl.NumberFormat('en-US', { style: 'currency', currency: 'CDF', minimumFractionDigits: 0 }).format(amount)}
+              {new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 0 }).format(amount)}
             </h3>
           </div>
           <div className={`p-2 rounded-full bg-${color}-50`}>

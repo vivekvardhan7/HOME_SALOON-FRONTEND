@@ -8,7 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import DashboardLayout from '@/components/DashboardLayout';
-import { 
+import {
   Calendar,
   Clock,
   User,
@@ -113,8 +113,8 @@ const AppointmentsManagementPage = () => {
   };
 
   const handleStatusChange = (appointmentId: string, newStatus: string) => {
-    setAppointments(prev => prev.map(appointment => 
-      appointment.id === appointmentId 
+    setAppointments(prev => prev.map(appointment =>
+      appointment.id === appointmentId
         ? { ...appointment, status: newStatus }
         : appointment
     ));
@@ -228,9 +228,9 @@ const AppointmentsManagementPage = () => {
             ) : (
               <div className="space-y-4">
                 {filteredAppointments.map((appointment) => (
-                  <AppointmentCard 
-                    key={appointment.id} 
-                    appointment={appointment} 
+                  <AppointmentCard
+                    key={appointment.id}
+                    appointment={appointment}
                     onStatusChange={handleStatusChange}
                   />
                 ))}
@@ -249,9 +249,9 @@ const AppointmentsManagementPage = () => {
               ) : (
                 <div className="space-y-4">
                   {getAppointmentsByStatus(status).map((appointment) => (
-                    <AppointmentCard 
-                      key={appointment.id} 
-                      appointment={appointment} 
+                    <AppointmentCard
+                      key={appointment.id}
+                      appointment={appointment}
                       onStatusChange={handleStatusChange}
                     />
                   ))}
@@ -266,11 +266,11 @@ const AppointmentsManagementPage = () => {
 };
 
 // Appointment Card Component
-const AppointmentCard = ({ 
-  appointment, 
-  onStatusChange 
-}: { 
-  appointment: Appointment; 
+const AppointmentCard = ({
+  appointment,
+  onStatusChange
+}: {
+  appointment: Appointment;
   onStatusChange: (id: string, status: string) => void;
 }) => {
   const getStatusColor = (status: string) => {
@@ -350,7 +350,7 @@ const AppointmentCard = ({
             </div>
             <div className="flex items-center gap-2 text-[#6d4c41]">
               <DollarSign className="w-4 h-4" />
-              <span className="font-medium">{appointment.total.toLocaleString()} CDF</span>
+              <span className="font-medium">${appointment.total.toLocaleString()}</span>
             </div>
           </div>
         </div>
@@ -371,7 +371,7 @@ const AppointmentCard = ({
           <div className="text-xs text-[#6d4c41]">
             Booked on {new Date(appointment.createdAt).toLocaleDateString()}
           </div>
-          
+
           {appointment.status === 'pending' && (
             <div className="flex gap-2">
               <Button

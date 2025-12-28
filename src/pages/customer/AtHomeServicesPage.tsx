@@ -250,8 +250,8 @@ const AtHomeServicesPage = () => {
                       variant={selectedCategory === category.key ? "default" : "outline"}
                       size="sm"
                       className={`flex items-center gap-1 sm:gap-2 text-xs sm:text-sm ${selectedCategory === category.key
-                          ? "bg-[#4e342e] text-white"
-                          : "border-[#4e342e] text-[#4e342e] hover:bg-[#4e342e] hover:text-white"
+                        ? "bg-[#4e342e] text-white"
+                        : "border-[#4e342e] text-[#4e342e] hover:bg-[#4e342e] hover:text-white"
                         }`}
                       onClick={() => setSelectedCategory(category.key)}
                     >
@@ -289,7 +289,7 @@ const AtHomeServicesPage = () => {
                         </div>
                         <div className="flex items-center gap-1">
                           <DollarSign className="w-3 h-3 sm:w-4 sm:h-4" />
-                          {service.price.toLocaleString()} CDF
+                          ${service.price.toLocaleString()}
                         </div>
                       </div>
                     </div>
@@ -344,7 +344,7 @@ const AtHomeServicesPage = () => {
                         </div>
 
                         <div className="flex items-center justify-between text-xs sm:text-sm text-[#6d4c41] mb-2">
-                          <span>{service.price.toLocaleString()} CDF</span>
+                          <span>${service.price.toLocaleString()}</span>
                           <div className="flex items-center gap-1 sm:gap-2">
                             <Button
                               variant="outline"
@@ -367,7 +367,7 @@ const AtHomeServicesPage = () => {
                         </div>
 
                         <div className="text-xs sm:text-sm font-medium text-[#4e342e]">
-                          Total: {(service.price * service.quantity).toLocaleString()} CDF
+                          Total: ${(service.price * service.quantity).toLocaleString()}
                         </div>
                       </div>
                     ))}
@@ -381,7 +381,7 @@ const AtHomeServicesPage = () => {
                       </div>
                       <div className="flex justify-between text-base sm:text-lg font-semibold">
                         <span className="text-[#4e342e]">Total Price:</span>
-                        <span className="text-[#4e342e]">{getTotalPrice().toLocaleString()} CDF</span>
+                        <span className="text-[#4e342e]">${getTotalPrice().toLocaleString()}</span>
                       </div>
                     </div>
 

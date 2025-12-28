@@ -22,9 +22,9 @@ import spa_product from "../assets/spa_product.jpg";
 
 
 // Icons
-import { 
-  Calendar, 
-  MapPin, 
+import {
+  Calendar,
+  MapPin,
   Clock,
   Mail,
   Phone,
@@ -80,22 +80,21 @@ const LandingPage = () => {
     <div className="min-h-screen bg-[#fdf6f0]">
       <Navigation />
 
-  
+
       {/* Hero Carousel Section */}
       <section id="home" className="relative">
-        <HeroCarousel 
+        <HeroCarousel
           autoplayDelay={3000}
           showNavigation={false}
           showPagination={true}
-          className="h-[500px]"
         />
       </section>
-      
+
 
       {/* Services Section */}
       <section id="services" className="py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div 
+          <motion.div
             className="text-center mb-16"
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -111,7 +110,7 @@ const LandingPage = () => {
           </motion.div>
 
           {/* Two Main Service Blocks */}
-          <motion.div 
+          <motion.div
             className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-16"
             variants={stagger}
             initial="initial"
@@ -129,7 +128,7 @@ const LandingPage = () => {
                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-black/10 group-hover:from-black/50 group-hover:to-black/20 transition-all duration-300" />
-                  
+
                   {/* Icon Overlay */}
                   <div className="absolute top-4 left-4">
                     <div className="w-12 h-12 bg-[#4e342e] rounded-2xl flex items-center justify-center shadow-lg">
@@ -137,16 +136,16 @@ const LandingPage = () => {
                     </div>
                   </div>
                 </div>
-                
+
                 <CardContent className="p-8 text-center">
                   <h3 className="text-2xl font-serif font-bold text-[#4e342e] mb-4">
                     {t('home.services.atHome.title')}
                   </h3>
-                  
+
                   <p className="text-lg text-[#6d4c41] leading-relaxed mb-6 font-sans">
                     {t('home.services.atHome.description')}
                   </p>
-                  
+
                   <Link to="/at-home-services">
                     <Button className="bg-[#4e342e] hover:bg-[#3b2c26] text-white px-10 py-4 text-lg font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 w-full">
                       {t('home.services.atHome.button')}
@@ -168,7 +167,7 @@ const LandingPage = () => {
                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-black/10 group-hover:from-black/50 group-hover:to-black/20 transition-all duration-300" />
-                  
+
                   {/* Icon Overlay */}
                   <div className="absolute top-4 left-4">
                     <div className="w-12 h-12 bg-[#4e342e] rounded-2xl flex items-center justify-center shadow-lg">
@@ -176,16 +175,16 @@ const LandingPage = () => {
                     </div>
                   </div>
                 </div>
-                
+
                 <CardContent className="p-8 text-center">
                   <h3 className="text-2xl font-serif font-bold text-[#4e342e] mb-4">
                     {t('home.services.salon.title')}
                   </h3>
-                  
+
                   <p className="text-lg text-[#6d4c41] leading-relaxed mb-6 font-sans">
                     {t('home.services.salon.description')}
                   </p>
-                  
+
                   <Link to="/salon-visit">
                     <Button className="bg-[#4e342e] hover:bg-[#3b2c26] text-white px-10 py-4 text-lg font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 w-full">
                       {t('home.services.salon.button')}
@@ -198,7 +197,7 @@ const LandingPage = () => {
           </motion.div>
 
           {/* Service Categories */}
-          <motion.div 
+          <motion.div
             className="grid grid-cols-1 md:grid-cols-3 gap-8"
             variants={stagger}
             initial="initial"
@@ -228,9 +227,9 @@ const LandingPage = () => {
               <motion.div key={index} variants={fadeInUp}>
                 <Card className="group hover:shadow-xl transition-all duration-500 border-0 bg-[#fdf6f0] overflow-hidden rounded-2xl">
                   <div className="relative h-48 overflow-hidden">
-                  <img
-                    src={service.image}
-                    alt={service.title}
+                    <img
+                      src={service.image}
+                      alt={service.title}
                       className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                     />
                     {/* Darker overlay for service images */}
@@ -242,12 +241,12 @@ const LandingPage = () => {
                         <service.icon className="w-5 h-5 text-white" />
                       </div>
                       <h3 className="text-xl font-serif font-bold text-[#4e342e]">
-                    {service.title}
+                        {service.title}
                       </h3>
                     </div>
                     <p className="text-[#6d4c41] leading-relaxed font-sans text-sm">
-                    {service.description}
-                  </p>
+                      {service.description}
+                    </p>
                   </CardContent>
                 </Card>
               </motion.div>
@@ -259,7 +258,7 @@ const LandingPage = () => {
       {/* How It Works Section */}
       <section id="how-it-works" className="py-20 bg-[#fdf6f0]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div 
+          <motion.div
             className="text-center mb-16"
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -274,7 +273,7 @@ const LandingPage = () => {
             </p>
           </motion.div>
 
-          <motion.div 
+          <motion.div
             className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6"
             variants={stagger}
             initial="initial"
@@ -341,7 +340,7 @@ const LandingPage = () => {
       {/* Why Bonzenga Section */}
       <section className="py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div 
+          <motion.div
             className="text-center mb-16"
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -356,7 +355,7 @@ const LandingPage = () => {
             </p>
           </motion.div>
 
-          <motion.div 
+          <motion.div
             className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8"
             variants={stagger}
             initial="initial"
@@ -390,15 +389,15 @@ const LandingPage = () => {
                   <CardContent className="p-8">
                     <div className="w-16 h-16 bg-[#4e342e] rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg">
                       <feature.icon className="w-8 h-8 text-white" />
-                  </div>
+                    </div>
                     <h3 className="text-xl font-serif font-bold mb-4 text-[#4e342e]">
                       {feature.title}
                     </h3>
                     <p className="text-[#6d4c41] leading-relaxed font-sans">
                       {feature.description}
                     </p>
-                </CardContent>
-              </Card>
+                  </CardContent>
+                </Card>
               </motion.div>
             ))}
           </motion.div>
@@ -421,7 +420,7 @@ const LandingPage = () => {
             <p className="text-lg text-white/80 mb-8 font-sans">
               {t('home.newsletter.subtitle')}
             </p>
-            
+
             <div className="flex flex-col sm:flex-row gap-4 justify-center max-w-md mx-auto">
               <Input
                 type="email"

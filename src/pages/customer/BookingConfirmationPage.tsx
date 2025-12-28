@@ -421,7 +421,7 @@ const BookingConfirmationPage = () => {
                               {service.name} {service.quantity > 1 && `(x${service.quantity})`}
                             </span>
                             <span className="font-medium text-[#4e342e]">
-                              {(service.price * service.quantity).toLocaleString()} CDF
+                              ${(service.price * service.quantity).toLocaleString()}
                             </span>
                           </div>
                           {service.salonName && (
@@ -472,7 +472,7 @@ const BookingConfirmationPage = () => {
                                 {product.name} {product.quantity > 1 && `(x${product.quantity})`}
                               </span>
                               <span className="font-medium text-[#4e342e]">
-                                {(product.price * product.quantity).toLocaleString()} CDF
+                                ${(product.price * product.quantity).toLocaleString()}
                               </span>
                             </div>
                           </div>
@@ -490,7 +490,7 @@ const BookingConfirmationPage = () => {
                     </div>
                     <div className="flex justify-between text-lg font-semibold">
                       <span className="text-[#4e342e]">Total Price:</span>
-                      <span className="text-[#4e342e]">{getTotalPrice().toLocaleString()} CDF</span>
+                      <span className="text-[#4e342e]">${getTotalPrice().toLocaleString()}</span>
                     </div>
                   </div>
 
