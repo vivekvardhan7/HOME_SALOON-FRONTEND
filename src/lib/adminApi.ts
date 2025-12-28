@@ -2,10 +2,7 @@
  * Admin API Client with error handling and retry logic
  */
 
-import { config } from '../config/env';
-
-const API_BASE = config.apiUrl || '/api';
-const FALLBACK_BASE = config.apiUrl;
+import { getApiUrl } from '../config/env';
 
 interface ApiResponse<T> {
   success?: boolean;
@@ -15,7 +12,7 @@ interface ApiResponse<T> {
 }
 
 /**
- * Make API request with automatic fallback and retry
+ * Make API request with strict URL handling
  */
 async function apiRequest<T>(
   endpoint: string,
@@ -38,13 +35,14 @@ async function apiRequest<T>(
     signal: AbortSignal.timeout(10000), // 10 second timeout
   };
 
-  // Try primary endpoint first (via proxy)
+  const fullUrl = getApiUrl(endpoint);
+
   try {
-    const response = await fetch(`${API_BASE}${endpoint}`, requestOptions);
+    const response = await fetch(fullUrl, requestOptions);
 
     if (response.ok) {
       const data = await response.json();
-      console.log(`✅ Admin API response for ${endpoint}:`, data);
+      // console.log(`✅ Admin API response for ${endpoint}:`, data);
 
       // Check if response has success flag
       if (data.success === false) {
@@ -73,51 +71,13 @@ async function apiRequest<T>(
       };
     }
   } catch (error: any) {
-    console.warn(`Primary Admin API call failed for ${endpoint}, trying fallback...`, error);
+    console.error(`Admin API call failed for ${endpoint}:`, error);
 
-    // Try fallback endpoint (direct connection)
-    try {
-      const response = await fetch(`${FALLBACK_BASE}${endpoint}`, requestOptions);
-
-      if (response.ok) {
-        const data = await response.json();
-        console.log(`✅ Fallback Admin API response for ${endpoint}:`, data);
-
-        // Check if response has success flag
-        if (data.success === false) {
-          return {
-            success: false,
-            message: data.message || data.error || 'Request failed',
-            error: data.error,
-          };
-        }
-
-        return {
-          success: true,
-          data: data,
-        };
-      } else {
-        const errorData = await response.json().catch(() => ({
-          message: `HTTP ${response.status}: ${response.statusText}`,
-        }));
-
-        console.error(`❌ Fallback Admin API error for ${endpoint}:`, errorData);
-
-        return {
-          success: false,
-          message: errorData.message || errorData.error || 'Request failed',
-          error: errorData.error,
-        };
-      }
-    } catch (fallbackError: any) {
-      console.error(`Fallback Admin API call also failed for ${endpoint}:`, fallbackError);
-
-      return {
-        success: false,
-        message: fallbackError.message || 'Network error: Unable to connect to server',
-        error: fallbackError.message,
-      };
-    }
+    return {
+      success: false,
+      message: error.message || 'Network error: Unable to connect to server',
+      error: error.message,
+    };
   }
 }
 
