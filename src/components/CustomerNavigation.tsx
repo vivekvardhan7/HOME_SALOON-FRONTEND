@@ -22,6 +22,8 @@ import {
   Heart
 } from 'lucide-react';
 
+import logo from '@/assets/logo.jpg';
+
 interface CustomerNavigationProps {
   isScrolled?: boolean;
 }
@@ -65,9 +67,11 @@ const CustomerNavigation: React.FC<CustomerNavigationProps> = ({ isScrolled = fa
           onClick={() => navigate(getLogoRedirectPath(user?.role))}
           className="flex items-center space-x-3 cursor-pointer"
         >
-          <div className="h-12 w-12 rounded-full bg-gradient-to-br from-[#4e342e] to-[#6d4c41] flex items-center justify-center">
-            <span className="text-white font-bold text-lg">HB</span>
-          </div>
+          <img
+            src={logo}
+            alt="Home Bonzenga Logo"
+            className="h-12 w-12 rounded-full object-cover border-2 border-[#f8d7da] shadow-md"
+          />
           <div>
             <h1 className="text-xl font-serif font-bold text-[#4e342e]">HOME BONZENGA</h1>
             <p className="text-xs text-[#6d4c41] leading-none font-sans">Premium Beauty Services</p>
