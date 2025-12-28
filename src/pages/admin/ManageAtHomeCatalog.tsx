@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSupabaseAuth } from "@/contexts/SupabaseAuthContext";
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -10,6 +10,14 @@ import { Textarea } from '@/components/ui/textarea';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import DashboardLayout from '@/components/DashboardLayout';
 import {
   Scissors,
@@ -19,61 +27,104 @@ import {
   Edit,
   Trash2,
   Loader2,
-  CheckCircle,
-  XCircle,
+  Copy,
+  Image as ImageIcon,
   DollarSign,
   Clock,
-  Image as ImageIcon,
-  AlertCircle
+  AlignLeft,
+  CheckCircle2
 } from 'lucide-react';
 import { toast } from 'sonner';
-import { supabase } from '@/lib/supabase';
-import { supabaseCatalog, type CatalogService, type CatalogProduct } from '@/lib/supabaseCatalog';
+import { adminApi } from '@/lib/adminApi';
+
+// Interfaces
+interface AdminService {
+  id: string;
+  name: string;
+  description: string | null;
+  category: string;
+  price: number;
+  duration_minutes: number;
+  image_url: string | null;
+  is_active: boolean;
+  created_at?: string;
+}
+
+interface AdminProduct {
+  id: string;
+  name: string;
+  description: string | null;
+  category: string;
+  price: number;
+  image_url: string | null;
+  is_active: boolean;
+  created_at?: string;
+}
+
+// Interfaces for Vendor Reference
+interface VendorServiceReference {
+  name: string;
+  category: string;
+  price: number;
+  duration_minutes: number;
+  vendor_name: string;
+}
+
+interface VendorProductReference {
+  name: string;
+  price: number;
+  vendor_name: string;
+}
 
 const ManageAtHomeCatalog = ({ defaultTab = 'services' }: { defaultTab?: 'services' | 'products' }) => {
   const { user } = useSupabaseAuth();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<'services' | 'products'>(defaultTab);
+  const [subTab, setSubTab] = useState<'master' | 'reference'>('master');
 
-  // Services state
-  const [services, setServices] = useState<CatalogService[]>([]);
-  const [servicesLoading, setServicesLoading] = useState(true);
-  const [servicesSearchTerm, setServicesSearchTerm] = useState('');
-  const [servicesStatusFilter, setServicesStatusFilter] = useState('all');
+  // Master Data State
+  const [services, setServices] = useState<AdminService[]>([]);
+  const [products, setProducts] = useState<AdminProduct[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  // Vendor Reference State
+  const [vendorServices, setVendorServices] = useState<VendorServiceReference[]>([]);
+  const [vendorProducts, setVendorProducts] = useState<VendorProductReference[]>([]);
+  const [referenceLoading, setReferenceLoading] = useState(false);
+
+  // Search & Filters
+  const [searchTerm, setSearchTerm] = useState('');
+
+  // Dialog State
   const [isServiceDialogOpen, setIsServiceDialogOpen] = useState(false);
-  const [editingService, setEditingService] = useState<CatalogService | null>(null);
-  const [serviceFormData, setServiceFormData] = useState({
-    name: '',
-    description: '',
-    duration: 60,
-    customerPrice: 0,
-    vendorPayout: 0,
-    category: '',
-    icon: '',
-    allowsProducts: false,
-    isActive: true
-  });
-
-  // Products state
-  const [products, setProducts] = useState<CatalogProduct[]>([]);
-  const [productsLoading, setProductsLoading] = useState(true);
-  const [productsSearchTerm, setProductsSearchTerm] = useState('');
-  const [productsStatusFilter, setProductsStatusFilter] = useState('all');
-  const [productsCategoryFilter, setProductsCategoryFilter] = useState('all');
   const [isProductDialogOpen, setIsProductDialogOpen] = useState(false);
-  const [editingProduct, setEditingProduct] = useState<CatalogProduct | null>(null);
-  const [productFormData, setProductFormData] = useState({
+  const [editingService, setEditingService] = useState<AdminService | null>(null);
+  const [editingProduct, setEditingProduct] = useState<AdminProduct | null>(null);
+  const [processing, setProcessing] = useState(false);
+
+  // Forms
+  const [serviceForm, setServiceForm] = useState({
     name: '',
     description: '',
     category: '',
-    image: '',
-    customerPrice: 0,
-    vendorPayout: 0,
-    sku: '',
-    isActive: true
+    price: 0,
+    duration_minutes: 60,
+    image_url: '',
+    is_active: true
   });
 
-  // Check admin access
+  const [productForm, setProductForm] = useState({
+    name: '',
+    description: '',
+    category: '',
+    price: 0,
+    image_url: '',
+    is_active: true
+  });
+
+  const serviceCategories = ['Hair Styling', 'Skin Care', 'Makeup', 'Nail Care', 'Massage', 'Other'];
+  const productCategories = ['Hair Product', 'Skin Product', 'Makeup Product', 'Nail Product', 'General', 'Other'];
+
   useEffect(() => {
     if (user && user.role !== 'ADMIN') {
       toast.error('Access denied. Admin only.');
@@ -81,802 +132,659 @@ const ManageAtHomeCatalog = ({ defaultTab = 'services' }: { defaultTab?: 'servic
     }
   }, [user, navigate]);
 
-  // Fetch services
   useEffect(() => {
-    if (activeTab === 'services') {
-      fetchServices();
+    fetchMasterData();
+    if (subTab === 'reference') {
+      fetchReferenceData();
     }
-  }, [activeTab]);
+  }, [activeTab, subTab]);
 
-  // Fetch products
-  useEffect(() => {
-    if (activeTab === 'products') {
-      fetchProducts();
-    }
-  }, [activeTab]);
-
-  const fetchServices = async () => {
+  const fetchMasterData = async () => {
+    setLoading(true);
     try {
-      setServicesLoading(true);
-      console.log('📡 Fetching services from Supabase...');
-
-      const { data, error } = await supabase
-        .from('service_catalog')
-        .select('*')
-        .order('created_at', { ascending: false });
-
-      if (error) {
-        throw error;
+      if (activeTab === 'services') {
+        const res = await adminApi.get<{ data: AdminService[] }>('/admin/athome/services');
+        // Check for nested data property from backend response wrapper
+        if (res.success && res.data?.data) {
+          setServices(res.data.data);
+        } else if (res.success && Array.isArray(res.data)) {
+          setServices(res.data);
+        } else {
+          setServices([]);
+        }
+      } else {
+        const res = await adminApi.get<{ data: AdminProduct[] }>('/admin/athome/products');
+        if (res.success && res.data?.data) {
+          setProducts(res.data.data);
+        } else if (res.success && Array.isArray(res.data)) {
+          setProducts(res.data);
+        } else {
+          setProducts([]);
+        }
       }
-
-      const mappedServices: CatalogService[] = (data || []).map((item: any) => ({
-        id: item.id,
-        slug: item.slug,
-        name: item.name,
-        description: item.description,
-        duration: item.duration,
-        customerPrice: Number(item.customer_price || 0),
-        vendorPayout: Number(item.vendor_payout || 0),
-        category: item.category,
-        icon: item.icon,
-        allowsProducts: Boolean(item.allows_products),
-        isActive: Boolean(item.is_active),
-        createdAt: item.created_at,
-        updatedAt: item.updated_at,
-      }));
-
-      setServices(mappedServices);
-      console.log(`✅ Fetched ${mappedServices.length} services`);
     } catch (error: any) {
-      console.error('❌ Error fetching services:', error);
-      toast.error(error.message || 'Failed to load services');
+      console.error('Error fetching master data:', error);
+      toast.error('Failed to load master catalog');
       setServices([]);
-    } finally {
-      setServicesLoading(false);
-    }
-  };
-
-  const fetchProducts = async () => {
-    try {
-      setProductsLoading(true);
-      console.log('📡 Fetching products from Supabase...');
-
-      const { data, error } = await supabase
-        .from('product_catalog')
-        .select('*')
-        .order('created_at', { ascending: false });
-
-      if (error) {
-        throw error;
-      }
-
-      const mappedProducts: CatalogProduct[] = (data || []).map((item: any) => ({
-        id: item.id,
-        slug: item.slug,
-        name: item.name,
-        description: item.description,
-        category: item.category,
-        image: item.image,
-        customerPrice: Number(item.customer_price || 0),
-        vendorPayout: Number(item.vendor_payout || 0),
-        sku: item.sku,
-        isActive: Boolean(item.is_active),
-        createdAt: item.created_at,
-        updatedAt: item.updated_at,
-      }));
-
-      setProducts(mappedProducts);
-      console.log(`✅ Fetched ${mappedProducts.length} products`);
-    } catch (error: any) {
-      console.error('❌ Error fetching products:', error);
-      toast.error(error.message || 'Failed to load products');
       setProducts([]);
     } finally {
-      setProductsLoading(false);
+      setLoading(false);
     }
   };
 
-  // ==================== SERVICES HANDLERS ====================
+  const fetchReferenceData = async () => {
+    setReferenceLoading(true);
+    try {
+      if (activeTab === 'services') {
+        const res = await adminApi.get<VendorServiceReference[]>('/admin/vendor-catalog/services');
+        if (res.success && res.data) {
+          setVendorServices(res.data);
+        }
+      } else {
+        const res = await adminApi.get<VendorProductReference[]>('/admin/vendor-catalog/products');
+        if (res.success && res.data) {
+          setVendorProducts(res.data);
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching reference data:', error);
+      toast.error('Failed to load vendor reference');
+    } finally {
+      setReferenceLoading(false);
+    }
+  };
 
-  const handleAddService = () => {
-    setEditingService(null);
-    setServiceFormData({
-      name: '',
-      description: '',
-      duration: 60,
-      customerPrice: 0,
-      vendorPayout: 0,
-      category: '',
-      icon: '',
-      allowsProducts: false,
-      isActive: true
-    });
+  // ==================== SERVICE ACTIONS ====================
+
+  const handleOpenServiceDialog = (service?: AdminService) => {
+    if (service) {
+      setEditingService(service);
+      setServiceForm({
+        name: service.name,
+        description: service.description || '',
+        category: service.category,
+        price: service.price,
+        duration_minutes: service.duration_minutes,
+        image_url: service.image_url || '',
+        is_active: service.is_active
+      });
+    } else {
+      setEditingService(null);
+      setServiceForm({
+        name: '',
+        description: '',
+        category: '',
+        price: 0,
+        duration_minutes: 60,
+        image_url: '',
+        is_active: true
+      });
+    }
     setIsServiceDialogOpen(true);
   };
 
-  const handleEditService = (service: CatalogService) => {
-    setEditingService(service);
-    setServiceFormData({
-      name: service.name,
-      description: service.description || '',
-      duration: service.duration,
-      customerPrice: service.customerPrice,
-      vendorPayout: service.vendorPayout,
-      category: service.category || '',
-      icon: service.icon || '',
-      allowsProducts: service.allowsProducts,
-      isActive: service.isActive
+  const handleUseServiceTemplate = (ref: VendorServiceReference) => {
+    setEditingService(null);
+    setServiceForm({
+      name: ref.name,
+      description: `Professional ${ref.category} service.`,
+      category: ref.category,
+      price: ref.price,
+      duration_minutes: ref.duration_minutes,
+      image_url: '',
+      is_active: true
     });
+    setSubTab('master');
     setIsServiceDialogOpen(true);
+    toast.info('Template loaded. Please review and save.');
   };
 
   const handleSaveService = async () => {
-    if (!serviceFormData.name || !serviceFormData.customerPrice || !serviceFormData.vendorPayout) {
-      toast.error('Please fill in all required fields');
+    if (!serviceForm.name || !serviceForm.category || serviceForm.price < 0) {
+      toast.error('Please fill in valid name, category, and price.');
       return;
     }
 
-    if (serviceFormData.vendorPayout > serviceFormData.customerPrice) {
-      toast.error('Vendor payout cannot exceed customer price');
-      return;
-    }
-
+    setProcessing(true);
     try {
       if (editingService) {
-        const result = await supabaseCatalog.updateService(editingService.id, {
-          name: serviceFormData.name,
-          description: serviceFormData.description || null,
-          duration: serviceFormData.duration,
-          customerPrice: serviceFormData.customerPrice,
-          vendorPayout: serviceFormData.vendorPayout,
-          category: serviceFormData.category || null,
-          icon: serviceFormData.icon || null,
-          allowsProducts: serviceFormData.allowsProducts,
-          isActive: serviceFormData.isActive
-        });
-        if (result.success) {
-          toast.success('Service updated successfully');
-          setIsServiceDialogOpen(false);
-          fetchServices();
-        } else {
-          throw new Error(result.error || 'Failed to update service');
-        }
+        // UPDATE via adminApi (PUT)
+        const res = await adminApi.put(`/admin/athome/services/${editingService.id}`, serviceForm);
+        if (!res.success) throw new Error(res.message);
+        toast.success('Service updated');
       } else {
-        const result = await supabaseCatalog.createService(serviceFormData);
-        if (result.success) {
-          toast.success('Service created successfully');
-          setIsServiceDialogOpen(false);
-          fetchServices();
-        } else {
-          throw new Error(result.error || 'Failed to create service');
-        }
+        // CREATE via adminApi (POST)
+        const res = await adminApi.post('/admin/athome/services', serviceForm);
+        if (!res.success) throw new Error(res.message);
+        toast.success('Service created');
       }
+      setIsServiceDialogOpen(false);
+      fetchMasterData();
     } catch (error: any) {
       console.error('Error saving service:', error);
       toast.error(error.message || 'Failed to save service');
+    } finally {
+      setProcessing(false);
     }
   };
 
   const handleDeleteService = async (id: string) => {
-    if (!window.confirm('Are you sure you want to delete this service? This action cannot be undone.')) {
-      return;
-    }
-
+    if (!window.confirm("Are you sure you want to delete this service?")) return;
     try {
-      const result = await supabaseCatalog.deleteService(id);
-      if (result.success) {
-        toast.success('Service deleted successfully');
-        fetchServices();
-      } else {
-        throw new Error(result.error || 'Failed to delete service');
-      }
+      // DELETE via adminApi
+      const res = await adminApi.delete(`/admin/athome/services/${id}`);
+      if (!res.success) throw new Error(res.message);
+      toast.success('Service deleted');
+      fetchMasterData();
     } catch (error: any) {
-      console.error('Error deleting service:', error);
       toast.error(error.message || 'Failed to delete service');
     }
   };
 
-  const handleToggleServiceStatus = async (service: CatalogService) => {
-    try {
-      const result = await supabaseCatalog.updateService(service.id, { isActive: !service.isActive });
-      if (result.success) {
-        toast.success(`Service ${!service.isActive ? 'activated' : 'deactivated'}`);
-        fetchServices();
-      } else {
-        throw new Error(result.error || 'Failed to update service status');
-      }
-    } catch (error: any) {
-      console.error('Error updating service status:', error);
-      toast.error(error.message || 'Failed to update service status');
+  // ==================== PRODUCT ACTIONS ====================
+
+  const handleOpenProductDialog = (product?: AdminProduct) => {
+    if (product) {
+      setEditingProduct(product);
+      setProductForm({
+        name: product.name,
+        description: product.description || '',
+        category: product.category,
+        price: product.price,
+        image_url: product.image_url || '',
+        is_active: product.is_active
+      });
+    } else {
+      setEditingProduct(null);
+      setProductForm({
+        name: '',
+        description: '',
+        category: '',
+        price: 0,
+        image_url: '',
+        is_active: true
+      });
     }
+    setIsProductDialogOpen(true);
   };
 
-  // ==================== PRODUCTS HANDLERS ====================
-
-  const handleAddProduct = () => {
+  const handleUseProductTemplate = (ref: VendorProductReference) => {
     setEditingProduct(null);
-    setProductFormData({
-      name: '',
+    setProductForm({
+      name: ref.name,
       description: '',
-      category: '',
-      image: '',
-      customerPrice: 0,
-      vendorPayout: 0,
-      sku: '',
-      isActive: true
+      category: 'General',
+      price: ref.price,
+      image_url: '',
+      is_active: true
     });
+    setSubTab('master');
     setIsProductDialogOpen(true);
-  };
-
-  const handleEditProduct = (product: CatalogProduct) => {
-    setEditingProduct(product);
-    setProductFormData({
-      name: product.name,
-      description: product.description || '',
-      category: product.category || '',
-      image: product.image || '',
-      customerPrice: product.customerPrice,
-      vendorPayout: product.vendorPayout,
-      sku: product.sku || '',
-      isActive: product.isActive
-    });
-    setIsProductDialogOpen(true);
+    toast.info('Template loaded. Please review and save.');
   };
 
   const handleSaveProduct = async () => {
-    if (!productFormData.name || !productFormData.customerPrice || !productFormData.vendorPayout) {
-      toast.error('Please fill in all required fields');
+    if (!productForm.name || !productForm.category || productForm.price < 0) {
+      toast.error('Please fill in valid name, category, and price.');
       return;
     }
 
-    if (productFormData.vendorPayout > productFormData.customerPrice) {
-      toast.error('Vendor payout cannot exceed customer price');
-      return;
-    }
-
+    setProcessing(true);
     try {
       if (editingProduct) {
-        const result = await supabaseCatalog.updateProduct(editingProduct.id, {
-          name: productFormData.name,
-          description: productFormData.description || null,
-          category: productFormData.category || null,
-          image: productFormData.image || null,
-          customerPrice: productFormData.customerPrice,
-          vendorPayout: productFormData.vendorPayout,
-          sku: productFormData.sku || null,
-          isActive: productFormData.isActive
-        });
-        if (result.success) {
-          toast.success('Product updated successfully');
-          setIsProductDialogOpen(false);
-          fetchProducts();
-        } else {
-          throw new Error(result.error || 'Failed to update product');
-        }
+        // UPDATE via adminApi (PUT)
+        const res = await adminApi.put(`/admin/athome/products/${editingProduct.id}`, productForm);
+        if (!res.success) throw new Error(res.message);
+        toast.success('Product updated');
       } else {
-        const result = await supabaseCatalog.createProduct(productFormData);
-        if (result.success) {
-          toast.success('Product created successfully');
-          setIsProductDialogOpen(false);
-          fetchProducts();
-        } else {
-          throw new Error(result.error || 'Failed to create product');
-        }
+        // CREATE via adminApi (POST)
+        const res = await adminApi.post('/admin/athome/products', productForm);
+        if (!res.success) throw new Error(res.message);
+        toast.success('Product created');
       }
+      setIsProductDialogOpen(false);
+      fetchMasterData();
     } catch (error: any) {
       console.error('Error saving product:', error);
       toast.error(error.message || 'Failed to save product');
+    } finally {
+      setProcessing(false);
     }
   };
 
   const handleDeleteProduct = async (id: string) => {
-    if (!window.confirm('Are you sure you want to delete this product? This action cannot be undone.')) {
-      return;
-    }
-
+    if (!window.confirm("Are you sure you want to delete this product?")) return;
     try {
-      const result = await supabaseCatalog.deleteProduct(id);
-      if (result.success) {
-        toast.success('Product deleted successfully');
-        fetchProducts();
-      } else {
-        throw new Error(result.error || 'Failed to delete product');
-      }
+      // DELETE via adminApi
+      const res = await adminApi.delete(`/admin/athome/products/${id}`);
+      if (!res.success) throw new Error(res.message);
+      toast.success('Product deleted');
+      fetchMasterData();
     } catch (error: any) {
-      console.error('Error deleting product:', error);
       toast.error(error.message || 'Failed to delete product');
     }
   };
 
-  const handleToggleProductStatus = async (product: CatalogProduct) => {
-    try {
-      const result = await supabaseCatalog.updateProduct(product.id, { isActive: !product.isActive });
-      if (result.success) {
-        toast.success(`Product ${!product.isActive ? 'activated' : 'deactivated'}`);
-        fetchProducts();
-      } else {
-        throw new Error(result.error || 'Failed to update product status');
-      }
-    } catch (error: any) {
-      console.error('Error updating product status:', error);
-      toast.error(error.message || 'Failed to update product status');
-    }
-  };
+  // ==================== FILTERING ====================
 
-  // ==================== FILTERS ====================
+  const filteredServices = services.filter(s =>
+    s.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    (s.description || '').toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
-  const filteredServices = services.filter(service => {
-    const matchesSearch = service.name.toLowerCase().includes(servicesSearchTerm.toLowerCase()) ||
-      (service.description || '').toLowerCase().includes(servicesSearchTerm.toLowerCase());
-    const matchesStatus = servicesStatusFilter === 'all' ||
-      (servicesStatusFilter === 'active' && service.isActive) ||
-      (servicesStatusFilter === 'inactive' && !service.isActive);
-    return matchesSearch && matchesStatus;
-  });
+  const filteredProducts = products.filter(p =>
+    p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    (p.description || '').toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
-  const filteredProducts = products.filter(product => {
-    const matchesSearch = product.name.toLowerCase().includes(productsSearchTerm.toLowerCase()) ||
-      (product.description || '').toLowerCase().includes(productsSearchTerm.toLowerCase());
-    const matchesStatus = productsStatusFilter === 'all' ||
-      (productsStatusFilter === 'active' && product.isActive) ||
-      (productsStatusFilter === 'inactive' && !product.isActive);
-    const matchesCategory = productsCategoryFilter === 'all' || product.category === productsCategoryFilter;
-    return matchesSearch && matchesStatus && matchesCategory;
-  });
+  const filteredRefServices = vendorServices.filter(s =>
+    s.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    s.vendor_name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
-  const categories = ['Hair', 'Skin', 'Makeup', 'Nail', 'General'];
-  const uniqueProductCategories = Array.from(new Set(products.map(p => p.category).filter(Boolean)));
+  const filteredRefProducts = vendorProducts.filter(p =>
+    p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    p.vendor_name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
-  // ==================== RENDER ====================
+  // Reusable Image Preview Component
+  const ImagePreview = ({ url }: { url: string }) => {
+    const [hasError, setHasError] = useState(false);
 
-  if (user && user.role !== 'ADMIN') {
-    return (
-      <DashboardLayout>
-        <div className="container mx-auto py-8 px-4">
-          <Card className="border-0 shadow-lg">
-            <CardContent className="p-12 text-center">
-              <AlertCircle className="w-16 h-16 text-red-500 mx-auto mb-4" />
-              <h2 className="text-2xl font-bold text-[#4e342e] mb-2">Access Denied</h2>
-              <p className="text-[#6d4c41]">This page is only accessible to administrators.</p>
-            </CardContent>
-          </Card>
+    // Reset error state if URL changes
+    useEffect(() => {
+      setHasError(false);
+    }, [url]);
+
+    if (!url) {
+      return (
+        <div className="mt-2 h-40 w-full rounded-lg border-2 border-dashed border-gray-200 bg-gray-50 flex flex-col items-center justify-center text-gray-400">
+          <ImageIcon className="w-8 h-8 mb-2 opacity-50" />
+          <span className="text-xs font-medium">No image preview available</span>
         </div>
-      </DashboardLayout>
+      );
+    }
+
+    if (hasError) {
+      return (
+        <div className="mt-2 h-40 w-full rounded-lg border-2 border-dashed border-red-200 bg-red-50 flex flex-col items-center justify-center text-red-400">
+          <ImageIcon className="w-8 h-8 mb-2 opacity-50" />
+          <span className="text-xs font-medium">Invalid Image URL</span>
+        </div>
+      )
+    }
+
+    return (
+      <div className="mt-2 relative h-40 w-full rounded-lg border border-gray-200 overflow-hidden bg-white shadow-sm group">
+        <img
+          src={url}
+          alt="Preview"
+          className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+          onError={() => setHasError(true)}
+        />
+      </div>
     );
-  }
+  };
 
   return (
     <DashboardLayout>
       <div className="container mx-auto py-8 px-4">
+        {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-serif font-bold text-[#4e342e] mb-2">
-            🧾 Manage At-Home Services & Products
+          <h1 className="text-3xl font-serif font-bold text-[#4e342e] mb-2 flex items-center gap-2">
+            <Package className="w-8 h-8" />
+            Manage At-Home Catalog
           </h1>
-          <p className="text-[#6d4c41]">Create, update, and manage catalog services and products for at-home bookings</p>
+          <p className="text-[#6d4c41]">Create, update, and manage catalog items for at-home bookings.</p>
         </div>
 
-        <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as 'services' | 'products')} className="space-y-6">
-          <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="services" className="flex items-center gap-2">
-              <Scissors className="w-4 h-4" />
-              Services ({services.length})
+        {/* Main Tabs */}
+        <Tabs value={activeTab} onValueChange={(v) => { setActiveTab(v as any); setSubTab('master'); }} className="space-y-6">
+          <TabsList className="grid w-full grid-cols-2 max-w-md bg-white border">
+            <TabsTrigger value="services" className="data-[state=active]:bg-[#4e342e] data-[state=active]:text-white transition-all">
+              <Scissors className="w-4 h-4 mr-2" /> Services
             </TabsTrigger>
-            <TabsTrigger value="products" className="flex items-center gap-2">
-              <Package className="w-4 h-4" />
-              Products ({products.length})
+            <TabsTrigger value="products" className="data-[state=active]:bg-[#4e342e] data-[state=active]:text-white transition-all">
+              <Package className="w-4 h-4 mr-2" /> Products
             </TabsTrigger>
           </TabsList>
 
-          {/* SERVICES TAB */}
-          <TabsContent value="services" className="space-y-6">
-            {/* Filters and Actions */}
-            <Card className="border-0 shadow-lg">
-              <CardContent className="p-4">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <div className="relative">
-                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#6d4c41] w-5 h-5" />
-                    <Input
-                      placeholder="Search services..."
-                      value={servicesSearchTerm}
-                      onChange={(e) => setServicesSearchTerm(e.target.value)}
-                      className="pl-10"
-                    />
-                  </div>
-                  <Select value={servicesStatusFilter} onValueChange={setServicesStatusFilter}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Filter by status" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">All Status</SelectItem>
-                      <SelectItem value="active">Active</SelectItem>
-                      <SelectItem value="inactive">Inactive</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <Button
-                    onClick={handleAddService}
-                    className="bg-[#4e342e] hover:bg-[#3b2c26] text-white"
-                  >
-                    <Plus className="w-4 h-4 mr-2" />
-                    ➕ Add Service
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
+          {/* Sub Tabs Toggle & Actions */}
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-white p-4 rounded-xl shadow-sm border border-[#e7e0db]">
+            <Tabs value={subTab} onValueChange={(v) => setSubTab(v as any)} className="w-full md:w-auto">
+              <TabsList className="bg-gray-100 p-1">
+                <TabsTrigger value="master" className="data-[state=active]:bg-white data-[state=active]:shadow-sm rounded-md">Master Catalog</TabsTrigger>
+                <TabsTrigger value="reference" className="data-[state=active]:bg-white data-[state=active]:shadow-sm rounded-md">Vendor Reference</TabsTrigger>
+              </TabsList>
+            </Tabs>
 
-            {/* Services List */}
-            {servicesLoading ? (
-              <div className="flex items-center justify-center py-12">
-                <Loader2 className="w-8 h-8 animate-spin text-[#4e342e]" />
+            <div className="flex items-center gap-2 w-full md:w-auto">
+              <div className="relative flex-1 md:w-64">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                <Input
+                  placeholder={`Search ${activeTab}...`}
+                  value={searchTerm}
+                  onChange={e => setSearchTerm(e.target.value)}
+                  className="pl-9 bg-gray-50 border-gray-200 focus:bg-white transition-colors"
+                />
               </div>
-            ) : filteredServices.length === 0 ? (
-              <Card className="border-0 shadow-lg">
-                <CardContent className="p-12 text-center">
-                  <Scissors className="w-16 h-16 text-[#6d4c41] mx-auto mb-4 opacity-50" />
-                  <p className="text-xl font-semibold text-[#4e342e] mb-2">No services found</p>
-                  <p className="text-[#6d4c41]">Create your first at-home service to get started</p>
-                </CardContent>
-              </Card>
-            ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {filteredServices.map((service) => (
-                  <Card key={service.id} className="border-0 shadow-lg hover:shadow-xl transition-shadow">
-                    <CardHeader>
-                      <div className="flex items-start justify-between">
-                        <CardTitle className="text-lg font-serif text-[#4e342e]">
-                          {service.name}
-                        </CardTitle>
-                        <Badge variant={service.isActive ? "default" : "secondary"}>
-                          {service.isActive ? 'Active' : 'Inactive'}
-                        </Badge>
-                      </div>
-                      {service.category && (
-                        <Badge variant="outline" className="mt-2">
-                          {service.category}
-                        </Badge>
-                      )}
-                    </CardHeader>
-                    <CardContent>
-                      <p className="text-sm text-[#6d4c41] mb-4 line-clamp-2">
-                        {service.description || 'No description'}
-                      </p>
+              {subTab === 'master' && (
+                <Button
+                  onClick={() => activeTab === 'services' ? handleOpenServiceDialog() : handleOpenProductDialog()}
+                  className="bg-[#4e342e] text-white hover:bg-[#3b2c26] shadow-md hover:shadow-lg transition-all"
+                >
+                  <Plus className="w-4 h-4 md:mr-2" />
+                  <span className="hidden md:inline">Add {activeTab === 'services' ? 'Service' : 'Product'}</span>
+                </Button>
+              )}
+            </div>
+          </div>
 
-                      <div className="space-y-2 mb-4">
-                        <div className="flex items-center gap-2 text-sm text-[#6d4c41]">
-                          <Clock className="w-4 h-4" />
-                          <span>{service.duration} minutes</span>
-                        </div>
-                        <div className="flex items-center gap-2 text-sm text-[#6d4c41]">
-                          <DollarSign className="w-4 h-4" />
-                          <span>Customer: ${service.customerPrice.toLocaleString()}</span>
-                        </div>
-                        <div className="flex items-center gap-2 text-sm text-[#6d4c41]">
-                          <DollarSign className="w-4 h-4" />
-                          <span>Vendor: ${service.vendorPayout.toLocaleString()}</span>
-                        </div>
-                        {service.allowsProducts && (
-                          <div className="flex items-center gap-2 text-sm text-[#6d4c41]">
-                            <Package className="w-4 h-4" />
-                            <span>Allows Products</span>
+          {/* Content Area */}
+          <Card className="border-0 shadow-lg min-h-[400px] bg-white/50 backdrop-blur-sm">
+            <CardContent className="p-0">
+              {/* SERVICES CONTENT */}
+              <TabsContent value="services" className="m-0">
+                {subTab === 'master' ? (
+                  <Table>
+                    <TableHeader className="bg-[#f8f5f2]">
+                      <TableRow className="hover:bg-transparent border-b-[#e7e0db]">
+                        <TableHead className="font-serif text-[#4e342e]">Service Name</TableHead>
+                        <TableHead className="font-serif text-[#4e342e]">Category</TableHead>
+                        <TableHead className="font-serif text-[#4e342e]">Price</TableHead>
+                        <TableHead className="font-serif text-[#4e342e]">Duration</TableHead>
+                        <TableHead className="font-serif text-[#4e342e]">Status</TableHead>
+                        <TableHead className="text-right font-serif text-[#4e342e]">Actions</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {loading ? (
+                        <TableRow><TableCell colSpan={6} className="h-32 text-center"><Loader2 className="w-6 h-6 animate-spin mx-auto text-[#4e342e]" /></TableCell></TableRow>
+                      ) : filteredServices.length === 0 ? (
+                        <TableRow><TableCell colSpan={6} className="h-48 text-center text-muted-foreground">
+                          <div className="flex flex-col items-center justify-center opacity-70">
+                            <Scissors className="w-10 h-10 mb-2 text-[#4e342e]/30" />
+                            <p>No services found in Master Catalog.</p>
                           </div>
-                        )}
-                      </div>
-
-                      <div className="flex gap-2">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => handleEditService(service)}
-                          className="flex-1"
-                        >
-                          <Edit className="w-4 h-4 mr-1" />
-                          Edit
-                        </Button>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => handleToggleServiceStatus(service)}
-                          className="flex-1"
-                        >
-                          {service.isActive ? (
-                            <>
-                              <XCircle className="w-4 h-4 mr-1" />
-                              Deactivate
-                            </>
-                          ) : (
-                            <>
-                              <CheckCircle className="w-4 h-4 mr-1" />
-                              Activate
-                            </>
-                          )}
-                        </Button>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => handleDeleteService(service.id)}
-                          className="text-red-600 hover:text-red-700"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </Button>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-            )}
-          </TabsContent>
-
-          {/* PRODUCTS TAB */}
-          <TabsContent value="products" className="space-y-6">
-            {/* Filters and Actions */}
-            <Card className="border-0 shadow-lg">
-              <CardContent className="p-4">
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                  <div className="relative">
-                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#6d4c41] w-5 h-5" />
-                    <Input
-                      placeholder="Search products..."
-                      value={productsSearchTerm}
-                      onChange={(e) => setProductsSearchTerm(e.target.value)}
-                      className="pl-10"
-                    />
-                  </div>
-                  <Select value={productsStatusFilter} onValueChange={setProductsStatusFilter}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Filter by status" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">All Status</SelectItem>
-                      <SelectItem value="active">Active</SelectItem>
-                      <SelectItem value="inactive">Inactive</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <Select value={productsCategoryFilter} onValueChange={setProductsCategoryFilter}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Filter by category" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">All Categories</SelectItem>
-                      {uniqueProductCategories.map(cat => (
-                        <SelectItem key={cat} value={cat}>{cat}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <Button
-                    onClick={handleAddProduct}
-                    className="bg-[#4e342e] hover:bg-[#3b2c26] text-white"
-                  >
-                    <Plus className="w-4 h-4 mr-2" />
-                    ➕ Add Product
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Products List */}
-            {productsLoading ? (
-              <div className="flex items-center justify-center py-12">
-                <Loader2 className="w-8 h-8 animate-spin text-[#4e342e]" />
-              </div>
-            ) : filteredProducts.length === 0 ? (
-              <Card className="border-0 shadow-lg">
-                <CardContent className="p-12 text-center">
-                  <Package className="w-16 h-16 text-[#6d4c41] mx-auto mb-4 opacity-50" />
-                  <p className="text-xl font-semibold text-[#4e342e] mb-2">No products found</p>
-                  <p className="text-[#6d4c41]">Create your first at-home product to get started</p>
-                </CardContent>
-              </Card>
-            ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {filteredProducts.map((product) => (
-                  <Card key={product.id} className="border-0 shadow-lg hover:shadow-xl transition-shadow">
-                    <CardHeader>
-                      <div className="flex items-start justify-between">
-                        <CardTitle className="text-lg font-serif text-[#4e342e]">
-                          {product.name}
-                        </CardTitle>
-                        <Badge variant={product.isActive ? "default" : "secondary"}>
-                          {product.isActive ? 'Active' : 'Inactive'}
-                        </Badge>
-                      </div>
-                      {product.category && (
-                        <Badge variant="outline" className="mt-2">
-                          {product.category}
-                        </Badge>
+                        </TableCell></TableRow>
+                      ) : (
+                        filteredServices.map(service => (
+                          <TableRow key={service.id} className="hover:bg-[#faf8f6] group transition-colors">
+                            <TableCell className="font-medium text-[#4e342e]">
+                              <div className="flex items-center gap-3">
+                                <div className="w-10 h-10 rounded-lg bg-gray-100 overflow-hidden flex-shrink-0 border border-gray-200">
+                                  {service.image_url ? (
+                                    <img src={service.image_url} alt="" className="w-full h-full object-cover" />
+                                  ) : (
+                                    <div className="w-full h-full flex items-center justify-center text-gray-300">
+                                      <Scissors className="w-5 h-5" />
+                                    </div>
+                                  )}
+                                </div>
+                                <div>
+                                  <div>{service.name}</div>
+                                  {service.description && <div className="text-xs text-gray-400 line-clamp-1 max-w-[200px]">{service.description}</div>}
+                                </div>
+                              </div>
+                            </TableCell>
+                            <TableCell><Badge variant="outline" className="bg-white border-[#e7e0db] text-[#6d4c41] font-normal">{service.category}</Badge></TableCell>
+                            <TableCell className="font-bold text-[#4e342e]">${service.price.toLocaleString()}</TableCell>
+                            <TableCell className="text-[#6d4c41] text-sm"><span className="flex items-center gap-1"><Clock className="w-3 h-3" /> {service.duration_minutes}m</span></TableCell>
+                            <TableCell>
+                              {service.is_active
+                                ? <Badge className="bg-green-50 text-green-700 hover:bg-green-100 border border-green-200 shadow-none font-normal"><CheckCircle2 className="w-3 h-3 mr-1" /> Active</Badge>
+                                : <Badge variant="secondary" className="font-normal">Inactive</Badge>
+                              }
+                            </TableCell>
+                            <TableCell className="text-right">
+                              <div className="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                <Button variant="ghost" size="icon" onClick={() => handleOpenServiceDialog(service)} className="h-8 w-8 hover:bg-blue-50 hover:text-blue-600">
+                                  <Edit className="w-4 h-4" />
+                                </Button>
+                                <Button variant="ghost" size="icon" onClick={() => handleDeleteService(service.id)} className="h-8 w-8 hover:bg-red-50 hover:text-red-600">
+                                  <Trash2 className="w-4 h-4" />
+                                </Button>
+                              </div>
+                            </TableCell>
+                          </TableRow>
+                        ))
                       )}
-                    </CardHeader>
-                    <CardContent>
-                      {product.image && (
-                        <div className="mb-4">
-                          <img
-                            src={product.image}
-                            alt={product.name}
-                            className="w-full h-32 object-cover rounded-lg"
-                            onError={(e) => {
-                              (e.target as HTMLImageElement).style.display = 'none';
-                            }}
-                          />
-                        </div>
+                    </TableBody>
+                  </Table>
+                ) : (
+                  <Table>
+                    <TableHeader className="bg-[#fdf6f0]">
+                      <TableRow className="border-b-[#f0e6dd]">
+                        <TableHead className="font-serif text-[#4e342e]">Vendor Service</TableHead>
+                        <TableHead className="font-serif text-[#4e342e]">Category</TableHead>
+                        <TableHead className="font-serif text-[#4e342e]">Vendor</TableHead>
+                        <TableHead className="text-right font-serif text-[#4e342e]">Price</TableHead>
+                        <TableHead className="text-right font-serif text-[#4e342e]">Action</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {referenceLoading ? (
+                        <TableRow><TableCell colSpan={5} className="h-32 text-center"><Loader2 className="w-6 h-6 animate-spin mx-auto text-[#4e342e]" /></TableCell></TableRow>
+                      ) : filteredRefServices.length === 0 ? (
+                        <TableRow><TableCell colSpan={5} className="h-32 text-center text-muted-foreground">No vendor services found.</TableCell></TableRow>
+                      ) : (
+                        filteredRefServices.map((ref, i) => (
+                          <TableRow key={i} className="hover:bg-[#fff9f4]">
+                            <TableCell className="font-medium text-[#4e342e]">{ref.name}</TableCell>
+                            <TableCell><Badge variant="outline" className="bg-white/50">{ref.category}</Badge></TableCell>
+                            <TableCell className="text-gray-500 text-sm">{ref.vendor_name}</TableCell>
+                            <TableCell className="text-right font-serif font-medium">${ref.price.toLocaleString()}</TableCell>
+                            <TableCell className="text-right">
+                              <Button size="sm" variant="outline" onClick={() => handleUseServiceTemplate(ref)} className="h-8 bg-white border-[#e7e0db] hover:bg-[#4e342e] hover:text-white transition-colors">
+                                <Copy className="w-3 h-3 mr-2" /> Use Template
+                              </Button>
+                            </TableCell>
+                          </TableRow>
+                        ))
                       )}
-                      <p className="text-sm text-[#6d4c41] mb-4 line-clamp-2">
-                        {product.description || 'No description'}
-                      </p>
+                    </TableBody>
+                  </Table>
+                )}
+              </TabsContent>
 
-                      <div className="space-y-2 mb-4">
-                        <div className="flex items-center gap-2 text-sm text-[#6d4c41]">
-                          <DollarSign className="w-4 h-4" />
-                          <span>Customer: ${product.customerPrice.toLocaleString()}</span>
-                        </div>
-                        <div className="flex items-center gap-2 text-sm text-[#6d4c41]">
-                          <DollarSign className="w-4 h-4" />
-                          <span>Vendor: ${product.vendorPayout.toLocaleString()}</span>
-                        </div>
-                        {product.sku && (
-                          <div className="text-xs text-[#6d4c41]">
-                            SKU: {product.sku}
+              {/* PRODUCTS CONTENT */}
+              <TabsContent value="products" className="m-0">
+                {subTab === 'master' ? (
+                  <Table>
+                    <TableHeader className="bg-[#f8f5f2]">
+                      <TableRow className="hover:bg-transparent border-b-[#e7e0db]">
+                        <TableHead className="font-serif text-[#4e342e]">Product Name</TableHead>
+                        <TableHead className="font-serif text-[#4e342e]">Category</TableHead>
+                        <TableHead className="font-serif text-[#4e342e]">Price</TableHead>
+                        <TableHead className="font-serif text-[#4e342e]">Status</TableHead>
+                        <TableHead className="text-right font-serif text-[#4e342e]">Actions</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {loading ? (
+                        <TableRow><TableCell colSpan={5} className="h-32 text-center"><Loader2 className="w-6 h-6 animate-spin mx-auto text-[#4e342e]" /></TableCell></TableRow>
+                      ) : filteredProducts.length === 0 ? (
+                        <TableRow><TableCell colSpan={5} className="h-48 text-center text-muted-foreground">
+                          <div className="flex flex-col items-center justify-center opacity-70">
+                            <Package className="w-10 h-10 mb-2 text-[#4e342e]/30" />
+                            <p>No products found in Master Catalog.</p>
                           </div>
-                        )}
-                      </div>
-
-                      <div className="flex gap-2">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => handleEditProduct(product)}
-                          className="flex-1"
-                        >
-                          <Edit className="w-4 h-4 mr-1" />
-                          Edit
-                        </Button>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => handleToggleProductStatus(product)}
-                          className="flex-1"
-                        >
-                          {product.isActive ? (
-                            <>
-                              <XCircle className="w-4 h-4 mr-1" />
-                              Deactivate
-                            </>
-                          ) : (
-                            <>
-                              <CheckCircle className="w-4 h-4 mr-1" />
-                              Activate
-                            </>
-                          )}
-                        </Button>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => handleDeleteProduct(product.id)}
-                          className="text-red-600 hover:text-red-700"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </Button>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-            )}
-          </TabsContent>
+                        </TableCell></TableRow>
+                      ) : (
+                        filteredProducts.map(product => (
+                          <TableRow key={product.id} className="hover:bg-[#faf8f6] group transition-colors">
+                            <TableCell className="font-medium text-[#4e342e]">
+                              <div className="flex items-center gap-3">
+                                <div className="w-10 h-10 rounded-lg bg-gray-100 overflow-hidden flex-shrink-0 border border-gray-200">
+                                  {product.image_url ? (
+                                    <img src={product.image_url} alt="" className="w-full h-full object-cover" />
+                                  ) : (
+                                    <div className="w-full h-full flex items-center justify-center text-gray-300">
+                                      <Package className="w-5 h-5" />
+                                    </div>
+                                  )}
+                                </div>
+                                <div>
+                                  <div>{product.name}</div>
+                                  {product.description && <div className="text-xs text-gray-400 line-clamp-1 max-w-[200px]">{product.description}</div>}
+                                </div>
+                              </div>
+                            </TableCell>
+                            <TableCell><Badge variant="outline" className="bg-white border-[#e7e0db] text-[#6d4c41] font-normal">{product.category}</Badge></TableCell>
+                            <TableCell className="font-bold text-[#4e342e]">${product.price.toLocaleString()}</TableCell>
+                            <TableCell>
+                              {product.is_active
+                                ? <Badge className="bg-green-50 text-green-700 hover:bg-green-100 border border-green-200 shadow-none font-normal"><CheckCircle2 className="w-3 h-3 mr-1" /> Active</Badge>
+                                : <Badge variant="secondary" className="font-normal">Inactive</Badge>
+                              }
+                            </TableCell>
+                            <TableCell className="text-right">
+                              <div className="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                <Button variant="ghost" size="icon" onClick={() => handleOpenProductDialog(product)} className="h-8 w-8 hover:bg-blue-50 hover:text-blue-600">
+                                  <Edit className="w-4 h-4" />
+                                </Button>
+                                <Button variant="ghost" size="icon" onClick={() => handleDeleteProduct(product.id)} className="h-8 w-8 hover:bg-red-50 hover:text-red-600">
+                                  <Trash2 className="w-4 h-4" />
+                                </Button>
+                              </div>
+                            </TableCell>
+                          </TableRow>
+                        ))
+                      )}
+                    </TableBody>
+                  </Table>
+                ) : (
+                  <Table>
+                    <TableHeader className="bg-[#fdf6f0]">
+                      <TableRow className="border-b-[#f0e6dd]">
+                        <TableHead className="font-serif text-[#4e342e]">Vendor Product</TableHead>
+                        <TableHead className="font-serif text-[#4e342e]">Vendor</TableHead>
+                        <TableHead className="text-right font-serif text-[#4e342e]">Price</TableHead>
+                        <TableHead className="text-right font-serif text-[#4e342e]">Action</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {referenceLoading ? (
+                        <TableRow><TableCell colSpan={4} className="h-32 text-center"><Loader2 className="w-6 h-6 animate-spin mx-auto text-[#4e342e]" /></TableCell></TableRow>
+                      ) : filteredRefProducts.length === 0 ? (
+                        <TableRow><TableCell colSpan={4} className="h-32 text-center text-muted-foreground">No vendor products found.</TableCell></TableRow>
+                      ) : (
+                        filteredRefProducts.map((ref, i) => (
+                          <TableRow key={i} className="hover:bg-[#fff9f4]">
+                            <TableCell className="font-medium text-[#4e342e]">{ref.name}</TableCell>
+                            <TableCell className="text-gray-500">{ref.vendor_name}</TableCell>
+                            <TableCell className="text-right font-serif font-medium">${ref.price.toLocaleString()}</TableCell>
+                            <TableCell className="text-right">
+                              <Button size="sm" variant="outline" onClick={() => handleUseProductTemplate(ref)} className="h-8 bg-white border-[#e7e0db] hover:bg-[#4e342e] hover:text-white transition-colors">
+                                <Copy className="w-3 h-3 mr-2" /> Use Template
+                              </Button>
+                            </TableCell>
+                          </TableRow>
+                        ))
+                      )}
+                    </TableBody>
+                  </Table>
+                )}
+              </TabsContent>
+            </CardContent>
+          </Card>
         </Tabs>
 
         {/* SERVICE DIALOG */}
         <Dialog open={isServiceDialogOpen} onOpenChange={setIsServiceDialogOpen}>
-          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-            <DialogHeader>
+          <DialogContent className="max-w-2xl bg-[#faf9f8] border-0 shadow-2xl">
+            <DialogHeader className="border-b border-gray-200 pb-4">
               <DialogTitle className="text-2xl font-serif text-[#4e342e]">
                 {editingService ? 'Edit Service' : 'Add New Service'}
               </DialogTitle>
             </DialogHeader>
-            <div className="space-y-4">
-              <div>
-                <Label htmlFor="service-name" className="text-[#4e342e]">Service Name *</Label>
-                <Input
-                  id="service-name"
-                  value={serviceFormData.name}
-                  onChange={(e) => setServiceFormData({ ...serviceFormData, name: e.target.value })}
-                  placeholder="e.g., Professional Hair Styling"
-                />
-              </div>
-              <div>
-                <Label htmlFor="service-description" className="text-[#4e342e]">Description</Label>
-                <Textarea
-                  id="service-description"
-                  value={serviceFormData.description}
-                  onChange={(e) => setServiceFormData({ ...serviceFormData, description: e.target.value })}
-                  placeholder="Service description..."
-                  rows={3}
-                />
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="service-duration" className="text-[#4e342e]">Duration (minutes) *</Label>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 py-6">
+              {/* Left Column: Image & Basic Info */}
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <Label className="text-[#6d4c41] font-medium flex items-center gap-1"><ImageIcon className="w-3 h-3" /> Service Image URL</Label>
                   <Input
-                    id="service-duration"
-                    type="number"
-                    value={serviceFormData.duration}
-                    onChange={(e) => setServiceFormData({ ...serviceFormData, duration: parseInt(e.target.value) || 60 })}
+                    value={serviceForm.image_url}
+                    onChange={e => setServiceForm({ ...serviceForm, image_url: e.target.value })}
+                    placeholder="https://example.com/image.jpg"
+                    className="bg-white"
+                  />
+                  {/* LIVE IMAGE PREVIEW */}
+                  <ImagePreview url={serviceForm.image_url} />
+                </div>
+                <div className="flex items-center space-x-2 bg-white p-3 rounded-lg border border-gray-200 shadow-sm mt-4">
+                  <input
+                    type="checkbox"
+                    id="srvActive"
+                    checked={serviceForm.is_active}
+                    onChange={e => setServiceForm({ ...serviceForm, is_active: e.target.checked })}
+                    className="h-5 w-5 rounded border-gray-300 accent-[#4e342e] cursor-pointer"
+                  />
+                  <Label htmlFor="srvActive" className="cursor-pointer font-medium text-[#4e342e]">Active & Visible in Catalog</Label>
+                </div>
+              </div>
+
+              {/* Right Column: Details */}
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <Label className="text-[#6d4c41] font-medium">Service Name <span className="text-red-500">*</span></Label>
+                  <Input
+                    value={serviceForm.name}
+                    onChange={e => setServiceForm({ ...serviceForm, name: e.target.value })}
+                    className="bg-white font-medium"
+                    placeholder="e.g. Luxury Facial"
                   />
                 </div>
-                <div>
-                  <Label htmlFor="service-category" className="text-[#4e342e]">Category</Label>
-                  <Select value={serviceFormData.category} onValueChange={(value) => setServiceFormData({ ...serviceFormData, category: value })}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select category" />
-                    </SelectTrigger>
+
+                <div className="space-y-2">
+                  <Label className="text-[#6d4c41] font-medium">Category <span className="text-red-500">*</span></Label>
+                  <Select value={serviceForm.category} onValueChange={v => setServiceForm({ ...serviceForm, category: v })}>
+                    <SelectTrigger className="bg-white"><SelectValue placeholder="Select Category" /></SelectTrigger>
                     <SelectContent>
-                      {categories.map(cat => (
-                        <SelectItem key={cat} value={cat}>{cat}</SelectItem>
-                      ))}
+                      {serviceCategories.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}
                     </SelectContent>
                   </Select>
                 </div>
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="service-customer-price" className="text-[#4e342e]">Customer Price ($) *</Label>
-                  <Input
-                    id="service-customer-price"
-                    type="number"
-                    step="0.01"
-                    value={serviceFormData.customerPrice}
-                    onChange={(e) => setServiceFormData({ ...serviceFormData, customerPrice: parseFloat(e.target.value) || 0 })}
-                  />
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label className="text-[#6d4c41] font-medium flex items-center gap-1"><DollarSign className="w-3 h-3" /> Price</Label>
+                    <Input
+                      type="number"
+                      value={serviceForm.price}
+                      onChange={e => setServiceForm({ ...serviceForm, price: Number(e.target.value) })}
+                      className="bg-white"
+                      min="0"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label className="text-[#6d4c41] font-medium flex items-center gap-1"><Clock className="w-3 h-3" /> Duration (min)</Label>
+                    <Input
+                      type="number"
+                      value={serviceForm.duration_minutes}
+                      onChange={e => setServiceForm({ ...serviceForm, duration_minutes: Number(e.target.value) })}
+                      className="bg-white"
+                      min="0"
+                    />
+                  </div>
                 </div>
-                <div>
-                  <Label htmlFor="service-vendor-payout" className="text-[#4e342e]">Vendor Payout ($) *</Label>
-                  <Input
-                    id="service-vendor-payout"
-                    type="number"
-                    step="0.01"
-                    value={serviceFormData.vendorPayout}
-                    onChange={(e) => setServiceFormData({ ...serviceFormData, vendorPayout: parseFloat(e.target.value) || 0 })}
+
+                <div className="space-y-2">
+                  <Label className="text-[#6d4c41] font-medium flex items-center gap-1"><AlignLeft className="w-3 h-3" /> Description</Label>
+                  <Textarea
+                    value={serviceForm.description}
+                    onChange={e => setServiceForm({ ...serviceForm, description: e.target.value })}
+                    className="bg-white min-h-[100px]"
+                    placeholder="Describe the service details..."
                   />
-                </div>
-              </div>
-              <div>
-                <Label htmlFor="service-icon" className="text-[#4e342e]">Icon (optional)</Label>
-                <Input
-                  id="service-icon"
-                  value={serviceFormData.icon}
-                  onChange={(e) => setServiceFormData({ ...serviceFormData, icon: e.target.value })}
-                  placeholder="Icon name or URL"
-                />
-              </div>
-              <div className="flex items-center gap-4">
-                <div className="flex items-center space-x-2">
-                  <input
-                    type="checkbox"
-                    id="service-allows-products"
-                    checked={serviceFormData.allowsProducts}
-                    onChange={(e) => setServiceFormData({ ...serviceFormData, allowsProducts: e.target.checked })}
-                    className="w-4 h-4"
-                  />
-                  <Label htmlFor="service-allows-products" className="text-[#4e342e]">Allows Products</Label>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <input
-                    type="checkbox"
-                    id="service-is-active"
-                    checked={serviceFormData.isActive}
-                    onChange={(e) => setServiceFormData({ ...serviceFormData, isActive: e.target.checked })}
-                    className="w-4 h-4"
-                  />
-                  <Label htmlFor="service-is-active" className="text-[#4e342e]">Active</Label>
                 </div>
               </div>
             </div>
-            <DialogFooter>
-              <Button variant="outline" onClick={() => setIsServiceDialogOpen(false)}>
-                Cancel
-              </Button>
-              <Button
-                onClick={handleSaveService}
-                className="bg-[#4e342e] hover:bg-[#3b2c26] text-white"
-              >
-                {editingService ? 'Update' : 'Create'} Service
+            <DialogFooter className="bg-white border-t border-gray-100 -mx-6 -mb-6 p-4 rounded-b-lg">
+              <Button variant="outline" onClick={() => setIsServiceDialogOpen(false)} className="hover:bg-gray-50">Cancel</Button>
+              <Button onClick={handleSaveService} disabled={processing} className="bg-[#4e342e] text-white hover:bg-[#3b2c26] shadow-md">
+                {processing && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
+                {editingService ? 'Save Changes' : 'Create Service'}
               </Button>
             </DialogFooter>
           </DialogContent>
@@ -884,115 +792,92 @@ const ManageAtHomeCatalog = ({ defaultTab = 'services' }: { defaultTab?: 'servic
 
         {/* PRODUCT DIALOG */}
         <Dialog open={isProductDialogOpen} onOpenChange={setIsProductDialogOpen}>
-          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-            <DialogHeader>
+          <DialogContent className="max-w-2xl bg-[#faf9f8] border-0 shadow-2xl">
+            <DialogHeader className="border-b border-gray-200 pb-4">
               <DialogTitle className="text-2xl font-serif text-[#4e342e]">
                 {editingProduct ? 'Edit Product' : 'Add New Product'}
               </DialogTitle>
             </DialogHeader>
-            <div className="space-y-4">
-              <div>
-                <Label htmlFor="product-name" className="text-[#4e342e]">Product Name *</Label>
-                <Input
-                  id="product-name"
-                  value={productFormData.name}
-                  onChange={(e) => setProductFormData({ ...productFormData, name: e.target.value })}
-                  placeholder="e.g., Professional Hair Shampoo"
-                />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 py-6">
+              {/* Left Column: Image & Status */}
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <Label className="text-[#6d4c41] font-medium flex items-center gap-1"><ImageIcon className="w-3 h-3" /> Product Image URL</Label>
+                  <Input
+                    value={productForm.image_url}
+                    onChange={e => setProductForm({ ...productForm, image_url: e.target.value })}
+                    placeholder="https://example.com/product.jpg"
+                    className="bg-white"
+                  />
+                  {/* LIVE IMAGE PREVIEW */}
+                  <ImagePreview url={productForm.image_url} />
+                </div>
+                <div className="flex items-center space-x-2 bg-white p-3 rounded-lg border border-gray-200 shadow-sm mt-4">
+                  <input
+                    type="checkbox"
+                    id="prodActive"
+                    checked={productForm.is_active}
+                    onChange={e => setProductForm({ ...productForm, is_active: e.target.checked })}
+                    className="h-5 w-5 rounded border-gray-300 accent-[#4e342e] cursor-pointer"
+                  />
+                  <Label htmlFor="prodActive" className="cursor-pointer font-medium text-[#4e342e]">Active & Visible</Label>
+                </div>
               </div>
-              <div>
-                <Label htmlFor="product-description" className="text-[#4e342e]">Description</Label>
-                <Textarea
-                  id="product-description"
-                  value={productFormData.description}
-                  onChange={(e) => setProductFormData({ ...productFormData, description: e.target.value })}
-                  placeholder="Product description..."
-                  rows={3}
-                />
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="product-category" className="text-[#4e342e]">Category</Label>
-                  <Select value={productFormData.category} onValueChange={(value) => setProductFormData({ ...productFormData, category: value })}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select category" />
-                    </SelectTrigger>
+
+              {/* Right Column: Information */}
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <Label className="text-[#6d4c41] font-medium">Product Name <span className="text-red-500">*</span></Label>
+                  <Input
+                    value={productForm.name}
+                    onChange={e => setProductForm({ ...productForm, name: e.target.value })}
+                    className="bg-white font-medium"
+                    placeholder="e.g. Argan Oil Shampoo"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label className="text-[#6d4c41] font-medium">Category <span className="text-red-500">*</span></Label>
+                  <Select value={productForm.category} onValueChange={v => setProductForm({ ...productForm, category: v })}>
+                    <SelectTrigger className="bg-white"><SelectValue placeholder="Select Category" /></SelectTrigger>
                     <SelectContent>
-                      {categories.map(cat => (
-                        <SelectItem key={cat} value={cat}>{cat}</SelectItem>
-                      ))}
+                      {productCategories.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}
                     </SelectContent>
                   </Select>
                 </div>
-                <div>
-                  <Label htmlFor="product-sku" className="text-[#4e342e]">SKU</Label>
+                <div className="space-y-2">
+                  <Label className="text-[#6d4c41] font-medium flex items-center gap-1"><DollarSign className="w-3 h-3" /> Price</Label>
                   <Input
-                    id="product-sku"
-                    value={productFormData.sku}
-                    onChange={(e) => setProductFormData({ ...productFormData, sku: e.target.value })}
-                    placeholder="Product SKU"
-                  />
-                </div>
-              </div>
-              <div>
-                <Label htmlFor="product-image" className="text-[#4e342e]">Image URL</Label>
-                <Input
-                  id="product-image"
-                  value={productFormData.image}
-                  onChange={(e) => setProductFormData({ ...productFormData, image: e.target.value })}
-                  placeholder="https://example.com/image.jpg"
-                />
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="product-customer-price" className="text-[#4e342e]">Customer Price ($) *</Label>
-                  <Input
-                    id="product-customer-price"
                     type="number"
-                    step="0.01"
-                    value={productFormData.customerPrice}
-                    onChange={(e) => setProductFormData({ ...productFormData, customerPrice: parseFloat(e.target.value) || 0 })}
+                    value={productForm.price}
+                    onChange={e => setProductForm({ ...productForm, price: Number(e.target.value) })}
+                    className="bg-white"
+                    min="0"
                   />
                 </div>
-                <div>
-                  <Label htmlFor="product-vendor-payout" className="text-[#4e342e]">Vendor Payout ($) *</Label>
-                  <Input
-                    id="product-vendor-payout"
-                    type="number"
-                    step="0.01"
-                    value={productFormData.vendorPayout}
-                    onChange={(e) => setProductFormData({ ...productFormData, vendorPayout: parseFloat(e.target.value) || 0 })}
+                <div className="space-y-2">
+                  <Label className="text-[#6d4c41] font-medium flex items-center gap-1"><AlignLeft className="w-3 h-3" /> Description</Label>
+                  <Textarea
+                    value={productForm.description}
+                    onChange={e => setProductForm({ ...productForm, description: e.target.value })}
+                    className="bg-white min-h-[100px]"
+                    placeholder="Product details..."
                   />
                 </div>
-              </div>
-              <div className="flex items-center space-x-2">
-                <input
-                  type="checkbox"
-                  id="product-is-active"
-                  checked={productFormData.isActive}
-                  onChange={(e) => setProductFormData({ ...productFormData, isActive: e.target.checked })}
-                  className="w-4 h-4"
-                />
-                <Label htmlFor="product-is-active" className="text-[#4e342e]">Active</Label>
               </div>
             </div>
-            <DialogFooter>
-              <Button variant="outline" onClick={() => setIsProductDialogOpen(false)}>
-                Cancel
-              </Button>
-              <Button
-                onClick={handleSaveProduct}
-                className="bg-[#4e342e] hover:bg-[#3b2c26] text-white"
-              >
-                {editingProduct ? 'Update' : 'Create'} Product
+            <DialogFooter className="bg-white border-t border-gray-100 -mx-6 -mb-6 p-4 rounded-b-lg">
+              <Button variant="outline" onClick={() => setIsProductDialogOpen(false)} className="hover:bg-gray-50">Cancel</Button>
+              <Button onClick={handleSaveProduct} disabled={processing} className="bg-[#4e342e] text-white hover:bg-[#3b2c26] shadow-md">
+                {processing && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
+                {editingProduct ? 'Save Changes' : 'Create Product'}
               </Button>
             </DialogFooter>
           </DialogContent>
         </Dialog>
+
       </div>
     </DashboardLayout>
   );
 };
 
 export default ManageAtHomeCatalog;
-

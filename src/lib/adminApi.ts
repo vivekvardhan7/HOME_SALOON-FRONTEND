@@ -141,6 +141,25 @@ export const adminApi = {
   },
 
   /**
+   * Generic PUT request
+   */
+  async put<T>(endpoint: string, data: any) {
+    return apiRequest<T>(endpoint, {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    });
+  },
+
+  /**
+   * Generic DELETE request
+   */
+  async delete<T>(endpoint: string) {
+    return apiRequest<T>(endpoint, {
+      method: 'DELETE',
+    });
+  },
+
+  /**
    * Get admin dashboard data
    */
   async getDashboard() {
