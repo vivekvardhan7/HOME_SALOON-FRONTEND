@@ -9,21 +9,20 @@ export const config = {
 };
 
 // Helper function to get full API URL
-export const getApiUrl = (endpoint: string = '') => {
-  if (!config.apiUrl) {
-    if (config.isDevelopment) console.warn('VITE_API_BASE_URL is not set!');
-    return endpoint;
+// Helper function to get full API URL
+export function getApiUrl(path = '') {
+  const base = import.meta.env.VITE_API_BASE_URL?.replace(/\/$/, '');
+
+  if (!base) {
+    console.error('VITE_API_BASE_URL is missing in environment variables');
+    // Minimal fallback to prevent crash in strict dev environments, but user should fix env
+    if (import.meta.env.DEV) return `http://localhost:3001/api/${path.replace(/^\//, '')}`;
+    throw new Error('VITE_API_BASE_URL is missing');
   }
 
-  // Normalize base URL to remove trailing slash
-  const base = config.apiUrl.replace(/\/$/, '');
-
-  // Normalize endpoint to remove leading slash
-  const path = endpoint.startsWith('/') ? endpoint.slice(1) : endpoint;
-
-  // Construct full URL with /api prefix
-  return `${base}/api/${path}`;
-};
+  const cleanPath = path.startsWith('/') ? path : `/${path}`;
+  return `${base}/api${cleanPath}`;
+}
 
 // Helper function to check if we're in development
 export const isDev = () => config.isDevelopment;
