@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { getApiUrl } from '@/config/env';
 import { useSupabaseAuth } from "@/contexts/SupabaseAuthContext";
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -74,7 +75,7 @@ const SettingsPage = () => {
   const fetchManagerInfo = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch('http://localhost:3001/api/admin/manager-settings', {
+      const response = await fetch(getApiUrl('admin/manager-settings'), {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       if (response.ok) {
@@ -98,7 +99,7 @@ const SettingsPage = () => {
     try {
       setUpdatingManager(true);
       const token = localStorage.getItem('token');
-      const response = await fetch('http://localhost:3001/api/admin/manager-settings', {
+      const response = await fetch(getApiUrl('admin/manager-settings'), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -126,7 +127,7 @@ const SettingsPage = () => {
     try {
       setLoading(true);
       const token = localStorage.getItem('token');
-      const response = await fetch('http://localhost:3001/api/admin/settings', {
+      const response = await fetch(getApiUrl('admin/settings'), {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -150,7 +151,7 @@ const SettingsPage = () => {
     try {
       setSaving(true);
       const token = localStorage.getItem('token');
-      const response = await fetch('http://localhost:3001/api/admin/settings', {
+      const response = await fetch(getApiUrl('admin/settings'), {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { getApiUrl } from '@/config/env';
 import { useNavigate, useParams } from 'react-router-dom';
 import { supabase } from "@/lib/supabase";
 import { useSupabaseAuth } from "@/contexts/SupabaseAuthContext";
@@ -49,7 +50,7 @@ const EditServicePage = () => {
 
     const fetchCategories = async () => {
         try {
-            const response = await fetch('http://localhost:3001/api/vendor/categories');
+            const response = await fetch(getApiUrl('vendor/categories'));
             if (response.ok) {
                 const data = await response.json();
                 setCategories(data.categories || []);
@@ -70,7 +71,7 @@ const EditServicePage = () => {
             // We can use that or fetch from Vendor list. Let's use Public GET for simplicity but it returns public structure.
             // Better to fetch from Vendor List and find item.
 
-            const response = await fetch(`http://localhost:3001/api/vendor/${user?.id}/services`, {
+            const response = await fetch(getApiUrl(`vendor/${user?.id}/services`), {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
 
@@ -166,7 +167,7 @@ const EditServicePage = () => {
             };
 
             const token = localStorage.getItem('token');
-            const response = await fetch(`http://localhost:3001/api/vendor/${user.id}/services/${id}`, {
+            const response = await fetch(getApiUrl(`vendor/${user.id}/services/${id}`), {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',

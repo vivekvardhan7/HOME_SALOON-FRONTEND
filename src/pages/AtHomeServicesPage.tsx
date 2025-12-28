@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { getApiUrl } from '@/config/env';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { api } from '@/lib/api';
@@ -118,8 +119,7 @@ const AtHomeServicesPage = () => {
     const fetchUniqueServices = async () => {
       try {
         setLoading(true);
-        const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
-        const response = await fetch(`${API_URL}/services/unique/grouped`);
+        const response = await fetch(getApiUrl('/services/unique/grouped'));
         if (response.ok) {
           const data = await response.json();
           if (isMounted && data.success && data.data && Array.isArray(data.data) && data.data.length > 0) {
@@ -488,8 +488,8 @@ const AtHomeServicesPage = () => {
           >
             <Card
               className={`cursor-pointer transition-all duration-300 p-8 rounded-3xl border-2 ${productOption === 'with'
-                  ? 'border-[#4e342e] bg-[#f8d7da]/10 shadow-xl'
-                  : 'border-[#f8d7da]/30 bg-white hover:border-[#4e342e]/50 hover:shadow-lg'
+                ? 'border-[#4e342e] bg-[#f8d7da]/10 shadow-xl'
+                : 'border-[#f8d7da]/30 bg-white hover:border-[#4e342e]/50 hover:shadow-lg'
                 }`}
               onClick={() => setProductOption('with')}
             >
@@ -504,8 +504,8 @@ const AtHomeServicesPage = () => {
 
             <Card
               className={`cursor-pointer transition-all duration-300 p-8 rounded-3xl border-2 ${productOption === 'without'
-                  ? 'border-[#4e342e] bg-[#f8d7da]/10 shadow-xl'
-                  : 'border-[#f8d7da]/30 bg-white hover:border-[#4e342e]/50 hover:shadow-lg'
+                ? 'border-[#4e342e] bg-[#f8d7da]/10 shadow-xl'
+                : 'border-[#f8d7da]/30 bg-white hover:border-[#4e342e]/50 hover:shadow-lg'
                 }`}
               onClick={() => setProductOption('without')}
             >

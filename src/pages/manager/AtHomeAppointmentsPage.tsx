@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { getApiUrl } from '@/config/env';
 import { supabase } from '@/lib/supabase';
 import { useSupabaseAuth } from "@/contexts/SupabaseAuthContext";
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -308,7 +309,7 @@ const AtHomeAppointmentsPage = () => {
       // Import managerApi dynamically
       // But we need to use the specific endpoint for assignment which might not be in generic managerApi
       // Using fetch directly for custom endpoint
-      const response = await fetch(`http://localhost:3001/api/manager/bookings/${selectedBooking.id}/assignments`, {
+      const response = await fetch(getApiUrl(`manager/bookings/${selectedBooking.id}/assignments`), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

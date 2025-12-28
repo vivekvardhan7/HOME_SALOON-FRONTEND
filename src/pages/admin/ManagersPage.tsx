@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { getApiUrl } from '@/config/env';
 import { useSupabaseAuth } from "@/contexts/SupabaseAuthContext";
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -6,7 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { motion } from 'framer-motion';
 import DashboardLayout from '@/components/DashboardLayout';
-import { 
+import {
   UserCheck,
   Search,
   Filter,
@@ -70,12 +71,12 @@ const ManagersPage = () => {
     try {
       setLoading(true);
       console.log('📊 Fetching all managers from backend API...');
-      
+
       // Import adminApi dynamically
       const { adminApi } = await import('@/lib/adminApi');
-      
+
       const result = await adminApi.getAllManagers();
-      
+
       if (!result.success) {
         console.error('❌ Admin API returned error:', result.message);
         throw new Error(result.message || 'Failed to load managers');
@@ -121,7 +122,7 @@ const ManagersPage = () => {
   const updateManagerStatus = async (managerId: string, newStatus: string) => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`http://localhost:3001/api/admin/managers/${managerId}/status`, {
+      const response = await fetch(getApiUrl(`admin/managers/${managerId}/status`), {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
@@ -164,13 +165,13 @@ const ManagersPage = () => {
   };
 
   const filteredManagers = managers.filter(manager => {
-    const matchesSearch = 
+    const matchesSearch =
       manager.firstName.toLowerCase().includes(searchTerm.toLowerCase()) ||
       manager.lastName.toLowerCase().includes(searchTerm.toLowerCase()) ||
       manager.email.toLowerCase().includes(searchTerm.toLowerCase());
-    
+
     const matchesStatus = statusFilter === 'all' || manager.status === statusFilter;
-    
+
     return matchesSearch && matchesStatus;
   });
 
@@ -256,7 +257,7 @@ const ManagersPage = () => {
                 <h3 className="text-xl font-semibold text-[#4e342e] mb-2">No Managers Found</h3>
                 <p className="text-[#6d4c41]">
                   {searchTerm || statusFilter !== 'all'
-                    ? 'No managers match your search criteria.' 
+                    ? 'No managers match your search criteria.'
                     : 'No managers have been added yet.'}
                 </p>
               </CardContent>
@@ -344,7 +345,7 @@ const ManagersPage = () => {
                           <Badge className={getStatusColor(manager.status)}>
                             {manager.status}
                           </Badge>
-                          
+
                           <div className="flex space-x-2">
                             {manager.status === 'ACTIVE' ? (
                               <Button
@@ -366,7 +367,7 @@ const ManagersPage = () => {
                                 Activate
                               </Button>
                             )}
-                            
+
                             <Button
                               size="sm"
                               variant="outline"

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { getApiUrl } from '@/config/env';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -67,7 +68,7 @@ const SalonVisitPage = () => {
       const params = new URLSearchParams();
       if (searchTerm) params.append('search', searchTerm);
 
-      const response = await fetch(`http://localhost:3001/api/vendors?${params.toString()}`);
+      const response = await fetch(`${getApiUrl('vendors')}?${params.toString()}`);
 
       if (response.ok) {
         const data = await response.json();

@@ -3,7 +3,8 @@
  */
 
 const API_BASE = '/api'; // Use Vite proxy instead of hardcoded URL
-const FALLBACK_BASE = 'http://localhost:3001/api';
+import { getApiUrl } from '@/config/env';
+const FALLBACK_BASE = getApiUrl('');
 const REQUEST_TIMEOUT_MS = 30000;
 
 interface ApiResponse<T> {

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { getApiUrl } from '@/config/env';
 import { useSupabaseAuth } from "@/contexts/SupabaseAuthContext";
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -149,7 +150,7 @@ const VendorsPage = () => {
 
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`http://localhost:3001/api/admin/vendors/${vendorId}`, {
+      const response = await fetch(getApiUrl(`admin/vendors/${vendorId}`), {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`

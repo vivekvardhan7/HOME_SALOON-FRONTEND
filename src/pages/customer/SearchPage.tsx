@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { getApiUrl } from '@/config/env';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -8,12 +9,12 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Slider } from '@/components/ui/slider';
 import { motion } from 'framer-motion';
 import Navigation from '@/components/Navigation';
-import { 
-  Search, 
-  MapPin, 
-  Star, 
-  Clock, 
-  DollarSign, 
+import {
+  Search,
+  MapPin,
+  Star,
+  Clock,
+  DollarSign,
   Filter,
   Calendar,
   Building,
@@ -67,8 +68,7 @@ const SearchPage = () => {
   const fetchVendors = async () => {
     try {
       setLoading(true);
-      const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
-      const response = await fetch(`${API_URL}/vendors?status=APPROVED`);
+      const response = await fetch(getApiUrl('vendors?status=APPROVED'));
       if (response.ok) {
         const data = await response.json();
         if (data.vendors && Array.isArray(data.vendors) && data.vendors.length > 0) {
@@ -89,7 +89,7 @@ const SearchPage = () => {
             const servicePrices = vendor.services?.map((s: any) => s.price).filter((p: any) => p != null) || [];
             const minPrice = servicePrices.length > 0 ? Math.min(...servicePrices) : 30;
             const maxPrice = servicePrices.length > 0 ? Math.max(...servicePrices) : 100;
-            const avgPrice = servicePrices.length > 0 
+            const avgPrice = servicePrices.length > 0
               ? Math.round(servicePrices.reduce((a: number, b: number) => a + b, 0) / servicePrices.length)
               : 50;
 
@@ -181,12 +181,12 @@ const SearchPage = () => {
 
   const filteredVendors = displayVendors.filter(vendor => {
     const matchesSearch = vendor.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         vendor.services.some(service => service.toLowerCase().includes(searchQuery.toLowerCase()));
+      vendor.services.some(service => service.toLowerCase().includes(searchQuery.toLowerCase()));
     const matchesCategory = selectedCategory === 'all' || vendor.category === selectedCategory;
     const matchesLocation = selectedLocation === 'all' || vendor.location === selectedLocation;
     const matchesPrice = vendor.price >= priceRange[0] && vendor.price <= priceRange[1];
     const matchesAvailability = availability === 'all' || vendor.available === availability;
-    
+
     return matchesSearch && matchesCategory && matchesLocation && matchesPrice && matchesAvailability;
   });
 
@@ -224,7 +224,7 @@ const SearchPage = () => {
       {/* Hero Banner */}
       <section className="bg-[#fdf6f0] pt-20 pb-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div 
+          <motion.div
             className="text-center mb-12"
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
@@ -233,7 +233,7 @@ const SearchPage = () => {
             <div className="inline-flex items-center bg-[#f8d7da]/30 backdrop-blur-sm rounded-full px-4 py-2 mb-6">
               <Sparkles className="w-4 h-4 text-[#4e342e] mr-2" />
               <span className="text-sm font-medium text-[#4e342e]">Find Your Perfect Match</span>
-        </div>
+            </div>
 
             <h1 className="text-3xl lg:text-4xl font-serif font-bold text-[#4e342e] mb-6 leading-tight">
               Find Your Perfect Beauty Service
@@ -244,7 +244,7 @@ const SearchPage = () => {
           </motion.div>
 
           {/* Main Search Bar */}
-          <motion.div 
+          <motion.div
             className="max-w-4xl mx-auto"
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
@@ -252,52 +252,52 @@ const SearchPage = () => {
           >
             <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-xl rounded-2xl overflow-hidden">
               <CardContent className="p-6">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            {/* Search Input */}
-            <div className="md:col-span-2">
-              <div className="relative">
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                  {/* Search Input */}
+                  <div className="md:col-span-2">
+                    <div className="relative">
                       <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-[#6d4c41] w-5 h-5" />
-                <Input
+                      <Input
                         placeholder="Search for services (e.g. haircut, manicure)"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
                         className="pl-12 h-14 text-lg border-[#f8d7da]/50 focus:border-[#4e342e] rounded-xl font-sans"
-                />
-              </div>
-            </div>
+                      />
+                    </div>
+                  </div>
 
                   {/* Category Dropdown */}
-            <div>
-              <Select value={selectedCategory} onValueChange={setSelectedCategory}>
+                  <div>
+                    <Select value={selectedCategory} onValueChange={setSelectedCategory}>
                       <SelectTrigger className="h-14 border-[#f8d7da]/50 focus:border-[#4e342e] rounded-xl font-sans">
                         <SelectValue placeholder="Category" />
-                </SelectTrigger>
-                <SelectContent>
-                  {categories.map((category) => (
-                    <SelectItem key={category.value} value={category.value}>
-                      {category.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
+                      </SelectTrigger>
+                      <SelectContent>
+                        {categories.map((category) => (
+                          <SelectItem key={category.value} value={category.value}>
+                            {category.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
 
                   {/* Location Dropdown */}
-            <div>
-              <Select value={selectedLocation} onValueChange={setSelectedLocation}>
+                  <div>
+                    <Select value={selectedLocation} onValueChange={setSelectedLocation}>
                       <SelectTrigger className="h-14 border-[#f8d7da]/50 focus:border-[#4e342e] rounded-xl font-sans">
                         <SelectValue placeholder="Location" />
-                </SelectTrigger>
-                <SelectContent>
-                  {locations.map((location) => (
-                    <SelectItem key={location.value} value={location.value}>
-                      {location.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
+                      </SelectTrigger>
+                      <SelectContent>
+                        {locations.map((location) => (
+                          <SelectItem key={location.value} value={location.value}>
+                            {location.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
 
                 <div className="flex justify-center mt-6">
                   <Button className="bg-[#4e342e] hover:bg-[#3b2c26] text-white px-12 py-4 text-lg font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300">
@@ -318,7 +318,7 @@ const SearchPage = () => {
             {/* Filters */}
             <div className="flex flex-wrap gap-4 items-center">
               <span className="text-sm font-semibold text-[#4e342e] font-sans">Filters:</span>
-              
+
               {/* Price Range */}
               <div className="flex items-center space-x-3">
                 <span className="text-sm text-[#6d4c41] font-sans">Price: ${priceRange[0]} - ${priceRange[1]}</span>
@@ -380,7 +380,7 @@ const SearchPage = () => {
           </div>
 
           {sortedVendors.length > 0 ? (
-            <motion.div 
+            <motion.div
               className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
               variants={stagger}
               initial="initial"
@@ -391,13 +391,13 @@ const SearchPage = () => {
                   <Card className="group hover:shadow-2xl transition-all duration-500 border-0 bg-white overflow-hidden rounded-2xl h-full">
                     {/* Vendor Image */}
                     <div className="relative h-56 overflow-hidden">
-                    <img
-                      src={vendor.image}
-                      alt={vendor.name}
+                      <img
+                        src={vendor.image}
+                        alt={vendor.name}
                         className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-black/10" />
-                      
+
                       {/* Service Type Badge */}
                       <div className="absolute top-4 left-4">
                         <Badge className={`${vendor.serviceType === 'at-home' ? 'bg-green-500' : 'bg-blue-500'} text-white font-medium`}>
@@ -406,9 +406,9 @@ const SearchPage = () => {
                           ) : (
                             <><Building className="w-3 h-3 mr-1" />Salon</>
                           )}
-                    </Badge>
-                  </div>
-                  
+                        </Badge>
+                      </div>
+
                       {/* Verified Badge */}
                       {vendor.verified && (
                         <div className="absolute top-4 right-4">
@@ -426,11 +426,11 @@ const SearchPage = () => {
                         <h3 className="text-xl font-serif font-bold text-[#4e342e] mb-2">
                           {vendor.name}
                         </h3>
-                        
+
                         <div className="flex items-center justify-between mb-3">
                           <div className="flex items-center space-x-2">
-                          <div className="flex items-center space-x-1">
-                            <Star className="w-4 h-4 text-yellow-500 fill-current" />
+                            <div className="flex items-center space-x-1">
+                              <Star className="w-4 h-4 text-yellow-500 fill-current" />
                               <span className="font-semibold text-[#4e342e]">{vendor.rating}</span>
                             </div>
                             <span className="text-[#6d4c41] text-sm">({vendor.reviewCount} reviews)</span>
@@ -448,34 +448,34 @@ const SearchPage = () => {
                             <span className="capitalize">{vendor.available}</span>
                           </div>
                         </div>
-                  
+
                         {/* Services */}
                         <div className="mb-6">
-                      <div className="flex flex-wrap gap-2">
+                          <div className="flex flex-wrap gap-2">
                             {vendor.services.slice(0, 2).map((service, serviceIndex) => (
                               <Badge key={serviceIndex} variant="secondary" className="bg-[#f8d7da]/30 text-[#4e342e] text-xs">
-                            {service}
-                          </Badge>
-                        ))}
+                                {service}
+                              </Badge>
+                            ))}
                             {vendor.services.length > 2 && (
                               <Badge variant="outline" className="text-xs border-[#f8d7da] text-[#6d4c41]">
                                 +{vendor.services.length - 2} more
-                          </Badge>
-                        )}
-                      </div>
-                    </div>
-                    
+                              </Badge>
+                            )}
+                          </div>
+                        </div>
+
                         {/* Book Button */}
                         <Link to={`/customer/book/${vendor.id}`}>
                           <Button className="w-full bg-[#4e342e] hover:bg-[#3b2c26] text-white py-3 rounded-xl font-semibold transition-all duration-300 group">
-                      <Calendar className="w-4 h-4 mr-2" />
+                            <Calendar className="w-4 h-4 mr-2" />
                             Book Appointment
                             <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
-                    </Button>
+                          </Button>
                         </Link>
                       </div>
-                  </CardContent>
-                </Card>
+                    </CardContent>
+                  </Card>
                 </motion.div>
               ))}
             </motion.div>
@@ -486,27 +486,27 @@ const SearchPage = () => {
               transition={{ duration: 0.6 }}
             >
               <Card className="border-2 border-dashed border-[#f8d7da] bg-white/50">
-              <CardContent className="p-12 text-center">
+                <CardContent className="p-12 text-center">
                   <Search className="w-16 h-16 text-[#6d4c41] mx-auto mb-4" />
                   <h3 className="text-2xl font-serif font-bold text-[#4e342e] mb-2">No services found</h3>
                   <p className="text-[#6d4c41] mb-6 font-sans">
                     Try adjusting your search criteria or filters to find more options
-                </p>
-                <Button 
-                  variant="outline"
-                  onClick={() => {
-                    setSearchQuery('');
-                    setSelectedCategory('all');
-                    setSelectedLocation('all');
+                  </p>
+                  <Button
+                    variant="outline"
+                    onClick={() => {
+                      setSearchQuery('');
+                      setSelectedCategory('all');
+                      setSelectedLocation('all');
                       setPriceRange([0, 200]);
                       setAvailability('all');
-                  }}
+                    }}
                     className="border-[#4e342e] text-[#4e342e] hover:bg-[#4e342e] hover:text-white"
-                >
+                  >
                     Clear All Filters
-                </Button>
-              </CardContent>
-            </Card>
+                  </Button>
+                </CardContent>
+              </Card>
             </motion.div>
           )}
         </div>
@@ -515,7 +515,7 @@ const SearchPage = () => {
       {/* Why Book with Bonzenga Section */}
       <section className="py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div 
+          <motion.div
             className="text-center mb-16"
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -530,7 +530,7 @@ const SearchPage = () => {
             </p>
           </motion.div>
 
-          <motion.div 
+          <motion.div
             className="grid grid-cols-1 md:grid-cols-3 gap-8"
             variants={stagger}
             initial="initial"

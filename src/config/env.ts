@@ -1,17 +1,9 @@
 // Environment configuration
-const normalizeUrl = (value?: string | null) => {
-  if (!value) return '';
-  return value.replace(/\/+$/, '');
-};
-
-const supabaseUrl = normalizeUrl(import.meta.env.VITE_SUPABASE_URL);
-const supabaseRestUrl = supabaseUrl ? `${supabaseUrl}/rest/v1` : '';
-const explicitApiUrl = normalizeUrl(import.meta.env.VITE_API_URL);
-const resolvedApiUrl = explicitApiUrl || supabaseRestUrl;
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 export const config = {
-  apiUrl: resolvedApiUrl,
-  supabaseUrl,
+  apiUrl: API_BASE_URL,
+  supabaseUrl: import.meta.env.VITE_SUPABASE_URL,
   isDevelopment: import.meta.env.DEV,
   isProduction: import.meta.env.PROD,
 };
@@ -19,10 +11,18 @@ export const config = {
 // Helper function to get full API URL
 export const getApiUrl = (endpoint: string = '') => {
   if (!config.apiUrl) {
+    if (config.isDevelopment) console.warn('VITE_API_BASE_URL is not set!');
     return endpoint;
   }
-  const path = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
-  return `${config.apiUrl}${path}`;
+
+  // Normalize base URL to remove trailing slash
+  const base = config.apiUrl.replace(/\/$/, '');
+
+  // Normalize endpoint to remove leading slash
+  const path = endpoint.startsWith('/') ? endpoint.slice(1) : endpoint;
+
+  // Construct full URL with /api prefix
+  return `${base}/api/${path}`;
 };
 
 // Helper function to check if we're in development

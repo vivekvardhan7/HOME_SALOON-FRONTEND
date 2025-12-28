@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { getApiUrl } from '@/config/env';
 import { useTranslation } from 'react-i18next';
 import { useSupabaseAuth } from "@/contexts/SupabaseAuthContext";
 import { Button } from '@/components/ui/button';
@@ -61,7 +62,7 @@ const AppointmentsManagementPage = () => {
     try {
       setLoading(true);
       const token = localStorage.getItem('token');
-      const response = await fetch(`http://localhost:3001/api/vendor/${user?.id}/appointments`, {
+      const response = await fetch(getApiUrl(`vendor/${user?.id}/appointments`), {
         headers: {
           'Authorization': `Bearer ${token}`
         }

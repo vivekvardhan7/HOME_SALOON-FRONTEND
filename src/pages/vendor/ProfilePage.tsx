@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { getApiUrl } from '@/config/env';
 import { useSupabaseAuth } from "@/contexts/SupabaseAuthContext";
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -97,7 +98,7 @@ const ProfilePage = () => {
     try {
       setLoading(true);
       const token = localStorage.getItem('token');
-      const response = await fetch(`http://localhost:3001/api/vendor/${user?.id}/profile`, {
+      const response = await fetch(getApiUrl(`vendor/${user?.id}/profile`), {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -139,7 +140,7 @@ const ProfilePage = () => {
 
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`http://localhost:3001/api/vendor/${user?.id}/profile`, {
+      const response = await fetch(getApiUrl(`vendor/${user?.id}/profile`), {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

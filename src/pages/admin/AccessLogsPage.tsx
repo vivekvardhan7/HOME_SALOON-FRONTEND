@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { getApiUrl } from '@/config/env';
 import { useSupabaseAuth } from '@/contexts/SupabaseAuthContext';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -9,7 +10,7 @@ import DashboardLayout from '@/components/DashboardLayout';
 import { Loader2, Search, Filter, CheckCircle, XCircle, Shield, Globe } from 'lucide-react';
 import { toast } from 'sonner';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
+
 
 interface AccessLog {
   id: string;
@@ -69,7 +70,7 @@ const AccessLogsPage = () => {
     try {
       setLoading(true);
       const token = localStorage.getItem('accessToken') || localStorage.getItem('token');
-      
+
       const params = new URLSearchParams({
         page: pagination.page.toString(),
         limit: pagination.limit.toString(),
@@ -82,7 +83,7 @@ const AccessLogsPage = () => {
       if (filters.method) params.append('method', filters.method);
       if (filters.email) params.append('email', filters.email);
 
-      const response = await fetch(`${API_URL}/admin/access-logs?${params.toString()}`, {
+      const response = await fetch(`${getApiUrl('admin/access-logs')}?${params.toString()}`, {
         headers: {
           'Authorization': `Bearer ${token}`,
         },

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { getApiUrl } from '@/config/env';
 import { useSupabaseAuth } from "@/contexts/SupabaseAuthContext";
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -87,7 +88,7 @@ const AppointmentsPage = () => {
     try {
       setLoading(true);
       const token = localStorage.getItem('token');
-      const response = await fetch('http://localhost:3001/api/manager/appointments', {
+      const response = await fetch(getApiUrl('manager/appointments'), {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -215,7 +216,7 @@ const AppointmentsPage = () => {
   const updateAppointmentStatus = async (appointmentId: string, newStatus: string) => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`http://localhost:3001/api/manager/appointments/${appointmentId}/status`, {
+      const response = await fetch(getApiUrl(`manager/appointments/${appointmentId}/status`), {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',

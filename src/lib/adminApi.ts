@@ -2,8 +2,10 @@
  * Admin API Client with error handling and retry logic
  */
 
-const API_BASE = '/api'; // Use Vite proxy instead of hardcoded URL
-const FALLBACK_BASE = 'http://localhost:3001/api';
+import { config } from '../config/env';
+
+const API_BASE = config.apiUrl || '/api';
+const FALLBACK_BASE = config.apiUrl;
 
 interface ApiResponse<T> {
   success?: boolean;

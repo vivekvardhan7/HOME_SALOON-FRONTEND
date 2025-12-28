@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import axios from 'axios';
+import { api } from '../lib/api';
 
 interface PlatformConfig {
     platformName: string;
@@ -35,9 +35,10 @@ export const PlatformSettingsProvider: React.FC<{ children: React.ReactNode }> =
 
     const fetchConfig = async () => {
         try {
-            const response = await axios.get('http://localhost:3001/api/config');
-            if (response.data.success && response.data.config) {
-                setConfig(response.data.config);
+            // Use the centralized API client which handles the correct Base URL
+            const response = await api.get('/config');
+            if ((response.data as any).success && (response.data as any).config) {
+                setConfig((response.data as any).config);
             }
         } catch (error) {
             console.error('Failed to fetch platform config:', error);

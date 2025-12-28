@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { getApiUrl } from '@/config/env';
 import { useNavigate } from 'react-router-dom';
 import { useSupabaseAuth } from '@/contexts/SupabaseAuthContext';
 import { supabaseAuth } from '@/lib/supabaseAuth';
@@ -16,22 +17,22 @@ const OAuthCallbackPage = () => {
       try {
         console.log('🔍 Starting OAuth callback processing...');
         setStatus('Finishing sign in...');
-        
+
         // Check if Supabase is properly configured
         const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
         const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
-        
+
         console.log('🔍 Supabase config:', { url: supabaseUrl?.substring(0, 30), hasKey: !!supabaseKey });
-        
+
         if (!supabaseUrl || !supabaseKey || supabaseUrl.includes('your-project-id')) {
           throw new Error('Supabase not configured. Please set up your environment variables.');
         }
-        
+
         console.log('🔍 Calling handleOAuthCallback...');
         // Use auth helper to finalize OAuth, ensure user profile exists
         const result = await supabaseAuth.handleOAuthCallback();
         console.log('🔍 Callback result:', result);
-        
+
         if (!result.success) {
           const message = ('error' in result && result.error) ? result.error : 'Failed to complete OAuth';
           console.error('❌ Callback failed:', message);
@@ -45,8 +46,7 @@ const OAuthCallbackPage = () => {
 
           // Log successful Google OAuth attempt
           try {
-            const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
-            await fetch(`${API_URL}/auth/log-google-auth`, {
+            await fetch(getApiUrl('auth/log-google-auth'), {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json',
@@ -84,16 +84,15 @@ const OAuthCallbackPage = () => {
               dashboardPath = '/customer';
               break;
           }
-          
+
           console.log('🔍 Redirecting to:', dashboardPath);
           navigate(dashboardPath, { replace: true });
         } else {
           console.error('❌ No session or user in result');
-          
+
           // Log failed Google OAuth attempt
           try {
-            const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
-            await fetch(`${API_URL}/auth/log-google-auth`, {
+            await fetch(getApiUrl('auth/log-google-auth'), {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json',
@@ -106,11 +105,11 @@ const OAuthCallbackPage = () => {
                 ipAddress: null,
                 userAgent: navigator.userAgent,
               }),
-            }).catch(() => {});
+            }).catch(() => { });
           } catch (logError) {
             // Ignore logging errors
           }
-          
+
           throw new Error('No active session found. Please try logging in again.');
         }
       } catch (error: any) {
@@ -118,7 +117,7 @@ const OAuthCallbackPage = () => {
         const errorMessage = error.message || 'An unexpected error occurred';
         setError(errorMessage);
         toast.error(`Login failed: ${errorMessage}`);
-        
+
         // Wait a bit before redirecting to show the error
         setTimeout(() => {
           navigate('/login');
@@ -132,7 +131,7 @@ const OAuthCallbackPage = () => {
   const getDashboardPath = (userRole?: string) => {
     const role = userRole || user?.role;
     if (!role) return '/';
-    
+
     switch (role) {
       case 'ADMIN':
         return '/admin';

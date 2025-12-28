@@ -1,5 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
+import { getApiUrl } from '@/config/env';
 import { useParams, useNavigate } from 'react-router-dom';
 import { api } from '@/lib/api';
 import DashboardLayout from '@/components/DashboardLayout';
@@ -120,7 +121,7 @@ const AtHomeBookingDetailsPage = () => {
                 toast.dismiss();
                 toast.success(t('bookings.details.invoiceReady'));
                 // Trigger download
-                window.open(`${import.meta.env.VITE_API_URL || 'http://localhost:3001/api'}/invoices/download/${id}`, '_blank');
+                window.open(getApiUrl(`invoices/download/${id}`), '_blank');
             } else {
                 toast.dismiss();
                 toast.error(data.message || t('bookings.details.failedToGenerateInvoice'));

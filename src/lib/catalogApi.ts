@@ -3,12 +3,7 @@ import { supabase } from '@/lib/supabase';
 
 // Get backend API URL - use explicit API URL or default to localhost:3001
 const getBackendApiUrl = (endpoint: string = '') => {
-  const explicitApiUrl = import.meta.env.VITE_API_URL;
-  const backendUrl = explicitApiUrl
-    ? explicitApiUrl.replace(/\/+$/, '')
-    : 'http://localhost:3001/api';
-  const path = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
-  return `${backendUrl}${path}`;
+  return getApiUrl(endpoint);
 };
 
 export interface CatalogService {

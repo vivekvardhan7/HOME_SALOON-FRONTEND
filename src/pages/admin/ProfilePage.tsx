@@ -1,20 +1,21 @@
 import React, { useState, useEffect } from 'react';
+import { getApiUrl } from '@/config/env';
 import { useSupabaseAuth } from "@/contexts/SupabaseAuthContext";
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import DashboardLayout from '@/components/DashboardLayout';
-import { 
-  User, 
-  Mail, 
-  Phone, 
+import {
+  User,
+  Mail,
+  Phone,
   Users,
   Building,
   Calendar,
-  Edit, 
-  Save, 
-  X, 
+  Edit,
+  Save,
+  X,
   Loader2,
   Shield
 } from 'lucide-react';
@@ -52,7 +53,7 @@ const AdminProfilePage = () => {
     try {
       setIsLoading(true);
       const token = localStorage.getItem('token');
-      const response = await fetch(`http://localhost:3001/api/admin/profile`, {
+      const response = await fetch(getApiUrl('admin/profile'), {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -82,7 +83,7 @@ const AdminProfilePage = () => {
     try {
       setIsSaving(true);
       const token = localStorage.getItem('token');
-      const response = await fetch(`http://localhost:3001/api/admin/profile`, {
+      const response = await fetch(getApiUrl('admin/profile'), {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${token}`,

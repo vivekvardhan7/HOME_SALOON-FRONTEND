@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { getApiUrl } from '@/config/env';
 import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
@@ -124,7 +125,7 @@ const SalonVisitPage = () => {
       if (isInitial) setLoading(true);
       else setIsSearching(true);
 
-      const url = new URL('http://localhost:3001/api/vendors');
+      const url = new URL(getApiUrl('vendors'));
       url.searchParams.append('status', 'APPROVED');
       if (search) {
         url.searchParams.append('search', search);

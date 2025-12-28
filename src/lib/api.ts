@@ -1,13 +1,8 @@
 import axios, { AxiosInstance, AxiosResponse } from 'axios';
 import { supabase } from './supabase';
-import { config } from '@/config/env';
+import { config, getApiUrl } from '@/config/env';
 
-const normalizeBaseUrl = (url?: string) => {
-  if (!url) return '';
-  return url.replace(/\/+$/, '');
-};
-
-const BASE_URL = normalizeBaseUrl(config.apiUrl);
+const BASE_URL = getApiUrl('');
 const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
 if (!BASE_URL && import.meta.env.DEV) {

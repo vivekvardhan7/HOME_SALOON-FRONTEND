@@ -143,13 +143,13 @@ export const SupabaseAuthProvider = ({ children }: { children: React.ReactNode }
       return;
     }
 
-    const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:3001';
+
 
     try {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 3000); // Reduced to 3 second timeout
 
-      const response = await fetch(`${BACKEND_URL}/api/auth/sync-user`, {
+      const response = await fetch(getApiUrl('auth/sync-user'), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'

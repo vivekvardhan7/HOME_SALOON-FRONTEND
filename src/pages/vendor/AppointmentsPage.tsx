@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { getApiUrl } from '@/config/env';
 import { useTranslation } from 'react-i18next';
 import { useSupabaseAuth } from "@/contexts/SupabaseAuthContext";
 import { supabase } from '@/lib/supabase';
@@ -87,7 +88,7 @@ const AppointmentsPage = () => {
     try {
       setLoading(true);
       const token = localStorage.getItem('token');
-      const response = await fetch(`http://localhost:3001/api/vendor/${user?.id}/appointments`, {
+      const response = await fetch(getApiUrl(`vendor/${user?.id}/appointments`), {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -264,11 +265,11 @@ const AppointmentsPage = () => {
       let method = 'PUT';
 
       if (newStatus === 'CONFIRMED') {
-        endpoint = `http://localhost:3001/api/vendor/bookings/${appointmentId}/approve`;
+        endpoint = getApiUrl(`vendor/bookings/${appointmentId}/approve`);
       } else if (newStatus === 'CANCELLED') {
-        endpoint = `http://localhost:3001/api/vendor/bookings/${appointmentId}/reject`;
+        endpoint = getApiUrl(`vendor/bookings/${appointmentId}/reject`);
       } else {
-        endpoint = `http://localhost:3001/api/vendor/bookings/${appointmentId}/status`;
+        endpoint = getApiUrl(`vendor/bookings/${appointmentId}/status`);
       }
 
       const response = await fetch(endpoint, {

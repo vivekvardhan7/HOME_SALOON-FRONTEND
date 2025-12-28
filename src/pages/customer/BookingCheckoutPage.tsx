@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { getApiUrl } from '@/config/env';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
@@ -179,7 +180,7 @@ const BookingCheckoutPage = () => {
 
       console.log('Sending At-Salon Booking Payload:', bookingPayload);
 
-      const response = await fetch('http://localhost:3001/api/at-salon-booking', {
+      const response = await fetch(getApiUrl('at-salon-booking'), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

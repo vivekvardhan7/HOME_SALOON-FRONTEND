@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
+import { getApiUrl } from '@/config/env';
 import { useSupabaseAuth } from "@/contexts/SupabaseAuthContext";
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import DashboardLayout from '@/components/DashboardLayout';
-import { 
-  Calendar, 
+import {
+  Calendar,
   Clock,
   User,
   MapPin,
@@ -80,7 +81,7 @@ const BookingsPage = () => {
     try {
       setLoading(true);
       const token = localStorage.getItem('token');
-      const response = await fetch('http://localhost:3001/api/manager/bookings', {
+      const response = await fetch(getApiUrl('manager/bookings'), {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -187,7 +188,7 @@ const BookingsPage = () => {
     try {
       const token = localStorage.getItem('token');
       const response = await fetch(
-        `http://localhost:3001/api/manager/bookings/${selectedBooking.id}/assign-vendor`,
+        getApiUrl(`manager/bookings/${selectedBooking.id}/assign-vendor`),
         {
           method: 'PUT',
           headers: {
