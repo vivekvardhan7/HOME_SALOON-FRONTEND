@@ -73,7 +73,7 @@ const HeroCarousel: React.FC<HeroCarouselProps> = ({
   };
 
   return (
-    <div className={`relative w-full max-w-[1200px] mx-4 md:mx-auto h-[350px] sm:h-[400px] md:h-[500px] mt-24 md:mt-32 rounded-xl overflow-hidden shadow-lg ${className}`}>
+    <div className={`relative w-auto max-w-[1200px] mx-4 md:mx-auto h-[350px] sm:h-[400px] md:h-[500px] mt-24 md:mt-32 rounded-xl overflow-hidden shadow-lg ${className}`}>
 
       <Swiper
         modules={[Autoplay, EffectFade, Navigation, Pagination]}
@@ -115,7 +115,7 @@ const HeroCarousel: React.FC<HeroCarouselProps> = ({
                 {/* </div><div className="relative z-10 flex items-center justify-center h-full"> */}
                 <div className="text-center text-white px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto">
                   <motion.h1
-                    className="text-4xl sm:text-5xl lg:text-6xl font-serif font-bold mb-6 leading-tight"
+                    className="text-3xl sm:text-5xl lg:text-6xl font-serif font-bold mb-6 leading-tight"
                     initial={{ opacity: 0, y: 30 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.8, delay: 0.2 }}

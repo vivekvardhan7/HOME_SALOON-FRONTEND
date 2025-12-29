@@ -186,7 +186,7 @@ const Navigation = () => {
         </div>
 
         {/* Mobile Actions */}
-        <div className="lg:hidden flex items-center space-x-3">
+        <div className="lg:hidden flex items-center space-x-3 ml-auto">
 
           {/* Mobile Menu Button */}
           <button
