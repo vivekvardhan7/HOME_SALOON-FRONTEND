@@ -2,9 +2,8 @@
  * Manager API Client with error handling and retry logic
  */
 
-const API_BASE = '/api'; // Use Vite proxy instead of hardcoded URL
+// Use Vite proxy instead of hardcoded URL - logic moved to consolidated API_BASE below
 import { getApiUrl } from '@/config/env';
-const FALLBACK_BASE = getApiUrl('');
 const REQUEST_TIMEOUT_MS = 30000;
 
 interface ApiResponse<T> {
@@ -42,9 +41,10 @@ interface ParsedBody<T = unknown> {
   parseError?: unknown;
 }
 
+const API_BASE = getApiUrl('');
+// Disabled legacy fallback logic to force strict alignment with env config
 const attemptTargets = [
-  { baseUrl: API_BASE, label: 'primary' },
-  { baseUrl: FALLBACK_BASE, label: 'fallback' },
+  { baseUrl: API_BASE, label: 'primary' }
 ];
 
 function buildHeaders(token: string | null, optionHeaders?: HeadersInit): Headers {
@@ -280,7 +280,7 @@ async function apiRequest<T>(
     return lastFailure;
   }
 
-  return createFailureResponse(endpoint, FALLBACK_BASE, null, {} as ParsedBody<T>, lastError);
+  return createFailureResponse(endpoint, API_BASE, null, {} as ParsedBody<T>, lastError);
 }
 
 /**
