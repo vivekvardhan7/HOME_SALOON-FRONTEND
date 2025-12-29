@@ -1,3 +1,5 @@
+import { Helmet } from 'react-helmet-async';
+
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useNavigate } from 'react-router-dom';
@@ -38,8 +40,6 @@ const LoginPage = () => {
   // Handle navigation after successful login
   useEffect(() => {
     if (user) {
-      // Navigation is handled by AuthContext after successful login
-      // No need for duplicate toast here as AuthContext already shows success message
       if (user.role === "ADMIN") {
         navigate("/admin");
       } else if (user.role === "MANAGER") {
@@ -55,13 +55,9 @@ const LoginPage = () => {
   const onSubmit = async (data: LoginFormData) => {
     setIsLoading(true);
     try {
-      // Use Supabase auth login directly (no backend server needed)
       await login(data.email, data.password);
-      // Navigation is handled by AuthContext and useEffect above
     } catch (error: unknown) {
       console.error('Login error:', error);
-      // Error handling is done in the AuthContext login function
-      // No need to show error here as it's already handled
     } finally {
       setIsLoading(false);
     }
@@ -71,7 +67,6 @@ const LoginPage = () => {
     setIsLoading(true);
     try {
       await handleSignup('google');
-      //await loginWithGoogle();
     } catch (error: unknown) {
       console.error('Google login error:', error);
     } finally {
@@ -79,10 +74,14 @@ const LoginPage = () => {
     }
   };
 
-
-
   return (
     <div className="min-h-screen bg-[#fdf6f0]">
+      <Helmet>
+        <title>Login | Home Bonzenga</title>
+        <meta name="robots" content="noindex, nofollow" />
+      </Helmet>
+
+      {/* ... rest of the component ... */}
       {/* Navigation */}
       <nav className="bg-white shadow-sm border-b border-[#f8d7da]/20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -275,5 +274,4 @@ const LoginPage = () => {
     </div>
   );
 };
-
 export default LoginPage;
