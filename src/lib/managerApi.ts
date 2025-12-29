@@ -41,11 +41,7 @@ interface ParsedBody<T = unknown> {
   parseError?: unknown;
 }
 
-const API_BASE = getApiUrl('');
-// Disabled legacy fallback logic to force strict alignment with env config
-const attemptTargets = [
-  { baseUrl: API_BASE, label: 'primary' }
-];
+const API_BASE = getApiUrl(''); // Used only for health check fallbacks if needed, but primary requests use getApiUrl(endpoint)
 
 function buildHeaders(token: string | null, optionHeaders?: HeadersInit): Headers {
   const headers = new Headers(optionHeaders);
@@ -82,74 +78,38 @@ async function parseResponseBody<T = unknown>(response: Response): Promise<Parse
   }
 }
 
-async function performFetch<T>(
-  baseUrl: string,
-  endpoint: string,
-  init: RequestInit,
-  label: string
-): Promise<{ response: Response; parsed: ParsedBody<T> }> {
-  const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
-
-  if (init.signal) {
-    const abortHandler = () => controller.abort();
-    init.signal.addEventListener('abort', abortHandler, { once: true });
-  }
-
-  try {
-    const response = await fetch(`${baseUrl}${endpoint}`, {
-      ...init,
-      signal: controller.signal,
-    });
-    const parsed = await parseResponseBody<T>(response);
-    return { response, parsed };
-  } finally {
-    clearTimeout(timeoutId);
-  }
-}
-
 function createFailureResponse<T>(
   endpoint: string,
-  baseUrl: string,
+  url: string,
   response: Response | null,
   parsed: ParsedBody,
   error: unknown
 ): ApiResponse<T> {
-  if (response) {
-    const message = parsed?.data && typeof parsed.data === 'object' && 'message' in parsed.data
-      ? (parsed.data as Record<string, unknown>).message as string
-      : parsed.rawText || `HTTP ${response.status}: ${response.statusText}`;
+  const message = parsed?.data && typeof parsed.data === 'object' && 'message' in parsed.data
+    ? (parsed.data as Record<string, unknown>).message as string
+    : parsed?.rawText || (response ? `HTTP ${response.status}: ${response.statusText}` : 'Unknown Error');
 
-    console.error(`❌ API error for ${endpoint} via ${baseUrl}:`, {
-      status: response.status,
-      statusText: response.statusText,
-      message,
-      body: parsed.rawText,
-      parseError: parsed.parseError,
-    });
+  console.error(`❌ API error for ${endpoint}:`, {
+    url,
+    status: response?.status,
+    statusText: response?.statusText,
+    message,
+    body: parsed?.rawText,
+    parseError: parsed?.parseError,
+    error
+  });
 
-    const failure: ApiResponse<T> = {
-      success: false,
-      message,
-      error: parsed.parseError instanceof Error ? parsed.parseError.message : undefined,
-    };
+  const failure: ApiResponse<T> = {
+    success: false,
+    message: error instanceof Error ? error.message : message,
+    error: parsed?.parseError instanceof Error ? parsed.parseError.message : (error instanceof Error ? error.message : undefined),
+  };
 
-    if (parsed.data !== undefined) {
-      failure.data = parsed.data as T;
-    }
-
-    return failure;
+  if (parsed?.data !== undefined) {
+    failure.data = parsed.data as T;
   }
 
-  const derivedMessage = error instanceof Error ? error.message : 'Network error: Unable to connect to server';
-
-  console.error(`❌ API request failed for ${endpoint} via ${baseUrl}:`, error);
-
-  return {
-    success: false,
-    message: derivedMessage,
-    error: derivedMessage,
-  };
+  return failure;
 }
 
 function buildSuccessResponse<T>(endpoint: string, parsed: ParsedBody<T>): ApiResponse<T> {
@@ -173,19 +133,6 @@ function buildSuccessResponse<T>(endpoint: string, parsed: ParsedBody<T>): ApiRe
   return success;
 }
 
-function shouldFallback(response: Response, parsed: ParsedBody): boolean {
-  if (!response.ok && response.status >= 500) {
-    return true;
-  }
-
-  if (response.ok && parsed.parseError) {
-    // Try fallback if JSON parsing failed on primary
-    return true;
-  }
-
-  return false;
-}
-
 /**
  * Make API request with automatic fallback and retry
  */
@@ -194,93 +141,46 @@ async function apiRequest<T>(
   options: RequestInit = {}
 ): Promise<ApiResponse<T>> {
   const token = localStorage.getItem('token') || localStorage.getItem('accessToken');
+  // STRICT FIX: Use getApiUrl(endpoint) directly to prevent double slashes
+  const url = getApiUrl(endpoint);
 
-  console.log(`📡 Making API request to: ${endpoint}`);
-  console.log(`🔐 Token present: ${token ? 'Yes' : 'No'}`);
+  console.log(`📡 Making API request to: ${url}`);
+
   if (token) {
-    console.log(`🔑 Token preview: ${token.substring(0, 20)}...`);
+    // console.log(`🔑 Token present`);
   } else {
-    console.warn('⚠️ No token found in localStorage. Request may fail if authentication is required.');
+    console.warn('⚠️ No token found in localStorage.');
   }
 
   const { headers: optionHeaders, ...restOptions } = options;
   const headers = buildHeaders(token, optionHeaders);
-  const baseRequestInit: RequestInit = {
-    ...restOptions,
-    headers,
-  };
 
-  let lastFailure: ApiResponse<T> | null = null;
-  let lastError: unknown = null;
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
 
-  for (const { baseUrl, label } of attemptTargets) {
-    try {
-      const { response, parsed } = await performFetch<T>(baseUrl, endpoint, baseRequestInit, label);
+  try {
+    const response = await fetch(url, {
+      ...restOptions,
+      headers,
+      signal: controller.signal,
+    });
 
-      if (parsed.parseError) {
-        console.warn(`⚠️ Failed to parse JSON from ${label} response for ${endpoint}`, {
-          parseError: parsed.parseError,
-          rawText: parsed.rawText,
-        });
+    clearTimeout(timeoutId);
+    const parsed = await parseResponseBody<T>(response);
+
+    if (response.ok) {
+      if (parsed.data && typeof parsed.data === 'object' && (parsed.data as any).success === false) {
+        return createFailureResponse(endpoint, url, response, parsed, null);
       }
-
-      if (response.ok) {
-        if (parsed.data && typeof parsed.data === 'object' && (parsed.data as any).success === false) {
-          const failure: ApiResponse<T> = {
-            success: false,
-            message: (parsed.data as any).message || (parsed.data as any).error || 'Request failed',
-            error: (parsed.data as any).error,
-          };
-
-          if (parsed.data !== undefined) {
-            failure.data = parsed.data;
-          }
-
-          console.error(`❌ API reported failure for ${endpoint} via ${label}`, failure);
-
-          if (label === 'primary' && shouldFallback(response, parsed)) {
-            lastFailure = failure;
-            console.warn(`⚠️ Retrying ${endpoint} with fallback after API reported failure.`);
-            continue;
-          }
-
-          return failure;
-        }
-
-        console.log(`✅ API response for ${endpoint} via ${label}:`, parsed.data ?? parsed.rawText ?? '(empty)');
-        if (label === 'primary' && shouldFallback(response, parsed)) {
-          console.warn(`⚠️ Retrying ${endpoint} with fallback due to parse error or server response.`);
-          lastFailure = buildSuccessResponse(endpoint, parsed);
-          continue;
-        }
-
-        return buildSuccessResponse<T>(endpoint, parsed);
-      }
-
-      const failureResponse = createFailureResponse<T>(endpoint, baseUrl, response, parsed, null);
-      if (label === 'primary' && shouldFallback(response, parsed)) {
-        lastFailure = failureResponse;
-        console.warn(`⚠️ ${endpoint} returned ${response.status} via primary. Attempting fallback...`);
-        continue;
-      }
-
-      return failureResponse;
-    } catch (error) {
-      lastError = error;
-      if (label === 'primary') {
-        console.warn(`⚠️ Primary API call failed for ${endpoint}, trying fallback...`, error);
-        continue;
-      }
-
-      return createFailureResponse(endpoint, baseUrl, null, {} as ParsedBody<T>, error);
+      return buildSuccessResponse<T>(endpoint, parsed);
     }
-  }
 
-  if (lastFailure) {
-    return lastFailure;
-  }
+    return createFailureResponse(endpoint, url, response, parsed, null);
 
-  return createFailureResponse(endpoint, API_BASE, null, {} as ParsedBody<T>, lastError);
+  } catch (error) {
+    clearTimeout(timeoutId);
+    return createFailureResponse(endpoint, url, null, {} as ParsedBody<T>, error);
+  }
 }
 
 /**
