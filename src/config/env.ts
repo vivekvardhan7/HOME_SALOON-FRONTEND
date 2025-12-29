@@ -16,18 +16,18 @@ export const config = {
 };
 
 // Helper function to get full API URL
-export function getApiUrl(path = '') {
+// Helper function to get full API URL
+export function getApiUrl(path: string = "") {
   if (!API_BASE_URL) {
     if (import.meta.env.DEV) return `http://localhost:3001/api/${path.replace(/^\//, '')}`;
     throw new Error('VITE_API_BASE_URL is missing');
   }
 
-  // If path starts with /, remove it to avoid double slash since API_BASE_URL might end in /api (no slash) 
-  // but we want standard behavior. 
-  // User Requirements: `fetch(${API_BASE_URL}/manager/dashboard)` -> .../api/manager/dashboard
+  // STRICT NORMALIZATION: Prevent double slashes at origin
+  const base = API_BASE_URL.replace(/\/$/, "");
+  const cleanPath = path.replace(/^\//, "");
 
-  const cleanPath = path.startsWith('/') ? path : `/${path}`;
-  return `${API_BASE_URL}${cleanPath}`;
+  return `${base}/${cleanPath}`;
 }
 
 // Helper function to check if we're in development
