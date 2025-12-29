@@ -1,7 +1,12 @@
 // Environment configuration
 const RAW_BASE_URL = import.meta.env.VITE_API_BASE_URL || "https://home-saloon-backend.onrender.com/api";
-// Ensure it ends with /api but NO trailing slash
-const API_BASE_URL = RAW_BASE_URL.replace(/\/$/, "");
+
+// Robustly handling URL construction to ALWAYS end with /api
+let baseUrl = RAW_BASE_URL.replace(/\/$/, ""); // Remove trailing slash
+if (!baseUrl.endsWith('/api')) {
+  baseUrl += '/api';
+}
+const API_BASE_URL = baseUrl;
 
 export const config = {
   apiUrl: API_BASE_URL,
