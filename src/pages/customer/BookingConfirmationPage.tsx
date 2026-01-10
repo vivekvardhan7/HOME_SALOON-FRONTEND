@@ -149,11 +149,19 @@ const BookingConfirmationPage = () => {
     }
   };
 
-  const getTotalPrice = () => {
+  const getFinancials = () => {
     const servicesTotal = selectedServices.reduce((total, service) => total + (service.price * service.quantity), 0);
     const productsTotal = selectedProducts.reduce((total, product) => total + (product.price * product.quantity), 0);
-    return servicesTotal + productsTotal;
+    const base = servicesTotal + productsTotal;
+    const vat = base * 0.16;
+    const total = base + vat;
+    return { base, vat, total };
   };
+
+  const { base: basePrice, vat: vatAmount, total: grandTotal } = getFinancials();
+
+  // Helper
+  const getTotalPrice = () => grandTotal;
 
   const getTotalDuration = () => {
     return selectedServices.reduce((total, service) => total + (service.duration * service.quantity), 0);
@@ -187,6 +195,8 @@ const BookingConfirmationPage = () => {
       const existingDataStr = sessionStorage.getItem('bookingData');
       const existingData = existingDataStr ? JSON.parse(existingDataStr) : {};
 
+      const financials = getFinancials();
+
       const bookingData = {
         ...existingData, // Preserve catalogServiceIds, productCatalogSelections etc
         services: selectedServices, // Update these just in case for older flows
@@ -200,7 +210,9 @@ const BookingConfirmationPage = () => {
         phone: bookingForm.phone,
         notes: bookingForm.notes,
         beauticianPreference: bookingForm.beauticianPreference,
-        totalPrice: getTotalPrice(),
+        totalPrice: financials.total, // Grand Total (Incl VAT)
+        basePrice: financials.base,
+        vatAmount: financials.vat,
         totalDuration: getTotalDuration(),
         type: isAtHomeService() ? 'AT_HOME' : 'SALON_VISIT'
       };
@@ -222,6 +234,7 @@ const BookingConfirmationPage = () => {
       setSubmitting(false);
     }
   };
+
 
   if (loading) {
     return (
@@ -488,9 +501,21 @@ const BookingConfirmationPage = () => {
                       <span className="text-[#6d4c41]">Total Duration:</span>
                       <span className="font-medium text-[#4e342e]">{getTotalDuration()} min</span>
                     </div>
-                    <div className="flex justify-between text-lg font-semibold">
+
+                    <Separator className="my-2" />
+
+                    <div className="flex justify-between text-sm">
+                      <span className="text-[#6d4c41]">Subtotal:</span>
+                      <span className="font-medium text-[#4e342e]">${basePrice.toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
+                    </div>
+                    <div className="flex justify-between text-sm">
+                      <span className="text-[#d84315] font-medium">VAT (16%):</span>
+                      <span className="font-medium text-[#d84315]">${vatAmount.toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
+                    </div>
+
+                    <div className="flex justify-between text-lg font-semibold pt-2 border-t border-dashed border-[#d7ccc8] mt-2">
                       <span className="text-[#4e342e]">Total Price:</span>
-                      <span className="text-[#4e342e]">${getTotalPrice().toLocaleString()}</span>
+                      <span className="text-[#4e342e]">${grandTotal.toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
                     </div>
                   </div>
 

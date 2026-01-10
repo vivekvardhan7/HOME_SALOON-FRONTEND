@@ -510,7 +510,7 @@ const ProductsPage = () => {
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <Label htmlFor="price" className="text-[#4e342e] font-medium">
-                    Price ($) *
+                    Base Price ($) *
                   </Label>
                   <Input
                     id="price"
@@ -520,6 +520,11 @@ const ProductsPage = () => {
                     placeholder="0"
                     className="border-[#4e342e] text-[#4e342e] mt-2"
                   />
+                  {form.price && (
+                    <div className="text-xs text-purple-600 font-medium bg-purple-50 px-2 py-1 rounded inline-block mt-1">
+                      Price incl. 16% VAT: ${(Number(form.price) * 1.16).toFixed(2)}
+                    </div>
+                  )}
                 </div>
 
                 <div>

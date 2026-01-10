@@ -1,5 +1,5 @@
 // Environment configuration
-const RAW_BASE_URL = import.meta.env.VITE_API_BASE_URL || "https://home-saloon-backend.onrender.com/api";
+const RAW_BASE_URL = import.meta.env.VITE_API_BASE_URL || (import.meta.env.DEV ? "http://localhost:3001/api" : "https://home-saloon-backend.onrender.com/api");
 
 // Robustly handling URL construction to ALWAYS end with /api
 let baseUrl = RAW_BASE_URL.replace(/\/$/, ""); // Remove trailing slash

@@ -379,9 +379,18 @@ const AtHomeServicesPage = () => {
                         <span className="text-[#6d4c41]">Total Duration:</span>
                         <span className="font-medium text-[#4e342e]">{getTotalDuration()} min</span>
                       </div>
-                      <div className="flex justify-between text-base sm:text-lg font-semibold">
+                      <Separator className="my-2" />
+                      <div className="flex justify-between text-xs sm:text-sm">
+                        <span className="text-[#6d4c41]">Subtotal:</span>
+                        <span className="font-medium text-[#4e342e]">${getTotalPrice().toLocaleString()}</span>
+                      </div>
+                      <div className="flex justify-between text-xs sm:text-sm">
+                        <span className="text-[#d84315]">VAT (16%):</span>
+                        <span className="font-medium text-[#d84315]">${(getTotalPrice() * 0.16).toLocaleString()}</span>
+                      </div>
+                      <div className="flex justify-between text-base sm:text-lg font-semibold pt-2 border-t border-dashed border-[#d7ccc8]">
                         <span className="text-[#4e342e]">Total Price:</span>
-                        <span className="text-[#4e342e]">${getTotalPrice().toLocaleString()}</span>
+                        <span className="text-[#4e342e]">${(getTotalPrice() * 1.16).toLocaleString()}</span>
                       </div>
                     </div>
 

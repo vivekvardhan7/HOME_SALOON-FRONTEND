@@ -60,6 +60,8 @@ interface BookingData {
   notes?: string;
   beauticianPreference?: string;
   totalPrice: number;
+  basePrice?: number;
+  vatAmount?: number;
   totalDuration?: number;
   type: string;
   includeProducts?: boolean;
@@ -664,15 +666,21 @@ const PaymentPage = () => {
                   <div className="space-y-2">
                     <div className="flex justify-between text-sm">
                       <span className="text-[#6d4c41]">Subtotal:</span>
-                      <span className="font-medium text-[#4e342e]">${bookingData.totalPrice.toLocaleString()}</span>
+                      <span className="font-medium text-[#4e342e]">
+                        ${(bookingData.basePrice || bookingData.totalPrice).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                      </span>
                     </div>
-                    <div className="flex justify-between text-sm">
-                      <span className="text-[#6d4c41]">Service Fee:</span>
-                      <span className="font-medium text-[#4e342e]">$0</span>
-                    </div>
-                    <div className="flex justify-between text-lg font-semibold">
+                    {bookingData.vatAmount !== undefined && (
+                      <div className="flex justify-between text-sm">
+                        <span className="text-[#d84315] font-medium">VAT (16%):</span>
+                        <span className="font-medium text-[#d84315]">
+                          ${bookingData.vatAmount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                        </span>
+                      </div>
+                    )}
+                    <div className="flex justify-between text-lg font-semibold pt-2 border-t border-dashed border-[#d7ccc8]">
                       <span className="text-[#4e342e]">Total:</span>
-                      <span className="text-[#4e342e]">${bookingData.totalPrice.toLocaleString()}</span>
+                      <span className="text-[#4e342e]">${bookingData.totalPrice.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
                     </div>
                   </div>
 

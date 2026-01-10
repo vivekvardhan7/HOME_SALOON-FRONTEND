@@ -61,11 +61,12 @@ interface FinanceSummary {
     revenue: {
         gross: number;
         commission: number;
+        vat_collected: number;
         subscriptions: number;
     };
     breakdown?: {
-        vendor: { gross: number; commission: number; subscriptions: number; net_payable: number; paid: number; pending: number };
-        beautician: { gross: number; commission: number; subscriptions: number; net_payable: number; paid: number; pending: number };
+        vendor: { gross: number; vat?: number; commission: number; subscriptions: number; net_payable: number; paid: number; pending: number };
+        beautician: { gross: number; vat?: number; commission: number; subscriptions: number; net_payable: number; paid: number; pending: number };
     };
     pending_payouts: number;
     subscription_stats: {
@@ -389,7 +390,7 @@ export default function AdminFinancePage() {
             {/* Financial Overview (At Home) */}
             <div className="space-y-2">
                 <h2 className="text-xl font-semibold text-gray-800">Financial Overview (At Home)</h2>
-                <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+                <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
                     <Card>
                         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                             <CardTitle className="text-sm font-medium">Platform Commission</CardTitle>
@@ -397,6 +398,16 @@ export default function AdminFinancePage() {
                         </CardHeader>
                         <CardContent>
                             <div className="text-2xl font-bold text-green-600">${summary?.breakdown?.beautician.commission.toFixed(2) || '0.00'}</div>
+                        </CardContent>
+                    </Card>
+                    <Card className="bg-purple-50 border-purple-100">
+                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                            <CardTitle className="text-sm font-medium text-purple-900">VAT Collected (16%)</CardTitle>
+                            <DollarSign className="h-4 w-4 text-purple-600" />
+                        </CardHeader>
+                        <CardContent>
+                            <div className="text-2xl font-bold text-purple-700">${summary?.breakdown?.beautician.vat?.toFixed(2) || '0.00'}</div>
+                            <p className="text-xs text-purple-600/80">Govt Liability</p>
                         </CardContent>
                     </Card>
                     <Card>
@@ -433,7 +444,7 @@ export default function AdminFinancePage() {
             {/* Financial Overview (At Salon) */}
             <div className="space-y-2">
                 <h2 className="text-xl font-semibold text-gray-800">Financial Overview (At Salon)</h2>
-                <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+                <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
                     <Card>
                         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                             <CardTitle className="text-sm font-medium">Platform Commission</CardTitle>
@@ -441,6 +452,16 @@ export default function AdminFinancePage() {
                         </CardHeader>
                         <CardContent>
                             <div className="text-2xl font-bold text-green-600">${summary?.breakdown?.vendor.commission.toFixed(2) || '0.00'}</div>
+                        </CardContent>
+                    </Card>
+                    <Card className="bg-purple-50 border-purple-100">
+                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                            <CardTitle className="text-sm font-medium text-purple-900">VAT Collected (16%)</CardTitle>
+                            <DollarSign className="h-4 w-4 text-purple-600" />
+                        </CardHeader>
+                        <CardContent>
+                            <div className="text-2xl font-bold text-purple-700">${summary?.breakdown?.vendor.vat?.toFixed(2) || '0.00'}</div>
+                            <p className="text-xs text-purple-600/80">Govt Liability</p>
                         </CardContent>
                     </Card>
                     <Card>

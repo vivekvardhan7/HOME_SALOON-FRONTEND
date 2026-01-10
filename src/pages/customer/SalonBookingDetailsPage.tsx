@@ -17,6 +17,8 @@ interface SalonBookingDetails {
     appointment_date: string;
     appointment_time: string;
     total_amount: number;
+    base_amount?: number;
+    vat_amount?: number;
     payment_status: string;
     transaction_id?: string;
     services: {
@@ -202,9 +204,17 @@ const SalonBookingDetailsPage = () => {
                                             </div>
                                         ))}
                                         <Separator className="my-2" />
+                                        <div className="flex justify-between items-center text-sm">
+                                            <span>Subtotal</span>
+                                            <span>${booking.base_amount ? booking.base_amount.toFixed(2) : (booking.total_amount / 1.16).toFixed(2)}</span>
+                                        </div>
+                                        <div className="flex justify-between items-center text-sm text-[#d84315] font-medium">
+                                            <span>VAT (16%)</span>
+                                            <span>${booking.vat_amount ? booking.vat_amount.toFixed(2) : (booking.total_amount - (booking.total_amount / 1.16)).toFixed(2)}</span>
+                                        </div>
                                         <div className="flex justify-between items-center font-bold text-base pt-2">
                                             <span>{t('bookings.details.totalAmount') || 'Total Amount'}</span>
-                                            <span className="text-[#4e342e]">₹{booking.total_amount}</span>
+                                            <span className="text-[#4e342e]">${booking.total_amount.toFixed(2)}</span>
                                         </div>
                                     </div>
                                 </div>

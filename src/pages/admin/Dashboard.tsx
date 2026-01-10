@@ -4,7 +4,7 @@ import { useSupabaseAuth } from "@/contexts/SupabaseAuthContext";
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { adminApi } from '@/lib/adminApi'; // Static import for better stability
 import DashboardLayout from '@/components/DashboardLayout';
 import {
@@ -46,6 +46,8 @@ interface AdminStats {
   pendingVendors: number;
   activeCatalogServices: number;
   activeCatalogProducts: number;
+  totalPlatformServices?: number; // New aggregated stat
+  totalPlatformProducts?: number; // New aggregated stat
 }
 
 interface FinanceBreakdown {
@@ -73,6 +75,7 @@ interface FinancialSummary {
 const AdminDashboard = () => {
   const { user } = useSupabaseAuth();
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const [stats, setStats] = useState<AdminStats | null>(null);
   const [finance, setFinance] = useState<FinancialSummary | null>(null);
   const [loading, setLoading] = useState(true);
@@ -107,7 +110,9 @@ const AdminDashboard = () => {
           activeVendors: d.activeVendors || 0,
           pendingVendors: d.pendingVendors || 0,
           activeCatalogServices: d.activeCatalogServices || 0,
-          activeCatalogProducts: d.activeCatalogProducts || 0
+          activeCatalogProducts: d.activeCatalogProducts || 0,
+          totalPlatformServices: d.totalPlatformServices || d.activeCatalogServices || 0,
+          totalPlatformProducts: d.totalPlatformProducts || d.activeCatalogProducts || 0
         });
         setPendingVendors(dashboardRes.data.pendingVendors || []);
       }
@@ -205,8 +210,8 @@ const AdminDashboard = () => {
             />
             <StatCard
               label="Total Services"
-              value={stats?.activeCatalogServices || 0}
-              subValue={`${stats?.activeCatalogProducts} Products`}
+              value={stats?.totalPlatformServices || 0}
+              subValue={`${stats?.totalPlatformProducts || 0} Products`}
               icon={ShoppingBag}
               color="emerald"
             />
@@ -224,7 +229,7 @@ const AdminDashboard = () => {
                 </CardTitle>
               </CardHeader>
               <CardContent className="p-6 grid gap-4">
-                <div className="p-4 rounded-xl bg-orange-50 border border-orange-100 hover:shadow-md transition-all cursor-pointer group" onClick={() => window.location.href = '/admin/at-home-bookings'}>
+                <div className="p-4 rounded-xl bg-orange-50 border border-orange-100 hover:shadow-md transition-all cursor-pointer group" onClick={() => navigate('/admin/at-home-bookings')}>
                   <div className="flex justify-between items-center">
                     <div className="flex items-center gap-3">
                       <div className="bg-orange-100 p-2 rounded-lg">
@@ -243,7 +248,7 @@ const AdminDashboard = () => {
                   </div>
                 </div>
 
-                <div className="p-4 rounded-xl bg-purple-50 border border-purple-100 hover:shadow-md transition-all cursor-pointer group" onClick={() => window.location.href = '/admin/at-salon-services'}>
+                <div className="p-4 rounded-xl bg-purple-50 border border-purple-100 hover:shadow-md transition-all cursor-pointer group" onClick={() => navigate('/admin/at-salon-services')}>
                   <div className="flex justify-between items-center">
                     <div className="flex items-center gap-3">
                       <div className="bg-purple-100 p-2 rounded-lg">

@@ -36,9 +36,12 @@ import {
   Package,
   Pencil,
   Copy,
-  DollarSign
+  DollarSign,
+  Upload, // Added Upload
+  Trash2 // Added Trash2
 } from 'lucide-react';
 import { toast } from 'sonner';
+import { supabase } from '@/lib/supabase'; // Import Supabase
 
 interface VendorProductReference {
   name: string;
@@ -70,6 +73,61 @@ const AtHomeProductsPage = () => {
   const [isSheetOpen, setIsSheetOpen] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const [uploading, setUploading] = useState(false); // Added uploading state
+
+  // Handle Image Upload
+  const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    try {
+      const file = event.target.files?.[0];
+      if (!file) return;
+
+      setUploading(true);
+
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${Math.random().toString(36).substring(2)}-${Date.now()}.${fileExt}`;
+      const filePath = `products/${fileName}`;
+
+      // Upload to 'product-images' bucket
+      const { error: uploadError } = await supabase.storage
+        .from('product-images')
+        .upload(filePath, file);
+
+      if (uploadError) {
+        // Fallback: Try 'public' bucket if product-images fails
+        console.warn('Upload to product-images failed, trying public bucket...', uploadError);
+        const { error: publicError } = await supabase.storage
+          .from('public')
+          .upload(filePath, file);
+
+        if (publicError) throw publicError;
+
+        // Get Public URL from 'public' bucket
+        const { data: { publicUrl } } = supabase.storage
+          .from('public')
+          .getPublicUrl(filePath);
+
+        setFormData(prev => ({ ...prev, image_url: publicUrl }));
+        toast.success("Image uploaded (fallback bucket)");
+        return;
+      }
+
+      // Get Public URL
+      const { data: { publicUrl } } = supabase.storage
+        .from('product-images')
+        .getPublicUrl(filePath);
+
+      setFormData(prev => ({ ...prev, image_url: publicUrl }));
+      toast.success("Image uploaded successfully");
+
+    } catch (error: any) {
+      console.error('Error uploading image:', error);
+      toast.error(error.message || "Failed to upload image");
+    } finally {
+      setUploading(false);
+      // Reset input value to allow selecting same file again
+      if (event.target) event.target.value = '';
+    }
+  };
 
   const [formData, setFormData] = useState({
     name: '',
@@ -342,17 +400,71 @@ const AtHomeProductsPage = () => {
               </div>
 
               <div className="space-y-2">
-                <Label>Image URL</Label>
-                <Input
-                  placeholder="https://..."
-                  value={formData.image_url}
-                  onChange={e => setFormData({ ...formData, image_url: e.target.value })}
-                />
-                {formData.image_url && (
-                  <div className="h-32 w-full rounded-md border overflow-hidden mt-2">
-                    <img src={formData.image_url} alt="Preview" className="w-full h-full object-cover" />
+                <Label>Product Image</Label>
+                <div className="flex flex-col gap-4">
+                  {/* Image Preview */}
+                  {formData.image_url ? (
+                    <div className="relative h-48 w-full rounded-md border overflow-hidden group">
+                      <img src={formData.image_url} alt="Preview" className="w-full h-full object-cover" />
+                      <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                        <Button
+                          variant="destructive"
+                          size="sm"
+                          onClick={() => setFormData({ ...formData, image_url: '' })}
+                        >
+                          <Trash2 className="w-4 h-4 mr-2" />
+                          Remove
+                        </Button>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="h-48 w-full border-2 border-dashed border-gray-300 rounded-md flex flex-col items-center justify-center text-gray-400 bg-gray-50">
+                      <Package className="w-10 h-10 mb-2 opacity-50" />
+                      <span className="text-sm">No image selected</span>
+                    </div>
+                  )}
+
+                  {/* Upload / URL Input */}
+                  <div className="flex gap-2">
+                    <Input
+                      placeholder="https://..."
+                      value={formData.image_url}
+                      onChange={e => setFormData({ ...formData, image_url: e.target.value })}
+                      className="flex-1"
+                    />
+                    <div className="relative">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        disabled={uploading}
+                        className="cursor-pointer"
+                        onClick={() => document.getElementById('image-upload')?.click()}
+                      >
+                        {uploading ? (
+                          <Loader2 className="w-4 h-4 animate-spin" />
+                        ) : (
+                          <>
+                            <Upload className="w-4 h-4 mr-2" />
+                            Upload
+                          </>
+                        )}
+                      </Button>
+                      <input
+                        id="image-upload"
+                        type="file"
+                        accept="image/*"
+                        className="hidden"
+                        onChange={handleImageUpload}
+                        disabled={uploading}
+                      />
+                    </div>
                   </div>
-                )}
+                  <p className="text-xs text-muted-foreground">
+                    Upload an image or paste a direct URL. Recommended size: 800x600px.
+                    <br />
+                    <span className="text-amber-600">Note: Ensure a 'product-images' bucket exists in Supabase Storage.</span>
+                  </p>
+                </div>
               </div>
 
               <div className="space-y-2">

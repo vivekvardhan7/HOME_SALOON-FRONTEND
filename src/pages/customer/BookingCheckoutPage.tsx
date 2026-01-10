@@ -86,12 +86,20 @@ const BookingCheckoutPage = () => {
     }
   }, [location.state, navigate]);
 
-  const getTotalPrice = () => {
-    if (!bookingData) return 0;
+  const getFinancials = () => {
+    if (!bookingData) return { base: 0, vat: 0, total: 0 };
     const servicesTotal = bookingData.services.reduce((sum, service) => sum + service.price, 0);
     const productsTotal = bookingData.products.reduce((sum, product) => sum + (product.price * product.quantity), 0);
-    return servicesTotal + productsTotal;
+    const base = servicesTotal + productsTotal;
+    const vat = base * 0.16;
+    const total = base + vat;
+    return { base, vat, total };
   };
+
+  const { base: basePrice, vat: vatAmount, total: grandTotal } = getFinancials();
+
+  // Helper for backward compatibility or simple usage
+  const getTotalPrice = () => grandTotal;
 
   const validateCurrentSection = () => {
     const newErrors: Record<string, string> = {};
@@ -124,6 +132,7 @@ const BookingCheckoutPage = () => {
 
     return isValid;
   };
+
 
   const handlePaymentMethodChange = (value: string) => {
     setPaymentMethod(value);
@@ -608,10 +617,18 @@ const BookingCheckoutPage = () => {
                         </div>
                       ))}
 
-                      <div className="border-t pt-4">
-                        <div className="flex justify-between items-center text-lg font-bold text-[#4e342e]">
+                      <div className="border-t pt-4 space-y-2">
+                        <div className="flex justify-between items-center text-[#6d4c41]">
+                          <span>Subtotal</span>
+                          <span>${basePrice.toFixed(2)}</span>
+                        </div>
+                        <div className="flex justify-between items-center text-[#d84315] font-medium">
+                          <span>VAT (16%)</span>
+                          <span>${vatAmount.toFixed(2)}</span>
+                        </div>
+                        <div className="flex justify-between items-center text-lg font-bold text-[#4e342e] pt-2 border-t border-dashed border-[#d7ccc8]">
                           <span>Total</span>
-                          <span>${getTotalPrice()}</span>
+                          <span>${grandTotal.toFixed(2)}</span>
                         </div>
                       </div>
 

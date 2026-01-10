@@ -285,7 +285,7 @@ const EditServicePage = () => {
                             {/* Pricing & Time */}
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div className="space-y-2">
-                                    <Label htmlFor="price" className="text-[#4e342e]">Price ($)</Label>
+                                    <Label htmlFor="price" className="text-[#4e342e]">Base Price ($)</Label>
                                     <Input
                                         id="price"
                                         type="number"
@@ -295,6 +295,11 @@ const EditServicePage = () => {
                                         step="0.01"
                                         required
                                     />
+                                    {formData.price && (
+                                        <div className="text-xs text-purple-600 font-medium bg-purple-50 px-2 py-1 rounded inline-block mt-1">
+                                            Price incl. 16% VAT: ${(Number(formData.price) * 1.16).toFixed(2)}
+                                        </div>
+                                    )}
                                 </div>
                                 <div className="space-y-2">
                                     <Label htmlFor="duration" className="text-[#4e342e]">Duration (minutes)</Label>

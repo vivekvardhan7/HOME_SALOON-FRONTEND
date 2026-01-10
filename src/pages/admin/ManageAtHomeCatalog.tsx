@@ -748,7 +748,7 @@ const ManageAtHomeCatalog = ({ defaultTab = 'services' }: { defaultTab?: 'servic
 
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label className="text-[#6d4c41] font-medium flex items-center gap-1"><DollarSign className="w-3 h-3" /> Price</Label>
+                    <Label className="text-[#6d4c41] font-medium flex items-center gap-1"><DollarSign className="w-3 h-3" /> Base Price ($)</Label>
                     <Input
                       type="number"
                       value={serviceForm.price}
@@ -756,6 +756,9 @@ const ManageAtHomeCatalog = ({ defaultTab = 'services' }: { defaultTab?: 'servic
                       className="bg-white"
                       min="0"
                     />
+                    <div className="text-xs text-purple-600 font-medium bg-purple-50 px-2 py-1 rounded inline-block">
+                      Price incl. 16% VAT: ${(serviceForm.price * 1.16).toFixed(2)}
+                    </div>
                   </div>
                   <div className="space-y-2">
                     <Label className="text-[#6d4c41] font-medium flex items-center gap-1"><Clock className="w-3 h-3" /> Duration (min)</Label>
@@ -845,7 +848,7 @@ const ManageAtHomeCatalog = ({ defaultTab = 'services' }: { defaultTab?: 'servic
                   </Select>
                 </div>
                 <div className="space-y-2">
-                  <Label className="text-[#6d4c41] font-medium flex items-center gap-1"><DollarSign className="w-3 h-3" /> Price</Label>
+                  <Label className="text-[#6d4c41] font-medium flex items-center gap-1"><DollarSign className="w-3 h-3" /> Base Price ($)</Label>
                   <Input
                     type="number"
                     value={productForm.price}
@@ -853,6 +856,9 @@ const ManageAtHomeCatalog = ({ defaultTab = 'services' }: { defaultTab?: 'servic
                     className="bg-white"
                     min="0"
                   />
+                  <div className="text-xs text-purple-600 font-medium bg-purple-50 px-2 py-1 rounded inline-block">
+                    Price incl. 16% VAT: ${(productForm.price * 1.16).toFixed(2)}
+                  </div>
                 </div>
                 <div className="space-y-2">
                   <Label className="text-[#6d4c41] font-medium flex items-center gap-1"><AlignLeft className="w-3 h-3" /> Description</Label>

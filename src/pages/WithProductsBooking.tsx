@@ -344,7 +344,9 @@ const WithProductsBooking: React.FC = () => {
         0
       )
       : selectedProducts.reduce((sum, p) => sum + p.price * (productQuantities[p.id] || 0), 0);
-  const grandTotal = servicesTotal + productsTotal;
+  const subTotal = servicesTotal + productsTotal;
+  const vatAmount = subTotal * 0.16;
+  const grandTotal = subTotal + vatAmount;
 
   const fadeInUp = {
     initial: { opacity: 0, y: 60 },
@@ -403,9 +405,14 @@ const WithProductsBooking: React.FC = () => {
       quantity: productQuantities[product.id] || 0,
       vendorPayout: 'vendorPayout' in product ? product.vendorPayout : undefined
     }));
-    const totalPrice =
-      services.reduce((sum, s) => sum + (s.price || 0), 0) +
-      products.reduce((sum, p) => sum + p.price * (p.quantity || 0), 0);
+
+    // Explicit calculations for transfer
+    const sTotal = services.reduce((sum, s) => sum + (s.price || 0), 0);
+    const pTotal = products.reduce((sum, p) => sum + p.price * (p.quantity || 0), 0);
+    const baseTotal = sTotal + pTotal;
+    const vat = baseTotal * 0.16;
+    const total = baseTotal + vat;
+
     const totalDuration =
       selectedCatalogServices.length > 0
         ? selectedCatalogServices.reduce((sum, svc) => sum + (svc.duration || 0), 0)
@@ -425,7 +432,12 @@ const WithProductsBooking: React.FC = () => {
       phone: '',
       notes: 'At-home with products',
       beauticianPreference: 'any',
-      totalPrice,
+
+      // Financials
+      totalPrice: total, // Grand Total (Incl VAT)
+      basePrice: baseTotal,
+      vatAmount: vat,
+
       totalDuration,
       type: 'AT_HOME',
       includeProducts: products.some(p => (p.quantity || 0) > 0),
@@ -629,7 +641,11 @@ const WithProductsBooking: React.FC = () => {
                     <span>Products</span>
                     <span>${productsTotal.toFixed(2)}</span>
                   </div>
-                  <div className="flex items-center justify-between text-[#4e342e] font-bold mt-2 border-t border-[#d7ccc8] pt-2">
+                  <div className="flex items-center justify-between text-[#d84315] font-semibold mt-1 border-t border-[#d7ccc8] pt-2">
+                    <span>VAT (16%)</span>
+                    <span>${vatAmount.toFixed(2)}</span>
+                  </div>
+                  <div className="flex items-center justify-between text-[#4e342e] font-bold mt-2">
                     <span>Total</span>
                     <span>${grandTotal.toFixed(2)}</span>
                   </div>
@@ -728,7 +744,7 @@ const WithProductsBooking: React.FC = () => {
       <div className={`fixed bottom-0 left-0 right-0 p-4 bg-white border-t border-[#d7ccc8] shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)] z-40 lg:hidden transform transition-transform duration-300 ${grandTotal > 0 ? 'translate-y-0' : 'translate-y-full'}`}>
         <div className="flex items-center justify-between gap-4">
           <div className="flex flex-col">
-            <span className="text-sm text-[#6d4c41]">Total</span>
+            <span className="text-sm text-[#6d4c41]">Total (Inc. VAT)</span>
             <span className="text-xl font-bold text-[#4e342e]">${grandTotal.toFixed(2)}</span>
           </div>
           <Button
